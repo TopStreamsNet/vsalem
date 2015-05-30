@@ -107,7 +107,7 @@ public class CartographWindow extends Window {
                         if((f == null) && (cg.manhattan2(plg) <= 1)) {
                             f = Defer.later(new Defer.Callable<MapTile> () {
                                 public MapTile call() {
-                                    BufferedImage img = lmmap.drawmap(ul, cmaps);
+                                    BufferedImage img = lmmap.drawmap(ul, cmaps, true);
                                     if(img == null){return null;}
                                     return(new MapTile(new TexI(img), ul, tcg));
                                 }

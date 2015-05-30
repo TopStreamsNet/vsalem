@@ -1219,7 +1219,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		}
 
 		public void presize() {
-		    this.c = new Coord(0, (mainmenu.c.y - sz.y - ((int) ((mainmenu.cash!=null)?37:0))) + (mainmenu.full?0:119));
+		    this.c = new Coord(0, (mainmenu.c.y - sz.y + (mainmenu.full?0:119)));
 		}
 
 		public Object tooltip(Coord c, Widget prev) {
@@ -1269,7 +1269,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		}
 
 		public void presize() {
-		    c = new Coord(90, (mainmenu.c.y - sz.y));
+		    this.c = new Coord(90, (mainmenu.c.y - sz.y + (mainmenu.full?0:119)));
 		}
 
 		public Object tooltip(Coord c, Widget prev) {
