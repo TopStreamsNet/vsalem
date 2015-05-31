@@ -56,6 +56,8 @@ public class UI {
     public MenuGrid mnu;
     public final ActAudio audio = new ActAudio();
     
+    private long lastactivity = 0;
+    
     {
 	lastevent = lasttick = System.currentTimeMillis();
     }
@@ -261,6 +263,7 @@ public class UI {
     }
     private int kcode = 0;
     public void type(KeyEvent ev) {
+        be_active();
 	setmods(ev);
 	ev.setKeyCode(kcode);
 	if(keygrab == null) {
@@ -310,7 +313,17 @@ public class UI {
 	return(false);
     }
 
+    public long timesinceactive() {
+        return System.currentTimeMillis() - lastactivity;
+    }
+    
+    private void be_active() {
+        lastactivity = System.currentTimeMillis();
+    }
+    
     public void mousedown(MouseEvent ev, Coord c, int button) {
+        be_active();
+        
 	setmods(ev);
 	lcc = mc = c;
 	if(mousegrab == null)

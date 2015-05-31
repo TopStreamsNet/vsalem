@@ -906,6 +906,16 @@ public class OptWnd2 extends Window {
                 }
                 {tooltip = Text.render("Will automatically drop bats that sit on your neck.");}
             }).a = Config.auto_drop_bats;
+            
+            (new CheckBox(new Coord(0, y+=35), tab, "Auto logout"){
+                @Override
+                public void changed(boolean val) {
+                    super.changed(val);
+                    Config.autolog = val;
+                    Utils.setprefb("autolog", val);
+                }
+                {tooltip = Text.render("Will automatically log you out if you do not interact with the client for 10 minutes.");}
+            }).a = Config.autolog;
         }
         
 	//new Frame(new Coord(-10, 20), new Coord(420, 330), this);

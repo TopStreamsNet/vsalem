@@ -32,6 +32,8 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Session implements Owner {
     public static final int PVER = 36;
@@ -644,6 +646,14 @@ public class Session implements Owner {
 			} else {
 			    throw(new MessageException("Unknown message type: " + msg.type, msg));
 			}
+                        
+                        if(Config.autolog && UI.instance.timesinceactive() > 1000*60*10)
+                        {
+                            try {
+                                UI.instance.cons.run("act lo cs");
+                            } catch (Exception ex) {
+                            }
+                        }
 		    }
 		}
 	    } finally {

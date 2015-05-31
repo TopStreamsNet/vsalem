@@ -88,6 +88,7 @@ public class Config {
     public static boolean flower_study = Utils.getprefb("flower_study", false);
     public static boolean pure_mult = Utils.getprefb("pure_mult", false);
     public static boolean blink = Utils.getprefb("blink", false);
+    public static boolean autolog = Utils.getprefb("autolog", false);
     public static GLSettings glcfg;
     public static String server;
     protected static boolean shadows = false;
