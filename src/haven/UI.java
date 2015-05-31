@@ -317,7 +317,7 @@ public class UI {
         return System.currentTimeMillis() - lastactivity;
     }
     
-    private void be_active() {
+    public void be_active() {
         lastactivity = System.currentTimeMillis();
     }
     

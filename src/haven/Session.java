@@ -650,6 +650,7 @@ public class Session implements Owner {
                         if(Config.autolog && UI.instance.timesinceactive() > 1000*60*10)
                         {
                             try {
+                                UI.instance.be_active();
                                 UI.instance.cons.run("act lo cs");
                             } catch (Exception ex) {
                             }
