@@ -26,60 +26,43 @@
 
 package haven;
 
-import static haven.Window.wbox;
+import java.awt.Color;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 
-public class SeasonImg extends Window {
+public class SeasonImg extends Widget {
     private static final SimpleDateFormat datef = new SimpleDateFormat("yyyy-MM-dd, HH:mm:ss", Locale.ENGLISH);
-    private long time;
-    private static long EPOCH;
-    private Tex timeTex;
+    private static final long EPOCH;
     private static final Tex seasons[] = {
-        Resource.loadtex("gfx/hud/coldsnap"),
-        Resource.loadtex("gfx/hud/everbloom"),
-        Resource.loadtex("gfx/hud/bloodmoon")
+	    Resource.loadtex("gfx/hud/coldsnap"),
+	    Resource.loadtex("gfx/hud/everbloom"),
+	    Resource.loadtex("gfx/hud/bloodmoon")
     };
-    private double t = 0;
+    public static final IBox box = Window.swbox;
+    public static final Color color = new Color(133, 92, 62);
+    private final Coord isz, ic;
+    private long time = 0;
+    private Tex timeTex = null;
+
     static {
 	Calendar c = new GregorianCalendar(1631, 0, 1);//Year when Providence was established
 	c.setTimeZone(TimeZone.getTimeZone("GMT"));
 	EPOCH = c.getTimeInMillis();
     }
-    
+
     public SeasonImg(Coord c, Coord sz, Widget parent) {
-	super(c, sz, parent,null);
-	synchronized (Config.window_props) {
-	    try {
-		this.c = new Coord(Config.window_props.getProperty("season_pos", c.toString()));
-	    } catch (Exception e){}
-	}
+	super(c, sz, parent);
+	isz = sz.sub(box.bisz());
+	ic = box.btloff();
 	datef.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-    
-    @Override
-    public boolean type(char key, java.awt.event.KeyEvent ev) {
-	if(key == 27) {
-	    return(true);
-	}
-	return(super.type(key, ev));
-    }
-    
-    @Override
-    public boolean mouseup(Coord c, int button) {
-        boolean result = super.mouseup(c,button);
-	Config.setWindowOpt("season_pos", this.c.toString());
-	return(result);
     }
     
     public void draw(GOut g) {
 	Tex t = seasons[ui.sess.glob.season];
-        g.image(t, this.sz.sub(t.sz()).div(2));
-        wbox.draw(g, Coord.z, sz);
+	g.image(t, ic, isz);
+	g.chcolor(color);
+	box.draw(g, Coord.z, sz);
+	g.chcolor();
     }
 
     @Override

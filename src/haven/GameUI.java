@@ -921,7 +921,6 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	public boolean hpv = true, pv = hpv && !Config.hptr;
 
 	boolean full = true;
-        public SeasonImg simg = new SeasonImg(new Coord(6,8), new Coord(125,125), this.ui.gui);
 	public MenuButton[] tohide = {
 		invb = new MenuButton(new Coord(4, 8), this, "inv", 9, "Inventory (Tab)") {
 		    int seq = 0;
