@@ -42,6 +42,7 @@ public class Button extends SIWidget {
     public Text text;
     public BufferedImage cont;
     boolean a = false;
+    public Object Info;
 	
     @RName("btn")
     public static class $Btn implements Factory {
