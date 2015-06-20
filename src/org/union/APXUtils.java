@@ -10,6 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class APXUtils {
 	static {
@@ -45,19 +47,26 @@ public class APXUtils {
 	}
 
 	public static void _sa_save_data() {
+                ObjectOutputStream sstream = null;
 		try {
 			File file = new File("data.bin");
 			if (!file.exists()) {
 				file.createNewFile();
 			}
 			FileOutputStream files = new FileOutputStream(file);
-			ObjectOutputStream sstream = new ObjectOutputStream(files);
+			sstream = new ObjectOutputStream(files);
 			sstream.writeObject(accounts);
 			sstream.flush();
-			sstream.close();
 		} catch (FileNotFoundException e) {
 		} catch (IOException e) {
 		}
+                finally 
+                {
+                    if(sstream != null)
+                        try {
+                            sstream.close();
+                        } catch (IOException ex) {ex.printStackTrace();}
+                }
 	}
 
 	public static void _sa_delete_account(String name) {
@@ -68,14 +77,21 @@ public class APXUtils {
 	@SuppressWarnings("unchecked")
 	public static void _sa_load_data() {
 		accounts.clear();
+                ObjectInputStream sstream = null;
 		try {
 			FileInputStream file = new FileInputStream("data.bin");
-			ObjectInputStream sstream = new ObjectInputStream(file);
+			sstream = new ObjectInputStream(file);
 			accounts = (HashMap<String, AccountInfo>) sstream.readObject();
-			sstream.close();
 		} catch (FileNotFoundException e) {
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
 		}
+                finally 
+                {
+                    if(sstream != null)
+                        try {
+                            sstream.close();
+                        } catch (IOException ex) {ex.printStackTrace();}
+                }
 	}
 }

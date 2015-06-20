@@ -175,7 +175,7 @@ public class AuthClient {
 	}
     }
 
-    public static class NativeCred extends Credentials {
+    public static class NativeCred extends Credentials implements Serializable{
 	public final String username;
 	private byte[] phash;
 	
