@@ -180,6 +180,7 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
 
     public void uimsg(String name, Object... args) {
 	if(name == "num") {
+            int oldnum = num;
 	    num = (Integer)args[0];
 	} else if(name == "chres") {
 	    res = ui.sess.getres((Integer)args[0]);
@@ -188,6 +189,8 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
 	    rawinfo = args;
 	    filtered = 0;
 	    if(sendttupdate){wdgmsg("ttupdate");}
+            if(this.parent == ui.gui.maininv)
+                OverviewTool.instance(ui).force_update();
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
 	}

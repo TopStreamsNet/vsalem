@@ -357,6 +357,9 @@ public class Inventory extends Widget implements DTarget {
             
             if(isTranslated)
                 updateClientSideSize();
+            
+            if(this == ui.gui.maininv)
+                OverviewTool.instance(ui).add_item(i);
 	}
 	return(ret);
     }
@@ -370,6 +373,8 @@ public class Inventory extends Widget implements DTarget {
             {
                 sanitizeDictionary();
             }
+            if(this == ui.gui.maininv)
+                OverviewTool.instance(ui).remove_item(i);
 	    ui.destroy(wi);
 	}
     }

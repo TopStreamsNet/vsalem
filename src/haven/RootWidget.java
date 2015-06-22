@@ -65,6 +65,9 @@ public class RootWidget extends ConsoleHost {
 	    }else if(isgui && (code == KeyEvent.VK_Q) && ctrl && !shift){
 		LocatorTool lt = LocatorTool.instance(ui);
                 if(lt!=null) lt.toggle();
+	    }else if(isgui && (code == KeyEvent.VK_A) && ctrl && !shift){
+		OverviewTool ot = OverviewTool.instance(ui);
+                if(ot!=null) ot.toggle();
 	    }else if(isgui && (code == KeyEvent.VK_X) && ctrl && !shift){
 		CartographWindow.toggle();
 	    }else if(isgui && code == KeyEvent.VK_D && ctrl && !shift){
