@@ -23,26 +23,26 @@ public class APXUtils {
 	public static class AccountInfo implements Serializable {
 		private static final long serialVersionUID = -8211372962031061806L;
 		public String login;
-		public AuthClient.NativeCred cred;
+		public AuthClient.Credentials cred;
 		public byte[] token;
 
-		public AccountInfo(String l, AuthClient.NativeCred p, byte[] t) {
+		public AccountInfo(String l, AuthClient.Credentials p, byte[] t) {
 			login = l;
 			cred = p;
 			token = t;
 		}
 
-		public AccountInfo(String l, AuthClient.NativeCred p) {
+		public AccountInfo(String l, AuthClient.Credentials p) {
 			this(l, p, null);
 		}
 	}
 
 	public static HashMap<String, AccountInfo> accounts;
 
-	public static void _sa_add_data(String login, AuthClient.NativeCred cred) {
+	public static void _sa_add_data(String login, AuthClient.Credentials cred) {
 		if (!accounts.containsKey(login)) {
-			accounts.put(login, new AccountInfo(login, cred));
-			_sa_save_data();
+                    accounts.put(login, new AccountInfo(login,cred));
+                    _sa_save_data();
 		}
 	}
 

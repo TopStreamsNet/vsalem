@@ -159,7 +159,7 @@ public class AuthClient {
 	return(recvmsg());
     }
     
-    public static abstract class Credentials {
+    public static abstract class Credentials implements Serializable {
 	public abstract String tryauth(AuthClient cl) throws IOException;
 	public abstract String name();
 	public void discard() {}
@@ -175,7 +175,7 @@ public class AuthClient {
 	}
     }
 
-    public static class NativeCred extends Credentials implements Serializable{
+    public static class NativeCred extends Credentials{
 	public final String username;
 	private byte[] phash;
 	
@@ -224,7 +224,7 @@ public class AuthClient {
 	}
     }
 
-    public static class TokenCred extends Credentials implements Serializable {
+    public static class TokenCred extends Credentials {
 	public final String acctname;
 	public final byte[] token;
 	
@@ -235,7 +235,7 @@ public class AuthClient {
 	}
 	
 	public String name() {
-	    throw(new UnsupportedOperationException());
+            return acctname;
 	}
 	
 	public String tryauth(AuthClient cl) throws IOException {

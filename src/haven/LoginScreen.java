@@ -263,7 +263,6 @@ public class LoginScreen extends Widget {
 		
 	Object[] data() {
 	    AuthClient.NativeCred cred = new AuthClient.NativeCred(user.text, pass.text);
-            APXUtils._sa_add_data(user.text,cred);
             return new Object[] {cred, savepass.a};
 	}
     }

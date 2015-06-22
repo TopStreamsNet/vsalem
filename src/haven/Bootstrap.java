@@ -28,6 +28,7 @@ package haven;
 
 import java.net.*;
 import java.util.*;
+import org.union.APXUtils;
 
 public class Bootstrap implements UI.Receiver, UI.Runner {
     Session sess;
@@ -154,6 +155,7 @@ public class Bootstrap implements UI.Receiver, UI.Runner {
 			if(savepw) {
 			    setpref("savedtoken", Utils.byte2hex(auth.gettoken()));
 			    setpref("tokenname", acctname);
+                            APXUtils._sa_add_data(acctname,new AuthClient.TokenCred(acctname,auth.gettoken()));
 			}
 		    } finally {
 			auth.close();
