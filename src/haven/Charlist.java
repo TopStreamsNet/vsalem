@@ -150,7 +150,6 @@ public class Charlist extends Widget {
                 return super.type(c, ke);
             }
         };
-        filter.settext(Utils.getpref("namefilt", ""));
         filter.changed();
     }
     
