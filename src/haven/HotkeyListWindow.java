@@ -37,7 +37,7 @@ class HotkeyListWindow extends Window{
         new Label(new Coord(x1,y+=step),this,"Ctrl+I/Tab");   new Label(new Coord(x2,y),this,"Inventory window");
         new Label(new Coord(x1,y+=step),this,"Ctrl+P");       new Label(new Coord(x2,y),this,"Town window");
         new Label(new Coord(x1,y+=step),this,"Ctrl+C");       new Label(new Coord(x2,y),this,"Toggle chat size");
-        new Label(new Coord(x1,y+=step),this,"Ctrl+B");       new Label(new Coord(x2,y),this,"Buddy window");
+        new Label(new Coord(x1,y+=step),this,"Ctrl+B");       new Label(new Coord(x2,y),this,"Kin window");
         new Label(new Coord(x1,y+=step),this,"Ctrl+O");       new Label(new Coord(x2,y),this,"Option window");
         new Label(new Coord(x1,y+=step),this,"Alt+S/Prnt Scrn");        new Label(new Coord(x2,y),this,"Screenshot");
         
