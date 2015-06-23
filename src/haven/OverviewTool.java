@@ -63,15 +63,12 @@ class OverviewTool extends Window{
                     unit = parts[1];
                     name = parts[3];
                 }
+                else
+                {
+                    name = i.name();
+                }
             }
             catch(Loading l){}
-            if(name==null){
-                name = i.name();
-            }
-            else
-            {
-                
-            }
             
             if(uniques.containsKey(name))
             {
