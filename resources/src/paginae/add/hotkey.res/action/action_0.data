@@ -1,0 +1,17 @@
+#ABUTTON LAYER FOR RES src//\paginae\add\hotkey.res
+#String pr
+paginae/act/add
+#uint16 pver
+2
+#String name
+Show a list of hotkeys
+#String preq
+
+#uint16 hk
+104
+#uint16 ad length
+2
+#String ad[0]
+@
+#String ad[1]
+hotkey

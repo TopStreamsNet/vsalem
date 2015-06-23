@@ -131,6 +131,7 @@ public class MenuGrid extends Widget {
 	p.add(glob.paginafor(Resource.load("paginae/add/wiki")));
 	p.add(glob.paginafor(Resource.load("paginae/add/craft")));
 	p.add(glob.paginafor(Resource.load("paginae/add/radius")));
+	p.add(glob.paginafor(Resource.load("paginae/add/hotkey")));
 //	p.add(glob.paginafor(Resource.load("paginae/add/anime/raeg")));
 //	p.add(glob.paginafor(Resource.load("paginae/add/anime/facepalm")));
 
@@ -608,6 +609,8 @@ public class MenuGrid extends Widget {
 	    ui.gui.toggleCraftWnd();
 	} else if(ad[1].equals("radius")) {
 	    Config.toggleRadius();
+	} else if(ad[1].equals("hotkey")) {
+            HotkeyListWindow.instance(ui).toggle();
 	}
 	use(null);
     }

@@ -501,6 +501,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	FlatnessTool.close();
         OverviewTool.close();
         LocatorTool.close();
+        HotkeyListWindow.close();
 	WikiBrowser.close();
         if (menu!= null) menu.destroy();
         if (tm!= null) tm.destroy();
