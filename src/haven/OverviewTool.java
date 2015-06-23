@@ -83,6 +83,8 @@ class OverviewTool extends Window{
     
     private void update_text()
     {
+        if(!this.visible)
+            return;
         update_uniques();
         String t = String.format("Carrying %.2f/%.2f kg", ui.gui.weight / 1000.0, ui.sess.glob.cattr.get("carry").comp / 1000.0);
 	this.text.settext(t);
