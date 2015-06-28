@@ -793,6 +793,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		invwnd.updweight();
 	    if(weightwdg != null){
 		weightwdg.update(weight);
+            OverviewTool.instance(ui).force_update();
 	    }
 	} else {
 	    super.uimsg(msg, args);

@@ -15,7 +15,6 @@ class OverviewTool extends Window{
     private ArrayList<Label> ls = new ArrayList<Label>();
     
     private Map<String,Entry<Float,String>> uniques = new HashMap<String,Entry<Float,String>>();
-    private List<GItem> contained = new ArrayList<GItem>();
     
     private static OverviewTool instance; 
 
@@ -50,7 +49,7 @@ class OverviewTool extends Window{
     private void update_uniques()
     {
         uniques = new HashMap<String,Entry<Float,String>>();
-        for(GItem i : contained)
+        for(GItem i : ui.gui.maininv.wmap.keySet())
         {
             String name = null,unit = null;
             float num = 1;
@@ -118,13 +117,11 @@ class OverviewTool extends Window{
     
     public void add_item(GItem i)
     {
-        contained.add(i);
         update_text();
     }
     
     public void remove_item(GItem i)
     {
-        contained.remove(i);
         update_text();
     }
     
