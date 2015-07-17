@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.*;
 
 class OverviewTool extends Window{
     static final String title = "Abacus";
@@ -94,7 +95,7 @@ class OverviewTool extends Window{
 		Iterator<Label> itr = ls.iterator();
 		while(itr.hasNext()) {
 			Label l = itr.next();
-			itr.remove()
+			itr.remove();
 			l.destroy();
 		}
         ls = new ArrayList<Label>();
