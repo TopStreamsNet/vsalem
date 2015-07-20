@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.*;
 
 class OverviewTool extends Window{
     static final String title = "Abacus";
@@ -90,10 +91,13 @@ class OverviewTool extends Window{
         
         int height = 25;
         //destroy all previous labels
-        for(Label l : ls)
-        {
-            l.destroy();
-        }
+		//your iteration method was conflicting with on-the-go destroying, try or fix this method
+		Iterator<Label> itr = ls.iterator();
+		while(itr.hasNext()) {
+			Label l = itr.next();
+			itr.remove();
+			l.destroy();
+		}
         ls = new ArrayList<Label>();
         ls.add(new Label(new Coord(0,height), this, "Overview of carried items:"));
         for(Entry<String,Entry<Float,String>> e : uniques.entrySet())
