@@ -78,7 +78,7 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
     public static class $_ implements Factory {
 	public Widget create(Coord c, Widget parent, Object[] args) {
 	    int res = (Integer)args[0];
-	    return(new GItem(parent, parent.ui.sess.getres(res)));
+	    return(new GItem(c, parent, parent.ui.sess.getres(res)));
 	}
     }
     
@@ -102,9 +102,14 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
 	    return(num);
 	}
     }
-    
+
     public GItem(Widget parent, Indir<Resource> res) {
+	this(Coord.z, parent, res);
+    }
+
+    public GItem(Coord c, Widget parent, Indir<Resource> res) {
 	super(parent);
+	this.c = c;
 	this.res = res;
     }
 
@@ -146,14 +151,9 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
     }
     
     public String name() {
-	Resource res = resource();
-	if(res != null){
-	    if(res.layer(Resource.tooltip) != null) {
-		return res.layer(Resource.tooltip).t;
-	    } else {
-		Name name = ItemInfo.find(Name.class, info);
-		return (name != null)?name.str.text:null;
-	    }
+	if(info != null) {
+	    Name name = ItemInfo.find(Name.class, info);
+	    return name != null ? name.str.text : null;
 	}
 	return null;
     }

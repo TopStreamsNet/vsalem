@@ -218,7 +218,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	    rl.prepc(hlt.getfx());
 	if(Config.blink){
 	    GobBlink blnk = getattr(GobBlink.class);
-	    if(blnk != null)
+	    if(blnk != null && blnk.visible())
 		rl.prepc(blnk.getfx());
 	}
         

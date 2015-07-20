@@ -37,15 +37,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-
-import org.union.APXUtils;
-import org.union.APXUtils.AccountInfo;
 
 public class LoginScreen extends Widget {
     Login cur;
@@ -57,6 +48,7 @@ public class LoginScreen extends Widget {
     static final Tex cbox = Resource.loadtex("gfx/hud/login/cbox");
     static final Coord cboxc = new Coord((bg.sz().x - cbox.sz().x) / 2, 310);
     Text progress = null;
+    AccountList accounts;
 	
     static {
 	textf = new Text.Foundry(new Font("Sans", Font.BOLD, 16), Color.BLACK).aa(true);
@@ -64,75 +56,16 @@ public class LoginScreen extends Widget {
 	textfs = new Text.Foundry(new Font("Sans", Font.BOLD, 14), Color.BLACK).aa(true);
     }
 	
-    static LoginScreen instance;
-    public static ArrayList<Button> login_btns = new ArrayList<Button>();
-    public static ArrayList<Button> del_btns = new ArrayList<Button>();
-
-    static Comparator<AccountInfo> comparator = new Comparator<AccountInfo>() {
-        public int compare(AccountInfo c1, AccountInfo c2) {
-            return c1.login.compareToIgnoreCase(c2.login);
-        }
-    };
-        
-    public static void spawnLoginButtons() {
-            for (Button btn : login_btns) {
-                    btn.unlink();
-                    btn.destroy();
-                    btn = null;
-            }
-            login_btns.clear();
-            for (Button btn : del_btns) {
-                    btn.unlink();
-                    btn.destroy();
-                    btn = null;
-            }
-            del_btns.clear();
-
-            int i = 0;
-            int j = 0;
-
-            Collection<AccountInfo> accColl = APXUtils.accounts.values();
-            List<AccountInfo> accList = new ArrayList<AccountInfo>(accColl);
-            Collections.sort(accList, comparator);
-
-            Iterator<APXUtils.AccountInfo> iterator = accList.iterator();
-            while (iterator.hasNext()) {
-                    if(j == 20) j = 0;
-                    final APXUtils.AccountInfo info = iterator.next();
-                    Button btn = new Button(Coord.z.add(0 + 140 * (i/20), j * 30), 100, instance,
-                                    info.login) {
-                            @Override
-                            public void click() {
-                                    // fromWidget = true;
-                                    instance.wdgmsg("forget");
-                                    instance.wdgmsg(instance, "login", new Object[] {info.cred,false});
-                            }
-                    };
-                    btn.Info = info;
-                    login_btns.add(btn);
-                    Button btn_del = new Button(Coord.z.add(105 + 140 * (i/20), j * 30), 15, instance,
-                                    "X") {
-                            public void click() {
-                                    APXUtils._sa_delete_account(info.login);
-                                    LoginScreen.spawnLoginButtons();
-                            }
-                    };
-                    btn_del.Info = info;
-                    del_btns.add(btn_del);
-                    i++;
-                    j++;
-            }
-    }
-
     public LoginScreen(Widget parent) {
 	super(parent.sz.div(2).sub(bg.sz().div(2)), bg.sz(), parent);
 	setfocustab(true);
 	parent.setfocus(this);
 	new Img(Coord.z, bg, this);
 	new Img(cboxc, cbox, this);
-	instance = this;
-        spawnLoginButtons();
-	if(Config.isUpdate == true){
+
+	accounts = new AccountList(Coord.z, this, 10);
+	
+	if(Config.isUpdate){
 	    showChangelog();
 	}
     }
@@ -159,26 +92,12 @@ public class LoginScreen extends Widget {
 	    br.close();
 	    out.close();
 	    in.close();
-	} catch (FileNotFoundException e) {
-	} catch (IOException e) {
+	} catch (FileNotFoundException ignored) {
+	} catch (IOException ignored) {
 	}
 	txt.setprog(0);
 	
 	//WikiBrowser.toggle();
-    }
-
-    public static boolean login(String charname) {
-            if (instance == null) return false;
-            Iterator<APXUtils.AccountInfo> iterator = APXUtils.accounts.values().iterator();
-            while (iterator.hasNext()) {
-                    APXUtils.AccountInfo info = iterator.next();
-                    if (info.login.equals(charname)) {
-                            instance.wdgmsg("forget");
-                            instance.wdgmsg(instance, "login", new Object[] { info.cred, false });
-                            return true;
-                    }
-            }
-            return false;
     }
 
     private static abstract class Login extends Widget {
@@ -213,7 +132,7 @@ public class LoginScreen extends Widget {
 	public void wdgmsg(Widget sender, String name, Object... args) {
 	}
 		
-	boolean enter() {            
+	boolean enter() {
 	    if(user.text.equals("")) {
 		setfocus(user);
 		return(false);
@@ -262,8 +181,7 @@ public class LoginScreen extends Widget {
 	}
 		
 	Object[] data() {
-	    AuthClient.NativeCred cred = new AuthClient.NativeCred(user.text, pass.text);
-            return new Object[] {cred, savepass.a};
+	    return(new Object[] {new AuthClient.NativeCred(user.text, pass.text), savepass.a});
 	}
     }
 		
@@ -297,17 +215,21 @@ public class LoginScreen extends Widget {
     }
 	
     private class Tokenbox extends Login {
+	private final String name;
+	private final String token;
 	Text label;
 	Button btn;
 		
-	private Tokenbox(String username) {
+	private Tokenbox(String username, String token) {
 	    super(cboxc, cbox.sz(), LoginScreen.this);
 	    label = textfs.render("Identity is saved for " + username);
 	    btn = new Button(new Coord((sz.x - 100) / 2, 55), 100, this, "Forget me");
+	    this.name = username;
+	    this.token = token;
 	}
 		
 	Object[] data() {
-	    return(new Object[0]);
+	    return(new Object[]{name, token});
 	}
 		
 	boolean enter() {
@@ -381,6 +303,14 @@ public class LoginScreen extends Widget {
 	    if(cur.enter())
 		super.wdgmsg("login", cur.data());
 	    return;
+	} else if(msg.equals("account")){
+	    //repeat if was not token box to do actual login
+	    boolean repeat = !(cur instanceof Tokenbox);
+	    if(repeat){
+		super.wdgmsg("login", args[0], args[1]);
+	    }
+	    super.wdgmsg("login", args[0], args[1]);
+	    return;
 	}
 	super.wdgmsg(sender, msg, args);
     }
@@ -401,7 +331,7 @@ public class LoginScreen extends Widget {
 		mklogin();
 	    } else if(msg == "token") {
 		clear();
-		cur = new Tokenbox((String)args[0]);
+		cur = new Tokenbox((String)args[0], (String)args[1]);
 		mklogin();
 	    } else if(msg == "error") {
 		error((String)args[0]);

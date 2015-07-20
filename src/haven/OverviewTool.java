@@ -69,7 +69,7 @@ class OverviewTool extends Window{
                 }
             }
             catch(Loading l){}
-            
+
             if(uniques.containsKey(name))
             {
                 uniques.put(name,new SimpleEntry<Float,String>(uniques.get(name).getKey()+num,unit));
@@ -80,7 +80,6 @@ class OverviewTool extends Window{
             }
         }
     }
-    
     private void update_text()
     {
         if(!this.visible)
@@ -115,16 +114,6 @@ class OverviewTool extends Window{
     }
     
     public void force_update()
-    {
-        update_text();
-    }
-    
-    public void add_item(GItem i)
-    {
-        update_text();
-    }
-    
-    public void remove_item(GItem i)
     {
         update_text();
     }
