@@ -45,6 +45,8 @@ public class Inventory extends Widget implements DTarget {
     public static final Coord sqlo = new Coord(4, 4);
     public static final Tex refl = Resource.loadtex("gfx/hud/invref");
 
+    private Comparator<WItem> sorter = null;
+    
     private static final Comparator<WItem> cmp_asc = new WItemComparator();
     private static final Comparator<WItem> cmp_desc = new Comparator<WItem>() {
 	@Override
@@ -82,7 +84,9 @@ public class Inventory extends Widget implements DTarget {
         	if (v1 == v2)
         	    return cmp_name.compare(o1, o2);
         	return v2-v1;
-            }catch(Loading l){return 0;}
+            }catch(Loading l){
+                return 0;
+            }
         }
     };
 
@@ -127,6 +131,7 @@ public class Inventory extends Widget implements DTarget {
             public void click() {
                 if(this.ui != null)
                 {
+                    Inventory.this.sorter = cmp_name;
                     Inventory.this.sortItemsLocally(cmp_name);
                 }
             }
@@ -134,12 +139,13 @@ public class Inventory extends Widget implements DTarget {
         sbtn.visible = true;
         ((Window)parent).addtwdg(sbtn);
         IButton sgbtn = new IButton(Coord.z, parent, Window.gbtni[0], Window.gbtni[1], Window.gbtni[2]){
-            {tooltip = Text.render("Sort the items in this inventory by gobble.");}
+            {tooltip = Text.render("Sort the items in this inventory by gobble values.");}
 
             @Override
             public void click() {
                 if(this.ui != null)
                 {
+                    Inventory.this.sorter = cmp_gobble;
                     Inventory.this.sortItemsLocally(cmp_gobble);
                 }
             }
@@ -153,6 +159,7 @@ public class Inventory extends Widget implements DTarget {
             public void click() {
                 if(this.ui != null)
                 {
+                    Inventory.this.sorter = null;
                     Inventory.this.removeDictionary();
                 }
             }
@@ -181,21 +188,34 @@ public class Inventory extends Widget implements DTarget {
         //assign the new locations to each of the items and add new translations
         int index = 0;
         BiMap<Coord,Coord> newdictionary = HashBiMap.create();
+        
+        //debug
         for(WItem w : array)
-        {
-            Coord newclientloc = new Coord((index%(width)),(int)(index/(width)));
-            
-            //adding the translation to the dictionary
-            Coord serverloc = w.server_c;
-            newdictionary.put(newclientloc,serverloc);
+            System.out.println("w.server_c: ("+w.server_c.x+","+w.server_c.y+").");
+        System.out.println("");
+        
+        try{
+            for(WItem w : array)
+            {
+                Coord newclientloc = new Coord((index%(width)),(int)(index/(width)));
 
-            //moving the widget to its ordered place
-            w.c = sqoff(newclientloc);
-            
-            //on to the next location
-            index++;
+                //adding the translation to the dictionary
+                Coord serverloc = w.server_c;
+                newdictionary.put(newclientloc,serverloc);
+
+                //moving the widget to its ordered place
+                w.c = sqoff(newclientloc);
+
+                //on to the next location
+                index++;
+            }
+            dictionaryClientServer = newdictionary;
         }
-        dictionaryClientServer = newdictionary;
+        catch(IllegalArgumentException iae)
+        {
+            //duplicate server coordinates, probably because we are swapping
+            //no problem, we'll resort upon cdestroy of the old WItem
+        }
         
         //resize the inventory to the new set-up
         this.updateClientSideSize();
@@ -262,14 +282,6 @@ public class Inventory extends Widget implements DTarget {
             w.c = sqoff(w.server_c);
         }
         this.updateClientSideSize();
-    }
-    
-    public void sanitizeDictionary()
-    {
-        if(wmap.isEmpty())
-        {
-            removeDictionary();
-        }
     }
     
     public Coord updateClientSideSize()
@@ -346,8 +358,22 @@ public class Inventory extends Widget implements DTarget {
         }
         return(true);
     }
+    
+    public void resort() {
+        if(sorter == null) return;
+        if(Config.alwayssort)
+        {
+            sortItemsLocally(sorter);
+        }
+        else
+        {
+            updateClientSideSize();
+        }
+    }
+    
     public Widget makechild(String type, Object[] pargs, Object[] cargs) {
     	Coord server_c = (Coord)pargs[0];
+        System.out.println("Adding child with server_c ("+server_c.x+","+server_c.y+").");
         Coord c = translateCoordinatesServerClient(server_c);
 	Widget ret = gettype(type).create(c, this, cargs);
 	if(ret instanceof GItem) {
@@ -356,7 +382,9 @@ public class Inventory extends Widget implements DTarget {
 	    newseq++;
             
             if(isTranslated)
-                updateClientSideSize();
+            {
+                resort();
+            }
             
             if(this == ui.gui.maininv)
                 OverviewTool.instance(ui).force_update();
@@ -369,9 +397,14 @@ public class Inventory extends Widget implements DTarget {
 	if(w instanceof GItem) {
 	    GItem i = (GItem)w;
             WItem wi = wmap.remove(i);
+            
+            Coord wc = sqroff(wi.c.add(isqsz.div(2)));
+            System.out.println("Removing item at client_c ("+wc.x+","+wc.y+").");
+            
             if(isTranslated)
             {
-                sanitizeDictionary();
+                dictionaryClientServer.remove(sqroff(wi.c.add(isqsz.div(2))));
+                resort();
             }
             if(this == ui.gui.maininv)
                 OverviewTool.instance(ui).force_update();

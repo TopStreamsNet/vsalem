@@ -157,6 +157,8 @@ public class Config {
     public static boolean hide_minimap = Utils.getprefb("hide_minimap", false);
     public static boolean hide_tempers = Utils.getprefb("hide_tempers", false);
     
+    public static boolean alwayssort = Utils.getprefb("alwayssort", false);
+    
     public static boolean show_contents_icons = Utils.getprefb("show_contents_icons", false);
     public static Map<String, String> contents_icons;
     

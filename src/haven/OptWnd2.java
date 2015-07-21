@@ -778,6 +778,18 @@ public class OptWnd2 extends Window {
 		{tooltip = Text.render("The humours will not be rendered.");}
 		
 	    }.a = Config.hide_tempers;
+            //sorting toggle
+            new CheckBox(new Coord(300, 300), tab, "Enable continuous sorting."){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.alwayssort = val;
+		    Utils.setprefb("alwayssort", val);
+		}
+
+		{tooltip = Text.render("Toggle between on-demand sorting and continuous sorting.");}
+		
+	    }.a = Config.alwayssort;
         }
         
         /* RADAR TAB */
@@ -916,6 +928,16 @@ public class OptWnd2 extends Window {
                 }
                 {tooltip = Text.render("Will automatically log you out if you do not interact with the client for 10 minutes.");}
             }).a = Config.autolog;
+            
+            new CheckBox(new Coord(0, y+=35), tab, "Single item CTRL choose"){
+                @Override
+                public void changed(boolean val) {
+                    super.changed(val);
+                    Config.singleItemCTRLChoose = val;
+                    Utils.setprefb("singleItemCTRLChoose", val);
+                }
+                {tooltip = Text.render("If checked, will automatically select single item menus if CTRL is pressed when menu is opened.");}
+            }.a = Config.singleItemCTRLChoose;
         }
         
 	//new Frame(new Coord(-10, 20), new Coord(420, 330), this);
@@ -924,37 +946,6 @@ public class OptWnd2 extends Window {
 	    if(t.btn.text.text.equals(last))
 		body.showtab(t);
 	}
-
-	//Flower menu
-	tab = body.new Tab(new Coord(280, 0), 60, "Menu"){
-	    FlowerList list = new FlowerList(new Coord(0, 55), this);
-	    Button add = new Button(new Coord(155, 308), 45, this, "Add");
-	    TextEntry value = new TextEntry(new Coord(0, 310), 150, this, "");
-	    {
-		value.canactivate = true;
-	    }
-
-	    @Override
-	    public void wdgmsg(Widget sender, String msg, Object... args) {
-		if((sender == add || sender == value) && msg.equals("activate")){
-		    list.add(value.text);
-		    value.settext("");
-		} else {
-		    super.wdgmsg(sender, msg, args);
-		}
-	    }
-	};
-	new Label(new Coord(0, 30), tab, "Choose menu items to select automatically:");
-
-	new CheckBox(new Coord(220, 60), tab, "Single item CTRL choose"){
-	    @Override
-	    public void changed(boolean val) {
-		super.changed(val);
-		Config.singleItemCTRLChoose = val;
-		Utils.setprefb("singleItemCTRLChoose", val);
-	    }
-	    {tooltip = Text.render("If checked, will automatically select single item menus if CTRL is pressed when menu is opened.");}
-	}.a = Config.singleItemCTRLChoose;
     }
     
     public static void setRadarInfo(RadarConfig rcf, MarkerFactory mf){

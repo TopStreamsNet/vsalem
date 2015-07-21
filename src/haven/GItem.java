@@ -190,7 +190,10 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
 	    filtered = 0;
 	    if(sendttupdate){wdgmsg("ttupdate");}
             if(this.parent == ui.gui.maininv)
+            {
+                ui.gui.maininv.resort();
                 OverviewTool.instance(ui).force_update();
+            }
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
 	}
