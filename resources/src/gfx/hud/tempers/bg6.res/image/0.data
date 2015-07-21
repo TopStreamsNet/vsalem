@@ -1,13 +1,12 @@
-;IMAGE Layer data file
-;z (uint-16):
+#IMAGE Layer data file
+#int16 z
 0
-;subz (uint-16):
+#int16 subz
 0
-;nooff (obsolete) (uint-8):
+#Byte nooff
 0
-;id (uint-16):
-65535
-;o(x) (uint-16):
+#int16 id
+-1
+#Coord o
 0
-;o(y) (uint-16):
 0
