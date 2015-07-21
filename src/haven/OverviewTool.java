@@ -90,13 +90,13 @@ class OverviewTool extends Window{
         
         int height = 25;
         //destroy all previous labels
-		//your iteration method was conflicting with on-the-go destroying, try or fix this method
-		Iterator<Label> itr = ls.iterator();
-		while(itr.hasNext()) {
-			Label l = itr.next();
-			itr.remove();
-			l.destroy();
-		}
+        Iterator<Label> itr = ls.iterator();
+        while(itr.hasNext()) {
+                Label l = itr.next();
+                itr.remove();
+                l.destroy();
+        }
+            
         ls = new ArrayList<Label>();
         ls.add(new Label(new Coord(0,height), this, "Overview of carried items:"));
         for(Entry<String,Entry<Float,String>> e : uniques.entrySet())
@@ -113,9 +113,20 @@ class OverviewTool extends Window{
         this.pack();
     }
     
+    private boolean invalidated = false;
     public void force_update()
     {
-        update_text();
+        invalidated = true;
+    }
+    
+    @Override
+    public void tick(double dt) {
+        if(invalidated)
+        {
+            invalidated = false;
+            update_text();
+        }
+        
     }
     
     @Override
