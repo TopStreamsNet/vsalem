@@ -26,8 +26,8 @@
 
 package haven;
 
-import java.awt.image.BufferedImage;
 import java.util.*;
+import com.google.common.collect.*;
 
 public class Inventory extends Widget implements DTarget {
     private static final Tex obt = Resource.loadtex("gfx/hud/inv/obt");
@@ -39,45 +39,56 @@ public class Inventory extends Widget implements DTarget {
     private static final Tex cbr = Resource.loadtex("gfx/hud/inv/ocbr");
     private static final Tex cbl = Resource.loadtex("gfx/hud/inv/ocbl");
     private static final Tex bsq = Resource.loadtex("gfx/hud/inv/sq");
-    public static final BufferedImage[] sbtni = new BufferedImage[] {
-	Resource.loadimg("gfx/hud/wnd/sortbtn"),
-	Resource.loadimg("gfx/hud/wnd/sortbtnd"),
-	Resource.loadimg("gfx/hud/wnd/sortbtnh")
-    };
-    public static final BufferedImage[] usbtni = new BufferedImage[] {
-	Resource.loadimg("gfx/hud/wnd/unsortbtn"),
-	Resource.loadimg("gfx/hud/wnd/unsortbtnd"),
-	Resource.loadimg("gfx/hud/wnd/unsortbtnh")
-    };
     public static final Coord sqsz = bsq.sz();
     public static final Coord isqsz = new Coord(40, 40);
     public static final Tex sqlite = Resource.loadtex("gfx/hud/inv/sq1");
     public static final Coord sqlo = new Coord(4, 4);
     public static final Tex refl = Resource.loadtex("gfx/hud/invref");
 
-    private static final Set<String> NOSORT;
-    static{
-	NOSORT = new HashSet<String>();
-	NOSORT.add("Turkey Coop");
-	NOSORT.add("Drying Frame");
-	NOSORT.add("Cementation Furnace");
-	NOSORT.add("Tanning Tub");
-	NOSORT.add("Novice Toolbelt");
-	NOSORT.add("Journeyman Toolbelt");
-	NOSORT.add("Master Toolbelt");
-	NOSORT.add("Bee Skep");
+    private static final Comparator<WItem> cmp_asc = new WItemComparator();
+    private static final Comparator<WItem> cmp_desc = new Comparator<WItem>() {
+	@Override
+	public int compare(WItem o1, WItem o2) {
+	    return cmp_asc.compare(o2, o1);
+	}
+    };
+    private static final Comparator<WItem> cmp_name = new Comparator<WItem>() {
+	@Override
+	public int compare(WItem o1, WItem o2) {
+            try{
+        	int result = o1.item.resname().compareTo(o2.item.resname());
+        	if(result == 0)
+        	{
+        	    result = cmp_desc.compare(o1, o2);
+        	}
+        	return result;
+            }catch(Loading l){return 0;}
+        }
+    };
+    private static final Comparator<WItem> cmp_gobble = new Comparator<WItem>() {
+	@Override
+	public int compare(WItem o1, WItem o2) {
+            try{
+        	GobbleInfo g1 = ItemInfo.find(GobbleInfo.class, o1.item.info());
+        	GobbleInfo g2 = ItemInfo.find(GobbleInfo.class, o2.item.info());
+        	if (g1 == null && g2 == null)
+        	    return cmp_name.compare(o1, o2);
+        	else if (g1 == null)
+        	    return 1;
+        	else if (g2 == null)
+        	    return -1;
+        	int v1 = g1.mainTemper();
+        	int v2 = g2.mainTemper();
+        	if (v1 == v2)
+        	    return cmp_name.compare(o1, o2);
+        	return v2-v1;
+            }catch(Loading l){return 0;}
+        }
+    };
 
-    }
-
-    Coord isz;
+    Coord isz,isz_client;
     Map<GItem, WItem> wmap = new HashMap<GItem, WItem>();
     public int newseq = 0;
-    private boolean cansort = false;
-    private boolean needSort = true;
-    private boolean needresize = false;
-    private Coord risz;
-    private Set<String> freecells;
-    public List<WItem> items;
 
     @RName("inv")
     public static class $_ implements Factory {
@@ -87,21 +98,202 @@ public class Inventory extends Widget implements DTarget {
     }
 
     public void draw(GOut g) {
-	invsq(g, Coord.z, isz);
-	for(Coord cc = new Coord(0, 0); cc.y < isz.y; cc.y++) {
-	    for(cc.x = 0; cc.x < isz.x; cc.x++) {
+	invsq(g, Coord.z, isz_client);
+	for(Coord cc = new Coord(0, 0); cc.y < isz_client.y; cc.y++) {
+	    for(cc.x = 0; cc.x < isz_client.x; cc.x++) {
 		invrefl(g, sqoff(cc), isqsz);
 	    }
 	}
 	super.draw(g);
     }
 
+    BiMap<Coord,Coord> dictionaryClientServer;
+    boolean isTranslated = false;
     public Inventory(Coord c, Coord sz, Widget parent) {
 	super(c, invsz(sz), parent);
-	risz = isz = sz;
-	addsorting();
+	isz = sz;
+        isz_client = sz;
+        
+        if(sz.equals(new Coord(1,1))|| !Window.class.isInstance(parent))
+        {
+            return;
+        }
+        dictionaryClientServer = HashBiMap.create();
+        
+        IButton sbtn = new IButton(Coord.z, parent, Window.obtni[0], Window.obtni[1], Window.obtni[2]){
+            {tooltip = Text.render("Sort the items in this inventory by name.");}
+
+            @Override
+            public void click() {
+                if(this.ui != null)
+                {
+                    Inventory.this.sortItemsLocally(cmp_name);
+                }
+            }
+        };
+        sbtn.visible = true;
+        ((Window)parent).addtwdg(sbtn);
+        IButton sgbtn = new IButton(Coord.z, parent, Window.gbtni[0], Window.gbtni[1], Window.gbtni[2]){
+            {tooltip = Text.render("Sort the items in this inventory by gobble.");}
+
+            @Override
+            public void click() {
+                if(this.ui != null)
+                {
+                    Inventory.this.sortItemsLocally(cmp_gobble);
+                }
+            }
+        };
+        sgbtn.visible = true;
+        ((Window)parent).addtwdg(sgbtn);
+        IButton nsbtn = new IButton(Coord.z, parent, Window.lbtni[0], Window.lbtni[1], Window.lbtni[2]){
+            {tooltip = Text.render("Undo client-side sorting.");}
+
+            @Override
+            public void click() {
+                if(this.ui != null)
+                {
+                    Inventory.this.removeDictionary();
+                }
+            }
+        };
+        nsbtn.visible = true;
+        ((Window)parent).addtwdg(nsbtn);
     }
 
+    public void sortItemsLocally(Comparator<WItem> comp)
+    {
+        isTranslated = true;
+        //first step: deciding the size of the sorted inventory
+        int width = this.isz.x;
+        int height = this.isz.y;
+        if(this.equals(this.ui.gui.maininv))
+        {
+            //flexible size
+            int nr_items = wmap.size();
+            float aspect_ratio = 8/4;
+            width  = Math.max(4,(int) Math.ceil(Math.sqrt(aspect_ratio*nr_items)));
+            height = Math.max(4,(int) Math.ceil(nr_items/width));
+        }
+        //now sort the item array
+        List<WItem> array = new ArrayList<WItem>(wmap.values());
+        Collections.sort(array, comp);
+        //assign the new locations to each of the items and add new translations
+        int index = 0;
+        BiMap<Coord,Coord> newdictionary = HashBiMap.create();
+        for(WItem w : array)
+        {
+            Coord newclientloc = new Coord((index%(width)),(int)(index/(width)));
+            
+            //adding the translation to the dictionary
+            Coord serverloc = w.server_c;
+            newdictionary.put(newclientloc,serverloc);
+
+            //moving the widget to its ordered place
+            w.c = sqoff(newclientloc);
+            
+            //on to the next location
+            index++;
+        }
+        dictionaryClientServer = newdictionary;
+        
+        //resize the inventory to the new set-up
+        this.updateClientSideSize();
+    }
+    
+    public Coord translateCoordinatesClientServer(Coord client)
+    {
+        if(!isTranslated)
+            return client;
+        Coord server = client;
+        if(dictionaryClientServer.containsKey(client))
+        {
+            server = dictionaryClientServer.get(client);
+        }
+        else if(dictionaryClientServer.containsValue(client))
+        {
+            //i.e. we don't have an item there but the server does: find a solution!
+            int width = isz.x;
+            int height = isz.y;
+            int index = 0;
+            Coord newloc;
+            do{
+                newloc = new Coord((index%(width-1)),(int)(index/(width-1)));
+                index++;
+            }while(dictionaryClientServer.containsValue(newloc));
+            server = newloc;
+            dictionaryClientServer.put(client,server);
+        }
+        return server;
+    }
+    
+    public Coord translateCoordinatesServerClient(Coord server)
+    {
+        if(!isTranslated)
+            return server;
+        Coord client = server;
+        BiMap<Coord,Coord> dictionaryServerClient = dictionaryClientServer.inverse();
+        if(dictionaryServerClient.containsKey(server))
+        {
+            client = dictionaryServerClient.get(server);
+        }
+        else{
+            //find a spot for it
+            int width = isz_client.x;
+            int height = isz_client.y;
+            int index = 0;
+            Coord newloc;
+            do{
+                newloc = new Coord((index%(width-1)),(int)(index/(width-1)));
+                index++;
+            }while(dictionaryClientServer.containsKey(newloc));
+            client = newloc;
+            dictionaryClientServer.put(client,server);
+        }
+        return client;
+    }
+    
+    public void removeDictionary()
+    {
+        isTranslated = false;
+        dictionaryClientServer = HashBiMap.create();
+        for(WItem w : wmap.values())
+        {
+            w.c = sqoff(w.server_c);
+        }
+        this.updateClientSideSize();
+    }
+    
+    public void sanitizeDictionary()
+    {
+        if(wmap.isEmpty())
+        {
+            removeDictionary();
+        }
+    }
+    
+    public Coord updateClientSideSize()
+    {
+        if(this.equals(ui.gui.maininv))
+        {
+            int maxx = 2;
+            int maxy = 2;
+            for(WItem w : wmap.values())
+            {
+                Coord wc = sqroff(w.c);
+                maxx = Math.max(wc.x,maxx);
+                maxy = Math.max(wc.y,maxy);
+            }
+            this.isz_client = new Coord(maxx+2,maxy+2);
+            this.resize(invsz(isz_client));
+            return isz_client;
+        }
+        else
+        {
+            return isz_client = isz;
+        }
+    }
+    
     public static Coord sqoff(Coord c) {
 	return(c.mul(sqsz).add(ctl.sz()));
     }
@@ -149,53 +341,49 @@ public class Inventory extends Widget implements DTarget {
     }
 
     public boolean mousewheel(Coord c, int amount) {
-	if(ui.modshift) {
-	    wdgmsg("xfer", amount);
-	}
-	return(true);
+        if(ui.modshift) {
+            wdgmsg("xfer", amount);
+        }
+        return(true);
     }
-
     public Widget makechild(String type, Object[] pargs, Object[] cargs) {
-	Coord c = (Coord)pargs[0];
+    	Coord server_c = (Coord)pargs[0];
+        Coord c = translateCoordinatesServerClient(server_c);
 	Widget ret = gettype(type).create(c, this, cargs);
 	if(ret instanceof GItem) {
 	    GItem i = (GItem)ret;
-	    if(cansort){
-		c = new Coord(wmap.size()%isz.x, wmap.size()/isz.x);
-	    }
-	    wmap.put(i, new WItem(sqoff(c), this, i));
+	    wmap.put(i, new WItem(sqoff(c), this, i, server_c));
 	    newseq++;
-	    resort();
+            
+            if(isTranslated)
+                updateClientSideSize();
+            
+            if(this == ui.gui.maininv)
+                OverviewTool.instance(ui).force_update();
 	}
 	return(ret);
     }
 
     public void cdestroy(Widget w) {
+	super.cdestroy(w);
 	if(w instanceof GItem) {
 	    GItem i = (GItem)w;
-	    ui.destroy(wmap.remove(i));
-	    resort();
+            WItem wi = wmap.remove(i);
+            if(isTranslated)
+            {
+                sanitizeDictionary();
+            }
+            if(this == ui.gui.maininv)
+                OverviewTool.instance(ui).force_update();
+	    ui.destroy(wi);
 	}
-	super.cdestroy(w);
     }
 
     public boolean drop(Coord cc, Coord ul) {
-	Coord c = sqroff(ul.add(isqsz.div(2)));
-	int i = c.y * isz.x + c.x;
-	if(items != null) {
-	    if(items.size() > i) {
-		c = items.get(i).item.c;
-	    } else {
-		Iterator<String> iterator = freecells.iterator();
-		if(iterator.hasNext()) {
-		    String sc = iterator.next();
-		    c = new Coord(sc);
-		    freecells.remove(sc);
-		}
-	    }
-	}
-	wdgmsg("drop", c);
-	return (true);
+        Coord clientcoords = sqroff(ul.add(isqsz.div(2)));
+        Coord servercoords = translateCoordinatesClientServer(clientcoords);
+	wdgmsg("drop", servercoords);
+	return(true);
     }
 
     public boolean iteminteract(Coord cc, Coord ul) {
@@ -204,15 +392,19 @@ public class Inventory extends Widget implements DTarget {
 
     public void uimsg(String msg, Object... args) {
 	if(msg.equals("sz")) {
-	    risz = isz = (Coord)args[0];
-	    if(cansort){
-		resort();
-	    } else {
-		resize(invsz(isz));
-	    }
+	    isz = (Coord)args[0];
+            if(isTranslated)
+            {
+                resize(invsz(updateClientSideSize()));
+            }
+            else
+            {
+                isz_client = isz;
+                resize(invsz(isz));
+            }
 	}
     }
-
+    
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(msg.equals("transfer-same")){
 	    process(getSame((String) args[0],(Boolean)args[1]), "transfer");
@@ -229,115 +421,6 @@ public class Inventory extends Widget implements DTarget {
 	}
     }
 
-    public void sort(boolean value){
-	if( value != cansort){
-	    cansort = value;
-	    if(cansort){
-		resort();
-	    } else {
-		for(WItem item : wmap.values()){
-		    item.c = sqoff(item.item.c);
-		}
-		items = null;
-		freecells = null;
-		isz = risz;
-		resize(invsz(isz));
-	    }
-	}
-    }
-
-    @Override
-    public void tick(double dt) {
-	if(cansort) {
-	    if(needresize) {
-		sortedsize();
-		resize(invsz(isz));
-		needresize = false;
-	    }
-	    if(needSort) {
-		try {
-		    items = new LinkedList<WItem>(wmap.values());
-		    Collections.sort(items, WItemComparator.sort);
-		    for(int i = 0; i < items.size(); i++) {
-			items.get(i).c = sqoff(new Coord(i % isz.x, i / isz.x));
-		    }
-		    needSort = false;
-		} catch(Loading ignored) {
-		}
-	    }
-	    if(items != null && freecells == null) {
-		calcfreecells();
-	    }
-	}
-	super.tick(dt);
-    }
-
-    public void resort() {
-	needSort = true;
-	needresize = true;
-	items = null;
-	freecells = null;
-        
-        if(this == ui.gui.maininv)
-            OverviewTool.instance(ui).force_update();
-    }
-
-    private void calcfreecells() {
-	freecells = new HashSet<String>(isz.x * isz.y);
-	Coord c = new Coord();
-	for(c.y = 0; c.y < isz.y; c.y++) {
-	    for(c.x = 0; c.x < isz.x; c.x++) {
-		freecells.add(c.toString());
-	    }
-	}
-	Set<GItem> items = wmap.keySet();
-	for(GItem item : items){
-	    freecells.remove(item.c.toString());
-	}
-    }
-
-    private void sortedsize() {
-	if(cansort) {
-	    if(this.equals(this.ui.gui.maininv)) {
-		int n = Math.min(1024, wmap.size() + 1);
-		float aspect_ratio = 1.5f;
-		isz = new Coord();
-		double a = Math.ceil(aspect_ratio * Math.sqrt(n / aspect_ratio));
-		isz.x = (int) Math.max(4, a);
-		isz.y = (int) Math.max(4, Math.ceil(n/a));
-	    }
-	}
-    }
-
-    private void addsorting() {
-	final Window wnd = getparent(Window.class);
-	if(wnd != null && !risz.equals(new Coord(1, 1)) && wnd.cap != null && !NOSORT.contains(wnd.cap.text)) {
-	    final boolean sort_opt = wnd.getOptBool("_sort", false);
-	    BufferedImage[] imgs = sort_opt?sbtni:usbtni;
-	    IButton btnsort = new IButton(Coord.z, wnd, imgs[0], imgs[1], imgs[2]) {
-		private Tex sort, unsort;
-		{
-		    sort = Text.render("sorting disabled").tex();
-		    unsort = Text.render("sorting enabled").tex();
-		    tooltip = sort_opt?unsort:sort;
-		}
-		@Override
-		public void click() {
-		    sort(!cansort);
-		    BufferedImage[] imgs = cansort?sbtni:usbtni;
-		    up = imgs[0];
-		    down = imgs[1];
-		    hover = imgs[2];
-
-		    tooltip = cansort?unsort:sort;
-		    wnd.storeOpt("_sort", cansort);
-		}
-	    };
-	    wnd.addtwdg(btnsort);
-	    sort(sort_opt);
-	}
-    }
-
     private List<WItem> getSame(String name, Boolean ascending) {
 	List<WItem> items = new ArrayList<WItem>();
 	for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
@@ -346,7 +429,7 @@ public class Inventory extends Widget implements DTarget {
 		    items.add((WItem) wdg);
 	    }
 	}
-	Collections.sort(items, ascending? WItemComparator.cmp_stats_asc : WItemComparator.cmp_stats_desc);
+	Collections.sort(items, ascending?cmp_asc:cmp_desc);
 	return items;
     }
     
