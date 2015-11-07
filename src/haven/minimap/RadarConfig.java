@@ -120,7 +120,7 @@ public class RadarConfig {
                 : group.order;
         marker.showicon = el.hasAttribute("showicon")
                 ? el.getAttribute("showicon").equals("true")
-                : group.show;
+                : group.showicon;
 
         if (el.hasAttribute("match")) {
             marker.match = el.getAttribute("match");
