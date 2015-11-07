@@ -28,7 +28,7 @@ public class MarkerFactory {
     public Marker makeMarker(String resname, Gob gob) {
 	MarkerTemplate mt = findTemplate(resname);
 	if ((mt == null) && Config.radar_icons && (gob.getattr(GobIcon.class) != null)){
-	    mt = new MarkerTemplate(Color.WHITE, true, resname, true, Shape.CIRCLE);
+	    mt = new MarkerTemplate(Color.WHITE, true, resname, true, Shape.CIRCLE,0,true);
 	    templateCache.put(resname, mt);
 	}
 	if(mt != null){
@@ -66,7 +66,7 @@ public class MarkerFactory {
     }
 
     private MarkerTemplate createTemplate(String resname, ConfigMarker cm) {
-        return new MarkerTemplate(cm.color, cm.show, cm.hastext() ? cm.text : resname, cm.tooltip, cm.shape);
+        return new MarkerTemplate(cm.color, cm.show, cm.hastext() ? cm.text : resname, cm.tooltip, cm.shape, cm.order, cm.showicon);
     }
 
     public void setConfig(RadarConfig config) {

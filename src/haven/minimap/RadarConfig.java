@@ -84,6 +84,12 @@ public class RadarConfig {
         group.show = !el.getAttribute("show").equals("false");
         group.color = Utils.parseColor(el.getAttribute("color"));
         group.shape = Shape.get(el.getAttribute("shape"));
+        group.order = el.hasAttribute("order")
+                        ? Integer.parseInt(el.getAttribute("order"))
+                        : 0;
+        group.showicon = el.hasAttribute("showicon")
+                            ? el.getAttribute("showicon").equals("true")
+                            : true;
 
         NodeList markerNodes = el.getElementsByTagName("marker");
         for (int i = 0; i < markerNodes.getLength(); i++) {
@@ -109,6 +115,12 @@ public class RadarConfig {
         marker.shape = el.hasAttribute("shape")
                 ? Shape.get(el.getAttribute("shape"))
                 : group.shape;
+        marker.order = el.hasAttribute("order")
+                ? Integer.parseInt(el.getAttribute("order"))
+                : group.order;
+        marker.showicon = el.hasAttribute("showicon")
+                ? el.getAttribute("showicon").equals("true")
+                : group.show;
 
         if (el.hasAttribute("match")) {
             marker.match = el.getAttribute("match");

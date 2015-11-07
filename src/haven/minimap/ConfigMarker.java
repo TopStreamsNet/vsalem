@@ -13,6 +13,8 @@ public class ConfigMarker {
     public String text;
     public boolean tooltip;
     public Shape shape;
+    public int order;
+    public boolean showicon;
 
     public boolean hastext() {
         return text != null && text.length() != 0;

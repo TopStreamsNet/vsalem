@@ -3,10 +3,14 @@ package haven.minimap;
 import haven.*;
 import java.awt.Color;
 
-public class Marker {
+public class Marker implements Comparable{
     public final String name;
     public final Gob gob;
     public final MarkerTemplate template;
+
+    public int compareTo(Object that) {
+        return this.template.order - ((Marker) that).template.order;
+    }
 
     private boolean override=false;
     private String override_name;
@@ -95,7 +99,7 @@ public class Marker {
         if(Config.radar_icons){
             try {
         	GobIcon icon = gob.getattr(GobIcon.class);
-        	if(icon != null) {
+        	if(icon != null && template.showicon) {
         	    Tex tex = icon.tex();
         	    g.image(tex, ptc.sub(tex.sz().div(2)), tex.sz().div(scale));
         	    return;

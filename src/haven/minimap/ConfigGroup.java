@@ -12,4 +12,6 @@ public class ConfigGroup {
     public boolean show;
     public List<ConfigMarker> markers = new ArrayList<ConfigMarker>();
     public Shape shape;
+    public int order;
+    public boolean showicon;
 }

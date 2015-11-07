@@ -83,7 +83,9 @@ public class Radar {
     public Marker[] getMarkers() {
         synchronized (markerLock) {
             checkUndefined();
-            return markers.values().toArray(new Marker[markers.size()]);
+            Marker[] collection = markers.values().toArray(new Marker[markers.size()]);
+            Arrays.sort(collection);
+            return collection;
         }
     }
     
