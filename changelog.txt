@@ -1,5 +1,12 @@
 $size[20]{$u{CHANGE LOG:}}
  
+$size[14]{$u{Update for 07.11.15 (Latikai):}}
+  * Fixed crash for inventory sorting with stuff on fishing rods.
+  * New default radar.xml (will not replace your old settings until you delete ~/Salem/radar.xml)
+ 
+$size[14]{$u{Update for 07.11.15 (Latikai):}}
+  * Radar update: you can now choose whether or not to show icons, and which order to display icons in.
+ 
 $size[14]{$u{Update for 02.06.15 (Ender):}}
   * added madness level to biles tooltip
   * added tooltip with estimated timer completion date to timer widget

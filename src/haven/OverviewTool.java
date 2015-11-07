@@ -68,7 +68,8 @@ class OverviewTool extends Window{
                     name = i.name();
                 }
             }
-            catch(Loading l){}
+            catch(Loading l){continue;}
+            catch(NumberFormatException n){name = i.name();}
 
             if(uniques.containsKey(name))
             {
