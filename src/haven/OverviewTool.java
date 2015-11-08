@@ -107,7 +107,7 @@ class OverviewTool extends Window{
                 return o1.getKey().compareTo(o2.getKey());
             }
         });
-        for(Entry<String,Entry<Float,String>> e : uniques.entrySet())
+        for(Entry<String,Entry<Float,String>> e : object_counts)
         {
             height += 15;
             ls.add(new Label(new Coord(0,height), this, "   "+e.getKey()+":"));
