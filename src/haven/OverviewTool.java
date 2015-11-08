@@ -100,6 +100,13 @@ class OverviewTool extends Window{
             
         ls = new ArrayList<Label>();
         ls.add(new Label(new Coord(0,height), this, "Overview of carried items:"));
+        ArrayList<Entry<String,Entry<Float,String>>>  object_counts = new ArrayList(uniques.entrySet());
+        Collections.sort(object_counts, new Comparator<Entry<String,Entry<Float,String>>>(){
+            @Override
+            public int compare(Entry<String, Entry<Float, String>> o1, Entry<String, Entry<Float, String>> o2) {
+                return o1.getKey().compareTo(o2.getKey());
+            }
+        });
         for(Entry<String,Entry<Float,String>> e : uniques.entrySet())
         {
             height += 15;
