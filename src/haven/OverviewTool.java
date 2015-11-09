@@ -104,7 +104,11 @@ class OverviewTool extends Window{
         Collections.sort(object_counts, new Comparator<Entry<String,Entry<Float,String>>>(){
             @Override
             public int compare(Entry<String, Entry<Float, String>> o1, Entry<String, Entry<Float, String>> o2) {
-                return o1.getKey().compareTo(o2.getKey());
+                String s1 = o1.getKey();
+                String s2 = o2.getKey();
+                if(s1 == null) s1="null";
+                if(s2 == null) s2="null";
+                return s1.compareTo(s2);
             }
         });
         for(Entry<String,Entry<Float,String>> e : object_counts)

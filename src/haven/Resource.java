@@ -1519,6 +1519,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public static BufferedImage loadimg(String name) {
 	Resource res = load(name);
 	res.loadwait();
+        System.out.println(name);
 	return(res.layer(imgc).img);
     }
 	

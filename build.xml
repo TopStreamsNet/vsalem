@@ -19,7 +19,7 @@
 	</target>
 
 	<target name="salem-client" depends="build-env">
-		<javac srcdir="src" destdir="build/classes" debug="on" source="1.6" target="1.6" includeantruntime="no">
+		<javac srcdir="src" destdir="build/classes" debug="on" source="1.8" target="1.8" includeantruntime="no" encoding="iso-8859-1">
 			<classpath>
 				<pathelement path="lib/jogl-all.jar" />
 				<pathelement path="lib/gluegen-rt.jar" />
@@ -84,7 +84,7 @@
 		</jar>
 	</target>
 
-	<target name="jar" depends="salem-client,buildinfo,lib-classes,resources">
+	<target name="jar" depends="salem-client,buildinfo,lib-classes">
 		<jar destfile="build/lsalem.jar" update="true">
 			<fileset dir="build/classes"/>
 			<fileset dir="build/classes-lib" />
