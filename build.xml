@@ -19,7 +19,7 @@
 	</target>
 
 	<target name="salem-client" depends="build-env">
-		<javac srcdir="src" destdir="build/classes" debug="on" source="1.8" target="1.8" includeantruntime="no" encoding="iso-8859-1">
+		<javac srcdir="src" destdir="build/classes" debug="on" source="1.7" target="1.7" includeantruntime="no" encoding="iso-8859-1">
 			<classpath>
 				<pathelement path="lib/jogl-all.jar" />
 				<pathelement path="lib/gluegen-rt.jar" />
