@@ -75,7 +75,7 @@
 	</target>
 
 	<target name="resources">
-		<exec executable="java" failifexecutionfails="false">
+		<exec executable="java" failifexecutionfails="true">
 			<arg line="-jar resources/LayerUtil.jar -re resources/src resources/compiled/res" />
 		</exec>
 		<jar destfile="build/lclient-res.jar" update="true">
@@ -84,7 +84,7 @@
 		</jar>
 	</target>
 
-	<target name="jar" depends="salem-client,buildinfo,lib-classes">
+	<target name="jar" depends="salem-client,buildinfo,lib-classes,resources">
 		<jar destfile="build/lsalem.jar" update="true">
 			<fileset dir="build/classes"/>
 			<fileset dir="build/classes-lib" />
