@@ -121,6 +121,7 @@ public class Config {
     //project raider
     public static boolean raidermodetrees = Utils.getprefb("raidermodetrees", false);
     public static boolean raidermodebraziers = Utils.getprefb("raidermodebraziers", false);
+    public static boolean farmermodetrees = Utils.getprefb("farmermodetrees", false);
     //project ironborn
     public static boolean altprosp = Utils.getprefb("altprosp", false);
     //project save the claim

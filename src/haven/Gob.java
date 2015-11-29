@@ -27,6 +27,7 @@
 package haven;
 
 import haven.minimap.Radar.GobBlink;
+import haven.res.lib.tree.TreeSprite;
 
 import java.awt.Color;
 import java.util.*;
@@ -207,6 +208,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     public void draw(GOut g) {}
 
     public boolean setup(RenderList rl) {
+        ResDrawable rd = this.getattr(ResDrawable.class);
 	for(Overlay ol : ols)
 	    rl.add(ol, null);
 	for(Overlay ol : ols) {
@@ -225,7 +227,6 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
         if(Config.raidermodebraziers){
             boolean brazier = false;
             
-            ResDrawable rd = this.getattr(ResDrawable.class);
             if(rd!=null && rd.res != null)
             {
                 brazier = rd.res.get().name.contains("brazier");
@@ -239,6 +240,61 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
                 fx.dif = Utils.c2fa(c);
                 fx.emi = Utils.c2fa(c);
                 rl.prepc(fx);
+            }
+        }
+        
+        //highlight fruit trees with fruit and thornbushes with flowers
+        if(Config.farmermodetrees){
+            boolean thornbush = false;
+            
+            if(rd!=null && rd.res != null)
+            {
+                thornbush = rd.res.get().name.contains("thornbush");
+            }
+            
+            if(thornbush)
+            {            
+                if(rd.spr!= null && ((StaticSprite)rd.spr).parts.length > 1)
+                {
+                    Material.Colors fx = new Material.Colors();
+                    Color c = new Color(28, 255, 28, 200);
+                    fx.amb = Utils.c2fa(c);
+                    fx.dif = Utils.c2fa(c);
+                    fx.emi = Utils.c2fa(c);
+                    rl.prepc(fx);
+                }
+            }
+            
+            boolean fruittree = false;
+            
+            if(rd!=null && rd.res != null)
+            {
+                fruittree = rd.res.get().name.contains("apple") || 
+                            rd.res.get().name.contains("cherry") || 
+                            rd.res.get().name.contains("mulberry") || 
+                            rd.res.get().name.contains("pear") || 
+                            rd.res.get().name.contains("peach") || 
+                            rd.res.get().name.contains("persimmon") || 
+                            rd.res.get().name.contains("plum") || 
+                            rd.res.get().name.contains("snozberry");
+            }
+            
+            if(fruittree)
+            {            
+                if(rd.spr!= null && ((StaticSprite)rd.spr).parts.length > 2)
+                {
+                    Material.Colors fx = new Material.Colors();
+                    Color c = new Color(205, 205, 255, 200);
+                    fx.amb = Utils.c2fa(c);
+                    fx.dif = Utils.c2fa(c);
+                    fx.emi = Utils.c2fa(c);
+                    rl.prepc(fx);
+                }
+                else
+                {
+                    if(rd.spr!=null)
+                            ((StaticSprite)rd.spr).prepc_location = TreeSprite.mkscale(0.2f);
+                }
             }
         }
 
