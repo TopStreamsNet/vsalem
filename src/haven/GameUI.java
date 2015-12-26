@@ -133,7 +133,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	setfocusctl(true);
 	menu = new MenuGrid(Coord.z, this);
 	new SeasonImg(new Coord(2,2), Avaview.dasz, this);
-	new Bufflist(new Coord(80, 40), this);
+	new Bufflist(new Coord(80, 60), this);
 	equipProxy = new EquipProxyWdg(new Coord(80, 2), new int[]{6, 7, 9, 14, 5, 4}, this);
 	tm = new Tempers(Coord.z, this);
 	chat = new ChatUI(Coord.z, 0, this);
