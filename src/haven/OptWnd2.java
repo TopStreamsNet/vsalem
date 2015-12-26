@@ -622,7 +622,7 @@ public class OptWnd2 extends Window {
 
 		{tooltip = Text.render("Fruit-bearing trees and flowered thornbushes are made clear.");}
 		
-	    }.a = Config.raidermodebraziers;
+	    }.a = Config.farmermodetrees;
             
             //project climber
 	    new CheckBox(new Coord(150, 220), tab, "Show ridges on the minimap."){
