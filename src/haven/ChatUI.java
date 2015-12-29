@@ -1385,6 +1385,13 @@ public class ChatUI extends Widget {
 			Gob gob = UI.instance.sess.glob.oc.getgob(id);
 			if (gob != null) {
 			    gob.setattr(new GobHighlight(gob));
+                            ResDrawable d = gob.getattr(ResDrawable.class);
+                            if(d!=null)
+                            {
+                                try{
+                                    UI.instance.gui.message("Highlighted object: "+d.res.get().name, GameUI.MsgType.INFO);
+                                }catch(Exception e){}
+                            }
 			}
 		    } catch (NumberFormatException ignored) {}
 		    return null;
