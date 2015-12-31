@@ -81,7 +81,8 @@ public class Config {
     static Properties window_props;
     public static Properties options;
     private static Map<String, Object> buildinfo = new HashMap<String, Object>();
-
+    public static String authserver_name = Utils.getpref("authserver_name","Providence");
+    
     public static boolean isUpdate;
     public static boolean isShowNames = true;
     public static boolean timestamp = true;
