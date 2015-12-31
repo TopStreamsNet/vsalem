@@ -1,11 +1,7 @@
 $size[20]{$u{CHANGE LOG:}}
  
-$size[14]{$u{TODO (Latikai):}}
-  * don't release bats on other's inventories
-  * camera steps to 45 degrees
-  * Fix inventory sorting and items overlapping
-  * switch to salemwiki.info again
-  * smaller fruit trees and color indication of fruits/flowers on trees/bushes
+$size[14]{$u{Update for 31.12.15 (Latikai):}}
+  * Included scarecrows for the radius display. Might require a fix for scarecrows in other seasons, but I hope not.
 
 $size[14]{$u{Update for 07.11.15 (Latikai):}}
   * Fixed crash for inventory sorting with stuff on fishing rods.
