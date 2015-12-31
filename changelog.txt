@@ -2,6 +2,7 @@ $size[20]{$u{CHANGE LOG:}}
  
 $size[14]{$u{Update for 31.12.15 (Latikai):}}
   * Included scarecrows for the radius display. Might require a fix for scarecrows in other seasons, but I hope not.
+  * Added a button that lets you choose which server you connect to for authenticating. This is be remembered over client restarts, and should allow popham players to connect even though providence is down.
 
 $size[14]{$u{Update for 07.11.15 (Latikai):}}
   * Fixed crash for inventory sorting with stuff on fishing rods.
