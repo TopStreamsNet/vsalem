@@ -267,8 +267,19 @@ public class Inventory extends Widget implements DTarget {
                 newloc = new Coord((index%(width-1)),(int)(index/(width-1)));
                 index++;
             }while(dictionaryClientServer.containsKey(newloc));
+            //if we're going too deep: add another row
+            boolean expanded = false;
+            if(newloc.y >= height-1 && 2*height>=width)
+            {
+                newloc = new Coord(width,0);
+                expanded = true;
+            }
             client = newloc;
             dictionaryClientServer.put(client,server);
+            if(expanded)
+            {
+                updateClientSideSize();
+            }
         }
         return client;
     }
