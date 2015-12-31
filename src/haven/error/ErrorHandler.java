@@ -86,7 +86,7 @@ public class ErrorHandler extends ThreadGroup {
 			try {
 			    doreport(r);
 			} catch(Exception e) {
-			    r.t.printStackTrace();
+			    r.t.printStackTrace(System.out);
 			    status.senderror(e);
 			}
 		    }

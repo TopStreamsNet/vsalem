@@ -80,7 +80,6 @@ public class Makewindow extends Widget {
     }
 
     public void uimsg(String msg, Object... args) {
-        System.out.println("UIMSG for makewindow, "+msg);
 	if(msg == "inpop") {
 	    Spec[] inputs = new Spec[args.length / 2];
 	    for(int i = 0, a = 0; a < args.length; i++, a += 2)
@@ -222,7 +221,7 @@ public class Makewindow extends Widget {
             String t = outputs[0].res.get().layer(Resource.tooltip).t;
 	    if(list.isEmpty() || !list.getFirst().equals(t))
                 list.push(t);
-	} catch (Exception e){e.printStackTrace();}
+	} catch (Exception e){e.printStackTrace(System.out);}
     }
 
     private void restore(){
@@ -231,7 +230,7 @@ public class Makewindow extends Widget {
             requested_restore = true;
 	    Pagina p = ui.mnu.paginafor(name);
 	    ui.mnu.use(p);
-	} catch (Exception e){e.printStackTrace();}
+	} catch (Exception e){e.printStackTrace(System.out);}
     }
 
     public void wdgmsg(Widget sender, String msg, Object... args) {

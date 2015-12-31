@@ -223,7 +223,7 @@ public class Audio {
 		    line.open(fmt, bufsize);
 		    line.start();
 		} catch(Exception e) {
-		    e.printStackTrace();
+		    e.printStackTrace(System.out);
 		    return;
 		}
 		byte[] buf = new byte[1024];

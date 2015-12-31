@@ -1,5 +1,6 @@
 package org.ender.wiki;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -70,8 +71,6 @@ public class Item {
 	String tag = "cloth";
 	builder.append(String.format("\n  <%s", tag));
 	builder.append(String.format(" slots=\"%d\"",cloth_slots));
-	builder.append(String.format(" difficulty=\"%d to %d\"",100 - cloth_pmin, 100 - cloth_pmax));
-	builder.append(String.format(" profs=\"%s\"",join(", ",cloth_profs).replaceAll("&", "&amp;")));
 	builder.append(String.format(" />"));
     }
 
@@ -87,6 +86,16 @@ public class Item {
 	    Float[] vals = e.getValue();
 	    builder.append(String.format(" %s=\"%s %s %s %s\"", e.getKey(), vals[0], vals[1], vals[2], vals[3]));
 	}
+        Iterator<Entry<String,Integer[]>> itr = food_reduce.entrySet().iterator();
+        for (int i = 0; i < food_reduce.size(); i++) {
+            Entry<String,Integer[]> entry = itr.next();
+            builder.append(String.format(" FoodReduce%d=\"%s %s %s\"",i+1,entry.getKey(),entry.getValue()[0],entry.getValue()[1]));
+        }
+        itr = food_restore.entrySet().iterator();
+        for (int i = 0; i < food_restore.size(); i++) {
+            Entry<String,Integer[]> entry = itr.next();
+            builder.append(String.format(" FoodRestore%d=\"%s %s %s\"",i+1,entry.getKey(),entry.getValue()[0],entry.getValue()[1]));
+        }
 	builder.append(String.format(" full=\"%d\" uses=\"%d\"", food_full, food_uses));
 	builder.append(String.format(" />"));
     }
@@ -164,9 +173,6 @@ public class Item {
     public void setClothing(int slots) {
 	this.cloth_slots = slots;
 	if(slots == 0){return;}
-	this.cloth_pmin = 100;
-	this.cloth_pmax = 100;
-	this.cloth_profs = new String[0];
     }
     
     public void setArtifact(String difficulty, String[] profs, Map<String, Integer> bonuses) {

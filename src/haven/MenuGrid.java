@@ -197,7 +197,7 @@ public class MenuGrid extends Widget {
 		}
 	    }
 	}catch (Exception e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
 	return null;
     }
@@ -225,15 +225,9 @@ public class MenuGrid extends Widget {
 		    float[] def = new float[]{0, 0, 0, 0};
                     String[] names = {"Blood", "Phlegm", "Yellow Bile", "Black Bile"};
 		    float[] heal = safeFloat(food.get("Heals"), def);
-		    float[] gmax = new float[4];
-		    float[] gmin = new float[4];
-                    for(int i = 0; i<4; i++)
-                    {
-                        float[] maxarr = safeFloat(food.get("Max "+names[i]), def);
-                        gmax[i]=maxarr[0];
-                        float[] minarr = safeFloat(food.get("Min "+names[i]), def);
-                        gmin[i]=minarr[0];
-                    }
+		    float[] gmax = safeFloat(food.get("GluttonMax"),def);
+		    float[] gmin = safeFloat(food.get("GluttonMin"),def);
+                    
 		    int[] low = new int[4];
 		    int[] high = new int[4];
 		    int[] tempers = new int[4];
@@ -257,7 +251,15 @@ public class MenuGrid extends Widget {
                     {
                         Integer[] values = e.getValue();
                         BufferedImage head = RichText.render(String.format("-%d%%", values[0]), debuff_color).img;
-                        Resource iconres = Resource.load("gfx/invobjs/"+Wiki.buffmap.get(e.getKey()));
+                        Resource iconres=null;
+                        if(Wiki.buffmap.containsKey(e.getKey()))
+                        {
+                            iconres = Resource.load("gfx/invobjs/"+Wiki.buffmap.get(e.getKey()));
+                        }
+                        else
+                        {
+                            System.out.println("Wiki food translation key not available: "+e.getKey());
+                        }
                         if(iconres != null)
                         {
                             BufferedImage icon, tail;
@@ -299,9 +301,12 @@ public class MenuGrid extends Widget {
 		    return currimg;
 		}
 	    }
-	} catch (Exception e) 
+	} catch (Loading l)
         {
-            e.printStackTrace();
+            
+        } catch (Exception e) 
+        {
+            e.printStackTrace(System.out);
         }
 	return null;
     }
@@ -334,7 +339,7 @@ public class MenuGrid extends Widget {
 
 	    return tip.longtip();
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	    return null;
 	}
     }
@@ -344,15 +349,12 @@ public class MenuGrid extends Widget {
 	    Item itm = Wiki.get(name);
 	    if(itm == null || itm.cloth_slots == 0){return null;}
 
-	    Object[] args = new Object[5 + itm.cloth_profs.length];
+	    Object[] args = new Object[5];
 	    int i = 0;
 	    args[i++] = 0;
 	    args[i++] = itm.cloth_slots;
-	    args[i++] = itm.cloth_pmin;
-	    args[i++] = itm.cloth_pmax;
-	    for(String prof : itm.cloth_profs){
-		args[i++] = CharWnd.attrbyname(prof);
-	    }
+	    args[i++] = 0;
+	    args[i++] = 25;
 	    args[i++] = 0;
 	    Resource res = Resource.load("ui/tt/slots");
 	    if(res == null){return null;}
@@ -360,7 +362,7 @@ public class MenuGrid extends Widget {
 	    ItemInfo.Tip tip = (Tip) f.build(null, args);
 	    return tip.longtip();
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	    return null;
 	}
     }

@@ -92,14 +92,18 @@ public class Wiki {
 	buffmap.put("Cabbages", "cabbage");
 	buffmap.put("Candy", "candy");
 	buffmap.put("Pies", "pies");
+	buffmap.put("Maize", "corn");
 	buffmap.put("Cereal", "cereal");
 	buffmap.put("Meat", "meat");
+	buffmap.put("Domesticated Meat", "meat");
 	buffmap.put("Cookies and Crackers", "cookies");
+	buffmap.put("Potato Food", "potatofood");
 	buffmap.put("Berries", "berry");
 	buffmap.put("Flowers and Herbs", "flowerfood");
 	buffmap.put("Seafood", "seafood");
 	buffmap.put("Fishes", "fish");
 	buffmap.put("Game", "game");
+	buffmap.put("Game Meat", "game");
 	buffmap.put("Slugs Bugs and Kritters", "slugsnbugs");
 	buffmap.put("Nuts and Seeds", "nut");
 	buffmap.put("Crustacea and Shellfish", "shellfish");
@@ -116,19 +120,16 @@ public class Wiki {
 	    Thread t = new Thread(new Runnable() {
 		@Override
 		public void run() {
-		    try{
-			//noinspection InfiniteLoopStatement
-			while(true){
-			    try {
-				load(requests.take());
-			    } catch (InterruptedException e) {
-				e.printStackTrace();
-                            }
-			}
-		    } catch(Exception e) {
-			e.printStackTrace();
-			System.out.println("Wiki loader thread has just died!");
-		    }
+                    //noinspection InfiniteLoopStatement
+                    while(true){
+                        try {
+                            load(requests.take());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace(System.out);
+                        } catch(Exception e) {
+                            e.printStackTrace(System.out);
+                        }
+                    }
 		}
 	    }, "Wiki loader "+i);
 	    t.setDaemon(true);
@@ -169,7 +170,7 @@ public class Wiki {
 	try {
 	    requests.put(request);
 	} catch (InterruptedException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
     }
 
@@ -187,7 +188,7 @@ public class Wiki {
 	    fw.write(item.toXML());
 	    fw.close();
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
     }
 
@@ -218,7 +219,7 @@ public class Wiki {
     private static String do_search(String name) {
 	String content = null;
 	try {
-	    URI uri = new URI("http", null, "salem-wiki.com/mediawiki", -1, "/api.php", String.format(SEARCH_URL, name), null);
+	    URI uri = new URI("http", null, "salemwiki.info", -1, "/api.php", String.format(SEARCH_URL, name), null);
 
 	    URL url = uri.toURL();
 	    String data = Utils.stream2str(url.openStream());
@@ -235,7 +236,6 @@ public class Wiki {
 	    for(int i=0; i<pages.length(); i++){
 		JSONObject page = pages.getJSONObject(i);
 		String title = page.getString("title");
-		//URI link = new URI("http", null, "salem-wiki.com/mediawiki", -1, "/index.php/"+title, null, null);
 		String snip = page.getString("snippet");
 		if(snip.length() >0){snip+="<BR/>";}
 		content += String.format("<B><a href=\"/index.php/%s\">%s</a></B><BR/>%s<BR/>", title, title, snip);
@@ -244,9 +244,9 @@ public class Wiki {
 	} catch (JSONException e) {
 	    System.err.println(String.format("Error while parsing '%s':\n%s\nContent:'%s'", name, e.getMessage(), content));
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (URISyntaxException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
 	return null;
     }
@@ -327,12 +327,12 @@ public class Wiki {
 	{
 	    String namerestore = args.get("FoodRestore"+(i+1));
 	    String namereduce = args.get("FoodReduce"+(i+1));
-	    if(namerestore.length()>0)
+	    if(namerestore != null && namerestore.length()>0)
 	    {
 		Integer[] restore = {Integer.parseInt(args.get("%Restore"+(i+1))),Integer.parseInt(args.get("%ChanceRestore"+(i+1)))};
 		food_restore.put(namerestore, restore);
 	    }
-	    if(namereduce.length()>0)
+	    if(namereduce != null && namereduce.length()>0)
 	    {
 		Integer[] reduce = {Integer.parseInt(args.get("%Reduce"+(i+1))),Integer.parseInt(args.get("%ChanceReduce"+(i+1)))};
 		food_reduce.put(namereduce, reduce);
@@ -341,10 +341,12 @@ public class Wiki {
         item.food_restore = food_restore;
         item.food_reduce = food_reduce;
 	try{
-	    item.food_full = parseTime(args.get("Gluttony Time"));
+            String times = args.get("Gluttony Time");
+	    item.food_full = times==null?0:parseTime(times);
 	} catch (NumberFormatException ex){}
 	try{
-	    item.food_uses = Integer.parseInt(args.get("Uses"));
+            String usess = args.get("Uses");
+	    item.food_uses = usess==null?0:Integer.parseInt(usess);
 	} catch (NumberFormatException ignored){}
 	item.food = food;
     }
@@ -356,7 +358,7 @@ public class Wiki {
         int mid = time.indexOf(':');
         if(mid<0)
         {
-            return 0;
+            return Integer.parseInt(time);
         }
         else
         {
@@ -407,7 +409,7 @@ public class Wiki {
 	String content;
 	String data = null;
 	try {
-	    URI uri = new URI("http", null, "www.salem-wiki.com/mediawiki", -1, "/api.php", null, null);
+	    URI uri = new URI("http", null, "www.salemwiki.info", -1, "/api.php", null, null);
 
 	    URL link = uri.toURL();
 	    HttpURLConnection conn = (HttpURLConnection) link.openConnection();
@@ -432,9 +434,9 @@ public class Wiki {
 	} catch (JSONException e) {
 	    System.err.println(String.format("Error while parsing '%s':\n%s\nData:'%s'", name, e.getMessage(), data));
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (URISyntaxException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
 	return null;
     }
@@ -442,7 +444,7 @@ public class Wiki {
     private static String parse_wiki(Item item){
 	String content;
 	try {
-	    URI uri = new URI("http", null, "salem-wiki.com/mediawiki", -1, "/api.php", null, null);
+	    URI uri = new URI("http", null, "salemwiki.info", -1, "/api.php", null, null);
 
 	    URL link = uri.toURL();
 	    HttpURLConnection conn = (HttpURLConnection) link.openConnection();
@@ -462,11 +464,11 @@ public class Wiki {
 	    content = json.getString("*");
 	    return content;
 	} catch (JSONException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (URISyntaxException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
 	return null;
     }
@@ -510,15 +512,15 @@ public class Wiki {
 
 	    return item;
 	} catch (MalformedURLException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (NullPointerException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (SAXException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (ParserConfigurationException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
 	return null;
     }
@@ -579,22 +581,44 @@ public class Wiki {
             Map<String, Integer[]> food_restore = new HashMap<String, Integer[]>(3);
             for(int i = 0;i<3;i++)
             {
-                String namerestore = attrs.getNamedItem("FoodRestore"+(i+1)).getNodeValue();
-                Integer[] restore = {Integer.parseInt(attrs.getNamedItem("%Restore"+(i+1)).getNodeValue()),Integer.parseInt(attrs.getNamedItem("%ChanceRestore"+(i+1)).getNodeValue())};
-                String namereduce = attrs.getNamedItem("FoodReduce"+(i+1)).getNodeValue();
-                Integer[] reduce = {Integer.parseInt(attrs.getNamedItem("%Reduce"+(i+1)).getNodeValue()),Integer.parseInt(attrs.getNamedItem("%ChanceReduce"+(i+1)).getNodeValue())};
-                if(namerestore.length()>0)
-                    food_restore.put(namerestore, restore);
-                if(namereduce.length()>0)
-                    food_reduce.put(namereduce, reduce);
+                Node restnode = attrs.getNamedItem("FoodRestore"+(i+1));
+                if(restnode!=null)
+                {
+                    String[] vals = restnode.getNodeValue().split(" ");
+                    int count = vals.length;
+                    Integer[] values = {Integer.parseInt(vals[count-2]),Integer.parseInt(vals[count-1])};
+                    String name = vals[0];
+                    for (int j = 1; j < count-2; j++) {
+                        name = name + " " + vals[j];
+                    }
+                    
+                    if(vals.length>0)
+                        food_restore.put(name,values);
+                }
+                Node redunode = attrs.getNamedItem("FoodReduce"+(i+1));
+                if(redunode!=null)
+                {
+                    String[] vals = redunode.getNodeValue().split(" ");
+                    int count = vals.length;
+                    Integer[] values = {Integer.parseInt(vals[count-2]),Integer.parseInt(vals[count-1])};
+                    String name = vals[0];
+                    for (int j = 1; j < count-2; j++) {
+                        name = name + " " + vals[j];
+                    }
+                    
+                    if(vals.length>0)
+                        food_reduce.put(name,values);
+                }
             }
             item.food_restore = food_restore;
             item.food_reduce = food_reduce;
 	    try{
-		item.food_full = parseTime(attrs.getNamedItem("full").getNodeValue());
+                Node timenode = attrs.getNamedItem("full");
+		item.food_full = parseTime(timenode.getNodeValue());
 	    } catch (NumberFormatException ex){}
 	    try{
-		item.food_uses = Integer.parseInt(attrs.getNamedItem("uses").getNodeValue());
+                Node usenode =  attrs.getNamedItem("uses");
+		item.food_uses = Integer.parseInt(usenode.getNodeValue());
 	    } catch (NumberFormatException ignored){}
 	}
     }
@@ -650,7 +674,7 @@ public class Wiki {
 	try {
 	    if(date < update_date){return true;}//ignore old cache
 	    //String p = String.format("%s%s", WIKI_URL, name);
-	    URI uri = new URI("http","salem-wiki.com/mediawiki","/index.php/"+name, null);
+	    URI uri = new URI("http","salemwiki.info","/index.php/"+name, null);
 	    URL  url = uri.toURL();
 	    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	    conn.setRequestMethod("HEAD");
@@ -660,11 +684,11 @@ public class Wiki {
 		return true;
 	    }
 	} catch (MalformedURLException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (URISyntaxException e1) {
-	    e1.printStackTrace();
+	    e1.printStackTrace(System.out);
 	}
 	return false;
     }

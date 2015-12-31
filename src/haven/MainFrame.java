@@ -497,9 +497,9 @@ public class MainFrame extends Frame implements Runnable, Console.Directory {
 	    OutputStream los = new LoggingOutputStream(Logger.getLogger("stderr"), Level.SEVERE);
 	    System.setErr(new PrintStream(los, true));  
 	} catch (SecurityException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
     }
 

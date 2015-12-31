@@ -188,7 +188,7 @@ public class TimerPanel extends Window {
 		    ui.destroy(this);
 		} catch(Exception e){
 		    System.out.println(e.getMessage());
-		    e.printStackTrace();
+		    e.printStackTrace(System.out);
 		}
             } else if(sender == cbtn)
             {

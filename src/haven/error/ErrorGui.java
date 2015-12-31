@@ -213,7 +213,7 @@ public abstract class ErrorGui extends JDialog implements ErrorStatus {
 	    buf.append("</html>");
 	    errstr = buf.toString();
 	} else {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	    errstr = "An error occurred while sending!";
 	}
 	done = false;
