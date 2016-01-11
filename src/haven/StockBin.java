@@ -98,7 +98,7 @@ public class StockBin extends Widget implements DTarget {
 	if (button == 1) {
 	    if (ui.modshift ^ ui.modctrl) {        //SHIFT or CTRL means pull
 		int dir = ui.modctrl ? -1 : 1;        //CTRL means pull out, SHIFT pull in
-		int all = (dir > 0) ? bi - rem : rem;        //count depends on direction
+		int all = (dir > 0) ? bi - rem : Math.min(rem,ui.gui.maininv.wmap.size());        //count depends on direction
 		int k = ui.modmeta ? all : 1;        //ALT means pull all
 		transfer(dir, k);
 	    } else {
