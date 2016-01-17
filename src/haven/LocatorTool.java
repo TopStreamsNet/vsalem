@@ -17,6 +17,19 @@ class LocatorTool extends Window{
     public LocatorTool(Coord c, Widget parent) {
 	super(c, new Coord(350, 100), parent, title);
         
+        if(((GameUI)parent).map.player()!=null)
+        {
+            Gob pl = ((GameUI)parent).map.player();
+            Moving m = pl.getattr(Moving.class);
+            if(m!=null){
+                if(m instanceof LinMove)
+                {
+                    LinMove gobpath = (LinMove) m;
+                    this.location = gobpath.t.sub(gobpath.s).div(11);
+                }
+            }
+        }
+
 	this.text = new Label(Coord.z, this, defaulttext);
         if( !location.equals(Coord.z) )
         {
@@ -59,7 +72,6 @@ class LocatorTool extends Window{
 
     public boolean type(char key, java.awt.event.KeyEvent ev) {
 	if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_ESCAPE) {
-	    close();
 	    return true;
 	}
 	return super.type(key, ev);

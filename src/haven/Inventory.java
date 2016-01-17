@@ -189,11 +189,6 @@ public class Inventory extends Widget implements DTarget {
         int index = 0;
         BiMap<Coord,Coord> newdictionary = HashBiMap.create();
         
-        //debug
-        for(WItem w : array)
-            System.out.println("w.server_c: ("+w.server_c.x+","+w.server_c.y+").");
-        System.out.println("");
-        
         try{
             for(WItem w : array)
             {
@@ -373,7 +368,6 @@ public class Inventory extends Widget implements DTarget {
     
     public Widget makechild(String type, Object[] pargs, Object[] cargs) {
     	Coord server_c = (Coord)pargs[0];
-        System.out.println("Adding child with server_c ("+server_c.x+","+server_c.y+").");
         Coord c = translateCoordinatesServerClient(server_c);
 	Widget ret = gettype(type).create(c, this, cargs);
 	if(ret instanceof GItem) {
