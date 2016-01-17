@@ -64,7 +64,39 @@ public class LoginScreen extends Widget {
 	new Img(cboxc, cbox, this);
 
 	accounts = new AccountList(Coord.z, this, 10);
-	
+        
+        new Button(new Coord(this.sz.x-180, 20),160,this, "Connecting to Providence"){
+            @Override
+            public void click()
+            {
+                if(Config.authserver_name.equals("Providence"))
+                {
+                    setAuthServer("Popham");
+                }
+                else
+                {
+                    setAuthServer("Providence");
+                }
+            }
+            
+            public void setAuthServer(String name)
+            {
+                Config.authserver_name = name;
+                Utils.setpref("authserver_name",name);
+                Config.defserv = "game.salemthegame.com";
+                if(name.equals("Providence"))
+                {
+                    Config.mainport = 1870;
+                }
+                else
+                {
+                    Config.mainport = 1606;
+                }
+                this.change("Connecting to "+name);
+            }
+        }.setAuthServer(Config.authserver_name);
+        
+        
 	if(Config.isUpdate){
 	    showChangelog();
 	}

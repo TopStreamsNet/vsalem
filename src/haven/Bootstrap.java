@@ -32,7 +32,6 @@ import java.util.*;
 public class Bootstrap implements UI.Receiver, UI.Runner {
     Session sess;
     String hostname;
-    int port;
     final Queue<Message> msgs = new LinkedList<Message>();
     String inituser = null;
     byte[] initcookie = null;
@@ -52,7 +51,6 @@ public class Bootstrap implements UI.Receiver, UI.Runner {
     public Bootstrap(String hostname, int port) {
 	Config.server = hostname;
 	this.hostname = hostname;
-	this.port = port;
     }
     
     public void setinitcookie(String username, byte[] cookie) {
@@ -77,8 +75,6 @@ public class Bootstrap implements UI.Receiver, UI.Runner {
 	String tokenhex = getpref("savedtoken", "");
 	if(tokenhex.length() == 64)
 	    token = Utils.hex2byte(tokenhex);
-	String authserver = (Config.authserv == null)?hostname:Config.authserv;
-	int authport = Config.authport;
 	retry: do {
 	    byte[] cookie;
 	    String acctname, tokenname;
@@ -110,7 +106,7 @@ public class Bootstrap implements UI.Receiver, UI.Runner {
 		}
 		ui.uimsg(1, "prg", "Authenticating...");
 		try {
-		    AuthClient auth = new AuthClient(authserver, authport);
+		    AuthClient auth = new AuthClient((Config.authserv == null)?hostname:Config.authserv, Config.authport);
 		    try {
 			if((acctname = auth.trytoken(tokenname, token)) == null) {
 			    token = null;
@@ -155,7 +151,7 @@ public class Bootstrap implements UI.Receiver, UI.Runner {
 		}
 		ui.uimsg(1, "prg", "Authenticating...");
 		try {
-		    AuthClient auth = new AuthClient(authserver, authport);
+		    AuthClient auth = new AuthClient((Config.authserv == null)?hostname:Config.authserv, Config.authport);
 		    try {
 			try {
 			    acctname = creds.tryauth(auth);
@@ -183,7 +179,7 @@ public class Bootstrap implements UI.Receiver, UI.Runner {
 	    }
 	    ui.uimsg(1, "prg", "Connecting...");
 	    try {
-		sess = new Session(new InetSocketAddress(InetAddress.getByName(hostname), port), acctname, cookie);
+		sess = new Session(new InetSocketAddress(InetAddress.getByName(hostname), Config.mainport), acctname, cookie);
 	    } catch(UnknownHostException e) {
 		ui.uimsg(1, "error", "Could not locate server");
 		continue retry;

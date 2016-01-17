@@ -170,6 +170,7 @@ public class Inventory extends Widget implements DTarget {
 
     public void sortItemsLocally(Comparator<WItem> comp)
     {
+        System.getProperties().setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         isTranslated = true;
         //first step: deciding the size of the sorted inventory
         int width = this.isz.x;
@@ -262,8 +263,19 @@ public class Inventory extends Widget implements DTarget {
                 newloc = new Coord((index%(width-1)),(int)(index/(width-1)));
                 index++;
             }while(dictionaryClientServer.containsKey(newloc));
+            //if we're going too deep: add another row
+            boolean expanded = false;
+            if(newloc.y >= height-1 && 2*height>=width)
+            {
+                newloc = new Coord(width,0);
+                expanded = true;
+            }
             client = newloc;
             dictionaryClientServer.put(client,server);
+            if(expanded)
+            {
+                updateClientSideSize();
+            }
         }
         return client;
     }
@@ -393,7 +405,6 @@ public class Inventory extends Widget implements DTarget {
             WItem wi = wmap.remove(i);
             
             Coord wc = sqroff(wi.c.add(isqsz.div(2)));
-            System.out.println("Removing item at client_c ("+wc.x+","+wc.y+").");
             
             if(isTranslated)
             {

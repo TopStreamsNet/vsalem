@@ -19,7 +19,7 @@
 	</target>
 
 	<target name="salem-client" depends="build-env">
-		<javac srcdir="src" destdir="build/classes" debug="on" source="1.6" target="1.6" includeantruntime="no">
+		<javac srcdir="src" destdir="build/classes" debug="on" source="1.7" target="1.7" includeantruntime="no" encoding="iso-8859-1">
 			<classpath>
 				<pathelement path="lib/jogl-all.jar" />
 				<pathelement path="lib/gluegen-rt.jar" />
@@ -75,7 +75,7 @@
 	</target>
 
 	<target name="resources">
-		<exec executable="java" failifexecutionfails="false">
+		<exec executable="java" failifexecutionfails="true">
 			<arg line="-jar resources/LayerUtil.jar -re resources/src resources/compiled/res" />
 		</exec>
 		<jar destfile="build/lclient-res.jar" update="true">

@@ -250,7 +250,7 @@ public class Profiler {
 		out.close();
 	    }
 	} catch(IOException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
     }
 

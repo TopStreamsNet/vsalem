@@ -30,6 +30,7 @@ import java.util.*;
 
 public class StaticSprite extends Sprite {
     public final Rendered[] parts;
+    public Location prepc_location = null;
     
     public static final Factory fact = new Factory() {
 	    public Sprite create(Owner owner, Resource res, Message sdt) {
@@ -68,6 +69,10 @@ public class StaticSprite extends Sprite {
     }
 
     public boolean setup(RenderList r) {
+        if(this.prepc_location != null) {
+            r.prepc(this.prepc_location);
+            r.prepc(States.normalize);
+        }
 	for(Rendered p : parts)
 	    r.add(p, null);
 	return(false);

@@ -611,6 +611,19 @@ public class OptWnd2 extends Window {
 		
 	    }.a = Config.raidermodebraziers;
             
+            //project raider braziers
+	    new CheckBox(new Coord(300, 200), tab, "Farmer mode trees/bushes"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.farmermodetrees = val;
+		    Utils.setprefb("farmermodetrees", val);
+		}
+
+		{tooltip = Text.render("Fruit-bearing trees and flowered thornbushes are made clear.");}
+		
+	    }.a = Config.farmermodetrees;
+            
             //project climber
 	    new CheckBox(new Coord(150, 220), tab, "Show ridges on the minimap."){
 		@Override

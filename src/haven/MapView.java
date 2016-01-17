@@ -1528,11 +1528,11 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	    constructor = camtypes.get(cam).getConstructor(MapView.class); 
 	    camera = Utils.construct(constructor, MapView.this);//constructor.newInstance(this);
 	} catch (NoSuchMethodException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (SecurityException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	} catch (IllegalArgumentException e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
     }
 

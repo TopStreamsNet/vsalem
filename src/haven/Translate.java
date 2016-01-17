@@ -45,7 +45,7 @@ public class Translate {
 	    }
 	    r.close();
 	} catch (Exception e) {
-	    e.printStackTrace();
+	    e.printStackTrace(System.out);
 	}
 	try {
 	    late = new PrintWriter(new FileWriter("late.txt", false));

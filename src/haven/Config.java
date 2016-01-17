@@ -81,7 +81,8 @@ public class Config {
     static Properties window_props;
     public static Properties options;
     private static Map<String, Object> buildinfo = new HashMap<String, Object>();
-
+    public static String authserver_name = Utils.getpref("authserver_name","Providence");
+    
     public static boolean isUpdate;
     public static boolean isShowNames = true;
     public static boolean timestamp = true;
@@ -121,6 +122,7 @@ public class Config {
     //project raider
     public static boolean raidermodetrees = Utils.getprefb("raidermodetrees", false);
     public static boolean raidermodebraziers = Utils.getprefb("raidermodebraziers", false);
+    public static boolean farmermodetrees = Utils.getprefb("farmermodetrees", false);
     //project ironborn
     public static boolean altprosp = Utils.getprefb("altprosp", false);
     //project save the claim

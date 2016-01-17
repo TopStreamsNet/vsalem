@@ -65,8 +65,6 @@ public class MCache {
         ols.clear();
         
 //        System.gc();
-        
-        System.out.println("purged");
     }
 
     private static class Request {
