@@ -803,6 +803,18 @@ public class OptWnd2 extends Window {
 		{tooltip = Text.render("Toggle between on-demand sorting and continuous sorting.");}
 		
 	    }.a = Config.alwayssort;
+            //picky food transfer-same toggle
+            new CheckBox(new Coord(300, 320), tab, "Picky Alt modifier."){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.pickyalt = val;
+		    Utils.setprefb("pickyalt", val);
+		}
+
+		{tooltip = Text.render("The alt modifier will now only take items which contain the same ingredients, as well as having the same name.");}
+		
+	    }.a = Config.pickyalt;
         }
         
         /* RADAR TAB */

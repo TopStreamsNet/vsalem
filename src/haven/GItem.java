@@ -164,6 +164,67 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
 	    filtered = lastFilter;
 	}
     }
+    
+    public boolean isSame(GItem that)
+    {
+        boolean same = true;
+        
+        if(!this.resname().equals(that.resname()))
+            return false;
+        
+        List<ItemInfo> thisinfo = this.info();
+        List<ItemInfo> thatinfo = that.info();
+        
+        for(ItemInfo this_ii : thisinfo)
+        {
+            //each adhoc on this object must also be found in the other
+            if(ItemInfo.AdHoc.class.isInstance(this_ii))
+            {
+                ItemInfo.AdHoc this_adhoc = (ItemInfo.AdHoc)this_ii;
+                boolean got_it = false;
+                for(ItemInfo that_ii : thatinfo)
+                {
+                    if(ItemInfo.AdHoc.class.isInstance(that_ii))
+                    {
+                        ItemInfo.AdHoc that_adhoc = (ItemInfo.AdHoc)that_ii;
+                        if(this_adhoc.str.text.equals(that_adhoc.str.text))
+                        {
+                            got_it = true;
+                            break;
+                        }
+                    }
+                }
+                if(!got_it)
+                    return false;
+            }
+        }
+        
+        for(ItemInfo that_ii : thatinfo)
+        {
+            //each adhoc on this object must also be found in the other
+            if(ItemInfo.AdHoc.class.isInstance(that_ii))
+            {
+                ItemInfo.AdHoc that_adhoc = (ItemInfo.AdHoc)that_ii;
+                boolean got_it = false;
+                for(ItemInfo this_ii : thisinfo)
+                {
+                    if(ItemInfo.AdHoc.class.isInstance(this_ii))
+                    {
+                        ItemInfo.AdHoc this_adhoc = (ItemInfo.AdHoc)this_ii;
+                        if(this_adhoc.str.text.equals(that_adhoc.str.text))
+                        {
+                            got_it = true;
+                            break;
+                        }
+                    }
+                }
+                if(!got_it)
+                    return false;
+            }
+        }
+        
+        return true;
+    }
 
     @Override
     public void tick(double dt) {

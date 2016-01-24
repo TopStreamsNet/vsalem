@@ -491,7 +491,7 @@ public class WItem extends Widget implements DTarget {
 	if(ui.modshift) {
 	    if(ui.modmeta) {
 		if(inv) {
-		    wdgmsg("transfer-same", item.resname(), button == 3);
+		    wdgmsg("transfer-same", item, button == 3);
 		    return true;
 		}
 	    } else if(button == 1) {
@@ -501,7 +501,7 @@ public class WItem extends Widget implements DTarget {
 	} else if(ui.modctrl) {
 	    if(ui.modmeta) {
 		if(inv) {
-		    wdgmsg("drop-same", item.resname(), button == 3);
+		    wdgmsg("drop-same", item, button == 3);
 		    return true;
 		}
 	    } else if(button == 1) {

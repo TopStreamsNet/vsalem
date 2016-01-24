@@ -445,9 +445,9 @@ public class Inventory extends Widget implements DTarget {
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(msg.equals("transfer-same")){
-	    process(getSame((String) args[0],(Boolean)args[1]), "transfer");
+	    process(getSame((GItem) args[0],(Boolean)args[1]), "transfer");
 	} else if(msg.equals("drop-same")){
-	    process(getSame((String) args[0], (Boolean) args[1]), "drop");
+	    process(getSame((GItem) args[0], (Boolean) args[1]), "drop");
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
@@ -459,11 +459,22 @@ public class Inventory extends Widget implements DTarget {
 	}
     }
 
-    private List<WItem> getSame(String name, Boolean ascending) {
+    private List<WItem> getSame(GItem item, Boolean ascending) {
+        String name = item.resname();
 	List<WItem> items = new ArrayList<WItem>();
 	for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
 	    if (wdg.visible && wdg instanceof WItem) {
-		if (((WItem) wdg).item.resname().equals(name))
+                boolean same;
+                if(Config.pickyalt)
+                {
+                    same = item.isSame(((WItem) wdg).item);
+                }
+                else
+                {
+                    String thatname = ((WItem) wdg).item.resname();
+                    same = thatname.equals(name);
+                }
+		if (same)
 		    items.add((WItem) wdg);
 	    }
 	}
