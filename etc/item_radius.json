@@ -36,6 +36,11 @@
 	"scol"  : "88ff2233",
 	"ecol"  : "ffaa44"
   },
+  "gfx/terobjs/babybrazier"       : {
+	"radius": 60,
+	"scol"  : "88ff2233",
+	"ecol"  : "ff2233"
+  },
   "gfx/terobjs/butterflyhouse": {
 	"radius": 121,
 	"scol"  : "883322ff",
