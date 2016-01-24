@@ -487,6 +487,17 @@ public class OptWnd2 extends Window {
 	    opt_cel.a = Config.cellshade;
 	    checkVideoOpt(opt_cel, Config.glcfg.cel);
 	    
+	    y = tab.sz.y - 50;
+	    new Label(new Coord(10, y), tab, "Camera FOV:");
+	    new HSlider(new Coord(85, y+5), 200, tab, 0, 1000, (int)(Config.camera_field_of_view * 1000)) {
+		public void changed() {
+                    Config.camera_field_of_view = val/1000.0f;
+		    Utils.setpreff("camera_field_of_view",  val/1000.0f);
+                    if(ui != null && ui.gui != null && ui.gui.map.camera != null)
+                        ui.gui.map.camera.resized();
+		}
+	    };
+            
 	    y = tab.sz.y - 20;
 	    new Label(new Coord(10, y), tab, "Brightness:");
 	    new HSlider(new Coord(85, y+5), 200, tab, 0, 1000, (int)(Config.brighten * 1000)) {

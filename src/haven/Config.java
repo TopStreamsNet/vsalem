@@ -98,6 +98,7 @@ public class Config {
     protected static boolean fsaa = false;
     protected static boolean water = false;
     public static boolean center = false;
+    public static float camera_field_of_view = Utils.getpreff("camera_field_of_view", 0.5f);
     public static boolean skybox = Utils.getprefb("skybox", true);
     public static float brighten = Utils.getpreff("brighten", 0.0f);
     protected static boolean ss_silent = Utils.getprefb("ss_slent", false);

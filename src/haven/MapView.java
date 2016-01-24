@@ -96,7 +96,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	public void fixangle() {}
 	
 	public void resized() {
-	    float field = 0.5f;
+	    float field = Config.camera_field_of_view;
 	    float aspect = ((float)mv.sz.y) / ((float)mv.sz.x);
 	    proj.update(Projection.makefrustum(new Matrix4f(), -field, field, -aspect * field, aspect * field, 1, 5000));
 	}
@@ -1096,7 +1096,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
             mv = new Matrix4f(), wxfaccent = new Matrix4f();
         mv.load(cam.load(dgpcam)).mul1(wxf.load(dgpwxf));
         wxfaccent = wxf.trim3(1).transpose();
-        float field = 0.5f;
+        float field = Config.camera_field_of_view;
         float aspect = ((float)g.sz.y) / ((float)g.sz.x);
         Projection proj = Projection.frustum(-field, field, -aspect * field, aspect * field, 1, 5000);
 
