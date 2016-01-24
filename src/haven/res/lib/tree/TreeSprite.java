@@ -18,7 +18,8 @@ public class TreeSprite extends StaticSprite
   public TreeSprite(Sprite.Owner paramOwner, Resource paramResource, float paramFloat)
   {
     super(paramOwner, paramResource, new Message(0));
-    if(!Config.raidermodetrees)
+    boolean bush = paramResource.name.equals("gfx/terobjs/cranberry") || paramResource.name.contains("bush");
+    if(!Config.raidermodetrees || bush)
     {
         this.fscale = paramFloat;
         if (paramFloat == 1.0F)
