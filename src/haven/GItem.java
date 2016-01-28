@@ -258,8 +258,8 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
             //this is a hand object
             if(Config.autobucket && this.parent == ui.gui)
             {
-            //this is an empty object
-            if(rawinfo.length == 1)
+            //this is an empty container
+            if(rawinfo.length == 1 && ((Object[])rawinfo[0]).length>1)
             {
             //this is a bucket
             if(String.class.isInstance(((Object[])rawinfo[0])[1]))
