@@ -914,6 +914,16 @@ public class OptWnd2 extends Window {
                 }
                 {tooltip = Text.render("Clicks on ground with sift cursor will be repeated until non-sift click received.");}
             }).a = Config.autosift;
+            
+            (new CheckBox(new Coord(0, y+=25), tab, "Auto bucket"){
+                @Override
+                public void changed(boolean val) {
+                    super.changed(val);
+                    Config.autobucket = val;
+                    Utils.setprefb("autobucket", val);
+                }
+                {tooltip = Text.render("Right-clicks on ground when you put an empty bucket on the cursor and are standing over water.");}
+            }).a = Config.autobucket;
 
             (new CheckBox(new Coord(0, y+=25), tab, "Show actor path"){
                 @Override
