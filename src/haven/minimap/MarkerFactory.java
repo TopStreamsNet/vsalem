@@ -7,6 +7,7 @@ import haven.*;
 import haven.minimap.Marker.Shape;
 
 public class MarkerFactory {
+
     private final Set<String> unknownNameCache;
     private final Map<String, MarkerTemplate> templateCache;
     private final Map<String, ConfigMarker> matches;
@@ -15,8 +16,8 @@ public class MarkerFactory {
     public MarkerFactory() {
         this(new RadarConfig());
     }
-    
-    public MarkerFactory(RadarConfig rc){
+
+    public MarkerFactory(RadarConfig rc) {
         unknownNameCache = new HashSet<String>();
         templateCache = new HashMap<String, MarkerTemplate>();
         matches = new HashMap<String, ConfigMarker>();
@@ -26,33 +27,44 @@ public class MarkerFactory {
     }
 
     public Marker makeMarker(String resname, Gob gob) {
-	MarkerTemplate mt = findTemplate(resname);
-	if ((mt == null) && Config.radar_icons && (gob.getattr(GobIcon.class) != null)){
-	    mt = new MarkerTemplate(Color.WHITE, true, resname, true, Shape.CIRCLE,0,true);
-	    templateCache.put(resname, mt);
-	}
-	if(mt != null){
-	    return new Marker(resname, gob, mt);
-	}
-	return null;
+        MarkerTemplate mt = findTemplate(resname);
+        if ((mt == null) && Config.radar_icons && (gob.getattr(GobIcon.class) != null)) {
+            mt = new MarkerTemplate(Color.WHITE, true, resname, true, Shape.CIRCLE, 0, true);
+            templateCache.put(resname, mt);
+        }
+        if (mt != null) {
+            Marker m = new Marker(resname, gob, mt);
+            try {
+                if (gob == UI.instance.gui.map.player()) {
+                    m.setOrder(-100);
+                }
+            } catch (NullPointerException npe) {
+
+            }
+            return m;
+        }
+        return null;
     }
 
     private MarkerTemplate findTemplate(String resname) {
-        if (unknownNameCache.contains(resname))
+        if (unknownNameCache.contains(resname)) {
             return null;
+        }
 
-        if (templateCache.containsKey(resname))
+        if (templateCache.containsKey(resname)) {
             return templateCache.get(resname);
+        }
 
         // now check if we have match defined in the config
         ConfigMarker marker = matches.get(resname);
         if (marker == null) {
             // try to match resource name with known patterns
-            for (ConfigMarker cm : patterns)
+            for (ConfigMarker cm : patterns) {
                 if (resname.matches(cm.match)) {
                     marker = cm;
                     break;
                 }
+            }
         }
 
         if (marker != null) {
@@ -77,10 +89,11 @@ public class MarkerFactory {
 
         for (ConfigGroup group : config.getGroups()) {
             for (ConfigMarker marker : group.markers) {
-                if (marker.ispattern)
+                if (marker.ispattern) {
                     patterns.add(marker);
-                else
+                } else {
                     matches.put(marker.match, marker);
+                }
             }
         }
     }
