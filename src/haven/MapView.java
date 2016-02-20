@@ -1525,7 +1525,10 @@ public class MapView extends PView implements DTarget, Console.Directory {
     public void setcam(String cam) {
 	try {
 	    Constructor<? extends Camera> constructor;
-	    constructor = camtypes.get(cam).getConstructor(MapView.class); 
+            Class<? extends Camera> camtype = camtypes.get(cam);
+            if(camtype==null)
+                camtype = camtypes.values().iterator().next();
+	    constructor = camtype.getConstructor(MapView.class); 
 	    camera = Utils.construct(constructor, MapView.this);//constructor.newInstance(this);
 	} catch (NoSuchMethodException e) {
 	    e.printStackTrace(System.out);
