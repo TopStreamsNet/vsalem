@@ -139,8 +139,8 @@ public class LoginScreen extends Widget {
             String[] lines = html.split("\n");
             String prov = lines[48];
             providencestate.change("Providence: "+prov.substring(prov.indexOf('>')+1,prov.lastIndexOf('<')));
-            String pop = lines[48];
-            pophamstate.change("Popham: "+pop.substring(prov.indexOf('>')+1,pop.lastIndexOf('<')));
+            String pop = lines[61];
+            pophamstate.change("Popham: "+pop.substring(pop.indexOf('>')+1,pop.lastIndexOf('<')));
         }
         catch(IOException ex)
         {
