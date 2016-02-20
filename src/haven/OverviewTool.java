@@ -16,6 +16,7 @@ class OverviewTool extends Window{
     private ArrayList<Label> ls = new ArrayList<Label>();
     
     private Map<String,Entry<Float,String>> uniques = new HashMap<String,Entry<Float,String>>();
+    private int sum;
     
     private static OverviewTool instance; 
 
@@ -50,6 +51,7 @@ class OverviewTool extends Window{
     private void update_uniques()
     {
         uniques = new HashMap<String,Entry<Float,String>>();
+        sum = ui.gui.maininv.wmap.size();
         for(GItem i : ui.gui.maininv.wmap.keySet())
         {
             String name = null,unit = null;
@@ -86,7 +88,7 @@ class OverviewTool extends Window{
         if(!this.visible)
             return;
         update_uniques();
-        String t = String.format("Carrying %.2f/%.2f kg", ui.gui.weight / 1000.0, ui.sess.glob.cattr.get("carry").comp / 1000.0);
+        String t = String.format("Carrying %.2f/%.2f kg (%d items)", ui.gui.weight / 1000.0, ui.sess.glob.cattr.get("carry").comp / 1000.0, sum);
 	this.text.settext(t);
         
         int height = 25;
