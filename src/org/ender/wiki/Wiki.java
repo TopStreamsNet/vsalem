@@ -302,28 +302,27 @@ public class Wiki {
 	Map<String, Float[]> food = new HashMap<String, Float[]>(3);
 	String key = "Heals";
 	String arg = args.get(key);
-	if(arg != null) {
-	    String[] svals = arg.split(",");
-	    Float[] vals = new Float[4];
-	    int i = 0;
-	    for (String sval : svals) {
-		float val = 0;
-		try {
-		    val = Float.parseFloat(sval);
-		} catch (NumberFormatException ignored) {
-		}
-		if (i > 3)
-		    System.out.println("Higher? Oo");
-		vals[i] = val;
-		i++;
-	    }
-	    food.put(key, vals);
-	}
+	if(arg == null) {
+            return;
+        }
+        String[] svals = arg.split(",");
+        Float[] vals = new Float[4];
+        int i = 0;
+        for (String sval : svals) {
+            float val = 0;
+            try {
+                val = Float.parseFloat(sval);
+            } catch (NumberFormatException ignored) {
+            }
+            vals[i] = val;
+            i++;
+        }
+        food.put(key, vals);
 	food.put("GluttonMax", parse_glutton(args, GLUTTON_MAX));
 	food.put("GluttonMin", parse_glutton(args, GLUTTON_MIN));
 	Map<String, Integer[]> food_reduce = new HashMap<String, Integer[]>(3);
 	Map<String, Integer[]> food_restore = new HashMap<String, Integer[]>(3);
-	for(int i = 0;i<3;i++)
+	for(i = 0;i<3;i++)
 	{
 	    String namerestore = args.get("FoodRestore"+(i+1));
 	    String namereduce = args.get("FoodReduce"+(i+1));
