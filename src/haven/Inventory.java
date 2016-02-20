@@ -170,7 +170,6 @@ public class Inventory extends Widget implements DTarget {
 
     public void sortItemsLocally(Comparator<WItem> comp)
     {
-        System.getProperties().setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         isTranslated = true;
         //first step: deciding the size of the sorted inventory
         int width = this.isz.x;

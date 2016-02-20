@@ -449,6 +449,8 @@ public class MainFrame extends Frame implements Runnable, Console.Directory {
     }
     
     public static void main(final String[] args) {
+        /* Force the use of legacy sorting mechanisms */
+        System.getProperties().setProperty("java.util.Arrays.useLegacyMergeSort", "true");
 	/* Set up the error handler as early as humanly possible. */
 	ThreadGroup g = new ThreadGroup("Haven main group");
 	String ed;
