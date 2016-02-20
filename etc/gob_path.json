@@ -51,6 +51,11 @@
     "color": "ff88ffdd",
     "name": "frog"
   },
+  "gfx/kritter/crow/crow": {
+    "show": false,
+    "color": "ff88ffdd",
+    "name": "crow"
+  },
   "gfx/kritter/marchhare/marchhare": {
     "show": true,
     "name": "march hare"
