@@ -26,13 +26,16 @@
 
 package haven;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ResDrawable extends Drawable {
     final public  Indir<Resource> res;
     Message sdt;
     Sprite spr = null;
     int delay = 0;
     boolean show_radius = false;
-    Gob.Overlay radius;
+    List<Gob.Overlay> radii = new ArrayList<>();
 	
     public ResDrawable(Gob gob, Indir<Resource> res, Message sdt) {
 	super(gob);
@@ -53,10 +56,7 @@ public class ResDrawable extends Drawable {
 	spr = Sprite.create(gob, res.get(), sdt.clone());
 
 	String name = res.get().name;
-	if(Config.item_radius.containsKey(name)){
-	    ColoredRadius.Cfg cfg = Config.item_radius.get(name);
-	    radius = new Gob.Overlay(new ColoredRadius(gob, cfg));
-	}
+        radii.addAll(ColoredRadius.getRadii(name,gob));
     }
 	
     public void setup(RenderList rl) {
@@ -70,11 +70,11 @@ public class ResDrawable extends Drawable {
     }
 
     private void checkRadius() {
-	if(radius != null && show_radius != Config.show_radius){
+	if(show_radius != Config.show_radius){
 	    show_radius = Config.show_radius;
-	    gob.ols.remove(radius);
+	    gob.ols.removeAll(radii);
 	    if(show_radius){
-		gob.ols.add(radius);
+		gob.ols.addAll(radii);
 	    }
 	}
     }

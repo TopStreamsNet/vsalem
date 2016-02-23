@@ -6,6 +6,8 @@ import haven.VertexBuf.VertexArray;
 import java.awt.Color;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ColoredRadius extends Sprite {
     final VertexArray posa;
@@ -40,9 +42,16 @@ public class ColoredRadius extends Sprite {
 	}
 
     }
+    
+    private float height = 10.0f;
 
     public ColoredRadius(Owner owner, Cfg cfg) {
+        this(owner,cfg,10.0f);
+    }
+    
+    public ColoredRadius(Owner owner, Cfg cfg, Float height) {
 	super(owner, null);
+        this.height = height;
 
 	smat = cfg.smat();
 	emat = cfg.emat();
@@ -57,8 +66,8 @@ public class ColoredRadius extends Sprite {
 	for(int section = 0; section < sections; ++section) {
 	    float var11 = (float)Math.sin(2*Math.PI * (double)section / (double)sections);
 	    float var12 = (float)Math.cos(2*Math.PI * (double)section / (double)sections);
-	    var6.put(section * 3 + 0, var12 * r).put(section * 3 + 1, var11 * r).put(section * 3 + 2, 10.0F);
-	    var6.put((sections + section) * 3 + 0, var12 * r).put((sections + section) * 3 + 1, var11 * r).put((sections + section) * 3 + 2, -10.0F);
+	    var6.put(section * 3 + 0, var12 * r).put(section * 3 + 1, var11 * r).put(section * 3 + 2, height);
+	    var6.put((sections + section) * 3 + 0, var12 * r).put((sections + section) * 3 + 1, var11 * r).put((sections + section) * 3 + 2, -height);
 	    var7.put(section * 3 + 0, var12).put(section * 3 + 1, var11).put(section * 3 + 2, 0.0F);
 	    var7.put((sections + section) * 3 + 0, var12).put((sections + section) * 3 + 1, var11).put((sections + section) * 3 + 2, 0.0F);
 	    int var13 = section * 6;
@@ -84,8 +93,8 @@ public class ColoredRadius extends Sprite {
 
 	    for(int var6 = 0; var6 < var4; ++var6) {
 		float var7 = var1.map.getcz((float)var2.x + var3.get(var6 * 3), (float)var2.y - var3.get(var6 * 3 + 1)) - var5;
-		var3.put(var6 * 3 + 2, var7 + 10.0F);
-		var3.put((var4 + var6) * 3 + 2, var7 - 10.0F);
+		var3.put(var6 * 3 + 2, var7 + height);
+		var3.put((var4 + var6) * 3 + 2, var7 - height);
 	    }
 	} catch (Loading ignored) {
 	}
@@ -110,6 +119,24 @@ public class ColoredRadius extends Sprite {
 	return true;
     }
 
+    public static List<Gob.Overlay> getRadii(String name, Gob gob)
+    {
+        List<Gob.Overlay> list = new ArrayList<>();
+	if(Config.item_radius.containsKey(name)){
+	    ColoredRadius.Cfg cfg = Config.item_radius.get(name);
+            float height = 8.0f;
+	    list.add(new Gob.Overlay(new ColoredRadius(gob, cfg,height)));
+            int i = 2;
+            while(Config.item_radius.containsKey(name+"_"+i))
+            {
+                height = height - 2.0f;
+                cfg = Config.item_radius.get(name+"_"+i++);
+                list.add(new Gob.Overlay(new ColoredRadius(gob, cfg, height)));
+            }
+	}
+        return list;
+    }
+        
     public void draw(GOut var1) {
 	var1.state(smat);
 	var1.apply();

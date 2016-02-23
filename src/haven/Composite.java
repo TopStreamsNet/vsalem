@@ -27,7 +27,6 @@
 package haven;
 
 import java.util.*;
-import java.lang.reflect.*;
 import haven.Skeleton.Pose;
 import haven.Skeleton.PoseMod;
 import static haven.Composited.ED;
@@ -45,6 +44,9 @@ public class Composite extends Drawable {
     private List<MD> nmod;
     private List<ED> nequ;
     
+    boolean show_radius = false;
+    List<Gob.Overlay> radii = new ArrayList<>();
+    
     public Composite(Gob gob, Indir<Resource> base) {
 	super(gob);
 	this.base = base;
@@ -54,6 +56,19 @@ public class Composite extends Drawable {
 	if(comp != null)
 	    return;
 	comp = new Composited(base.get().layer(Skeleton.Res.class).s);
+        
+	String name = base.get().name;
+        radii.addAll(ColoredRadius.getRadii(name,gob));
+    }
+    
+    private void checkRadius() {
+	if(show_radius != Config.show_radius){
+	    show_radius = Config.show_radius;
+	    gob.ols.removeAll(radii);
+	    if(show_radius){
+		gob.ols.addAll(radii);
+	    }
+	}
     }
     
     public void setup(RenderList rl) {
@@ -62,6 +77,7 @@ public class Composite extends Drawable {
 	} catch(Loading e) {
 	    return;
 	}
+	checkRadius();
 	rl.add(comp, null);
     }
 	

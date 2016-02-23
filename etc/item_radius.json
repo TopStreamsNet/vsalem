@@ -55,5 +55,15 @@
 	"radius": 100,
 	"scol"  : "883322ff",
 	"ecol"  : "22bb44"
+  },
+  "gfx/borka/body"          : {
+	"radius": 20,
+	"scol"  : "443322ff",
+	"ecol"  : "ff2233"
+  },
+  "gfx/borka/body_2"          : {
+	"radius": 30,
+	"scol"  : "443322ff",
+	"ecol"  : "ff2233"
   }
 }
