@@ -52,6 +52,8 @@ class HotkeyListWindow extends Window{
         new Label(new Coord(x1,y+=step),this,"Alt+C");       new Label(new Coord(x2,y),this,"Open the crafting window");
         new Label(new Coord(x1,y+=step),this,"Alt+F");       new Label(new Coord(x2,y),this,"Open the filter window");
         new Label(new Coord(x1,y+=step),this,"Ctrl+Z");       new Label(new Coord(x2,y),this,"Toggle tile centering");
+        new Label(new Coord(x1,y+=step),this,"Ctrl+R");       new Label(new Coord(x2,y),this,"Toggle the toolbelt");
+        new Label(new Coord(x1,y+=step),this,"Ctrl+G");       new Label(new Coord(x2,y),this,"Toggle the backpack");
         
         new Label(new Coord(0,y+=big_step), this, "Handy console commands");
         new Label(new Coord(x1,y+=step),this,":fs 0/1");       new Label(new Coord(x2,y),this,"Set fullscreen (buggy!)");

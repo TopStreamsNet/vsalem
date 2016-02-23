@@ -108,6 +108,58 @@ public class RootWidget extends ConsoleHost {
 		ui.gui.toggleCraftWnd();
 	    }else if(code == KeyEvent.VK_F && alt && isgui){
 		ui.gui.toggleFilterWnd();
+            }else if(code == KeyEvent.VK_R && ctrl && isgui){
+                //toggle toolbelt
+                Window toolbelt_window = null;
+                for(Widget w : ui.widgets.values())
+                {
+                    if(Window.class.isInstance(w))
+                    {
+                        Window ww = (Window)w;
+                        if(ww.cap.text.contains("belt"))
+                        {
+                            toolbelt_window = ww;
+                        }
+                    }
+                }
+                if(toolbelt_window == null)
+                {
+                    if(ui.gui.getEquipory().slots[5]!=null)
+                    {
+                        ui.gui.getEquipory().slots[5].mousedown(Coord.z, 3);
+                    }
+                }
+                else
+                {
+                    //close the existing toolbelt window
+                    toolbelt_window.cbtn.click();
+                }
+	    }else if(code == KeyEvent.VK_G && ctrl && isgui){
+                //toggle backpack
+                Window toolbelt_backpack = null;
+                for(Widget w : ui.widgets.values())
+                {
+                    if(Window.class.isInstance(w))
+                    {
+                        Window ww = (Window)w;
+                        if(ww.cap.text.contains("pack"))
+                        {
+                            toolbelt_backpack = ww;
+                        }
+                    }
+                }
+                if(toolbelt_backpack == null)
+                {
+                    if(ui.gui.getEquipory().slots[14]!=null)
+                    {
+                        ui.gui.getEquipory().slots[14].mousedown(Coord.z, 3);
+                    }
+                }
+                else
+                {
+                    //close the existing toolbelt window
+                    toolbelt_backpack.cbtn.click();
+                }
 	    }else if(code == KeyEvent.VK_Z && ctrl){
 		Config.center = !Config.center;
 		ui.message(String.format("Tile centering in turned %s", Config.center?"ON":"OFF"), GameUI.MsgType.INFO);
