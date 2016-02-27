@@ -26,7 +26,7 @@
 	<marker match="gfx/terobjs/herbs/wildgarlic" text="Wild Garlic" color="#FFF700" />
 	<marker match="gfx/terobjs/herbs/lilypad" text="Lilypad Bulb" color="#9966E6" />
 	<marker match="gfx/terobjs/herbs/milkweed" text="Milkweed Roots" color="#33E677" />
-	<marker match="gfx/terobjs/herbs/reeds" show="false" text="Milkweed Roots" color="#33E677" />
+	<marker match="gfx/terobjs/herbs/reeds" show="false" text="Reeds" color="#33E677" />
 	
 	<marker pattern="gfx/kritter/frog/.+"/>
 </group>
