@@ -119,7 +119,7 @@ class OverviewTool extends Window{
             ls.add(new Label(new Coord(0,height), this, "   "+e.getKey()+":"));
             String unit = e.getValue().getValue();
             if(unit != null)
-                ls.add(new Label(new Coord(150, height),this," " + e.getValue().getKey()+" "+e.getValue().getValue()));
+                ls.add(new Label(new Coord(150, height),this," " + String.format("%.2f",e.getValue().getKey())+" "+e.getValue().getValue()));
             else
                 ls.add(new Label(new Coord(150, height),this," " + e.getValue().getKey().intValue()));
         }
