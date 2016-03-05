@@ -359,9 +359,11 @@ public class WItem extends Widget implements DTarget {
 	{
 	    int[] means = new int[4];
 	    int i_highest=-1,i_nexthighest=-1;
+            int lowest_mean = Integer.MAX_VALUE;
 	    for(int b = 0;b<4;b++)
 	    {
 		means[b]=(food.h[b]+food.l[b])/2;
+                lowest_mean = Math.min(lowest_mean,means[b]);
 		if(i_highest < 0 || means[i_highest] < means[b])
 		{
 		    i_nexthighest = i_highest;
@@ -376,6 +378,17 @@ public class WItem extends Widget implements DTarget {
 	    {
 		c = Tempers.colors[i_highest];
 	    }
+            else if(means[i_highest] > lowest_mean)
+            {
+                //not completely the same: use a mix of the two colors.
+                float[] c1 = Tempers.colors[i_highest].getRGBColorComponents(null);
+                float[] c2 = Tempers.colors[i_nexthighest].getRGBColorComponents(null);
+                float[] fc = new float[3];
+                for (int i = 0; i < fc.length; i++) {
+                    fc[i] = (c1[i]+c2[i])/2;
+                }
+                c=new Color(fc[0],fc[1],fc[2]);
+            }
 	}
 	return c;
     }
