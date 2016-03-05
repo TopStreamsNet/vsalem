@@ -75,7 +75,8 @@ public class Config {
     public static boolean radar_icons = Utils.getprefb("radar_icons", true);
     public static boolean autoopen_craftwnd = Utils.getprefb("autoopen_craftwnd", false);
     public static boolean translate = Utils.getprefb("translate", false);
-
+    public static boolean chat_expanded = Utils.getprefb("chat_expanded", false);
+    
     public static String currentCharName = "";
     public static Map<String, Boolean> AUTOCHOOSE = null;
     static Properties window_props;

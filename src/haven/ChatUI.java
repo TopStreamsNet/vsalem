@@ -57,7 +57,6 @@ public class ChatUI extends Widget {
     public static int selw = 100;
     public Channel sel = null;
     private final Selector chansel;
-    public boolean expanded = false;
     private Coord base;
     private static int basesize = 12;
     private QuickLine qline = null;
@@ -72,6 +71,7 @@ public class ChatUI extends Widget {
 	setfocusctl(true);
 	setcanfocus(false);
         this.setbasesize((int) Utils.getpreff("chatfontsize", 12));
+        update_visibility();
     }
     
     public final void setbasesize(int basesize)
@@ -1141,7 +1141,7 @@ public class ChatUI extends Widget {
     public void select(Channel chan) {
 	Channel prev = sel;
 	sel = chan;
-	if(expanded) {
+	if(Config.chat_expanded) {
 	    if(prev != null)
 		prev.hide();
 	    sel.show();
@@ -1215,7 +1215,7 @@ public class ChatUI extends Widget {
 	    Channel chan = (Channel)w;
 	    select(chan);
 	    chansel.add(chan);
-	    if(!expanded)
+	    if(!Config.chat_expanded)
 		chan.hide();
 	}
     }
@@ -1246,25 +1246,36 @@ public class ChatUI extends Widget {
     }
 
     public void expand() {
-	if(expanded)
+	if(Config.chat_expanded)
 	    return;
 	resize(new Coord(sz.x, 100+(basesize-12)*24));
-	setcanfocus(true);
-	if(sel != null)
-	    sel.show();
-	chansel.show();
-	expanded = true;
+        Utils.setprefb("chat_expanded", Config.chat_expanded = true);
+        update_visibility();
     }
     
     public void contract() {
-	if(!expanded)
+	if(!Config.chat_expanded)
 	    return;
 	resize(new Coord(sz.x, 50));
-	setcanfocus(false);
-	if(sel != null)
-	    sel.hide();
-	chansel.hide();
-	expanded = false;
+        Utils.setprefb("chat_expanded", Config.chat_expanded = false);
+        update_visibility();
+    }
+    
+    public void update_visibility() {
+        if(Config.chat_expanded)
+        {
+            setcanfocus(true);
+            if(sel != null)
+                sel.show();
+            chansel.show();
+        }
+        else
+        {
+            setcanfocus(false);
+            if(sel != null)
+                sel.hide();
+            chansel.hide();
+        }
     }
 
     private class QuickLine extends LineEdit {
@@ -1338,7 +1349,7 @@ public class ChatUI extends Widget {
     }
 
     public void toggle() {
-	if(!expanded) {
+	if(!Config.chat_expanded) {
 	    expand();
 	    parent.setfocus(this);
 	} else {
@@ -1364,7 +1375,7 @@ public class ChatUI extends Widget {
 
     public boolean globtype(char key, KeyEvent ev) {
 	if(key == 10) {
-	    if(!expanded && (sel instanceof EntryChannel)) {
+	    if(!Config.chat_expanded && (sel instanceof EntryChannel)) {
 		ui.grabkeys(this);
 		qline = new QuickLine((EntryChannel)sel);
 		return(true);

@@ -672,7 +672,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    g.aimage(progt.tex(), new Coord(sz.x / 2, (sz.y * 4) / 10), 0.5, 0.5);
 	}
 	int by = sz.y;
-	if(chat.expanded)
+	if(Config.chat_expanded)
 	    by = Math.min(by, chat.c.y);
 //	if(beltwdg.visible)
 //	    by = Math.min(by, beltwdg.c.y);
@@ -689,7 +689,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		g.image(lasterr.tex(), new Coord(bx, by -= 20));
 	    }
 	}
-	if(!chat.expanded) {
+	if(!Config.chat_expanded) {
 	    chat.drawsmall(g, new Coord(bx, by), 50);
 	}
     }
