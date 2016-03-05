@@ -923,7 +923,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
  	public final MenuButton clab, towb, warb, ptrb, lndb, chatb;//hwab
 	public boolean hpv = true, pv = hpv && !Config.hptr;
 
-	boolean full = true;
+	boolean full = Config.mainmenu_full;
 	public MenuButton[] tohide = {
 		invb = new MenuButton(new Coord(4, 8), this, "inv", 9, "Inventory (Tab)") {
 		    int seq = 0;
@@ -1120,14 +1120,17 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 
 	@Override
 	public void draw(GOut g) {
-	    g.image(full?menubgfull:menubg, Coord.z);
+	    g.image(Config.mainmenu_full?menubgfull:menubg, Coord.z);
 	    super.draw(g);
 	}
 
-	public void toggle() {
-	    full = !full;
+        public void toggle() {
+            Utils.setprefb("mainmenu_full", Config.mainmenu_full=!Config.mainmenu_full);
+            apply_visibility();
+        }
+	public void apply_visibility() {
 	    for (Widget w: tohide){
-		w.visible = full;
+		w.visible = Config.mainmenu_full;
 	    }
 	    cash.presize();
 	    manual.presize();
@@ -1223,7 +1226,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		}
 
 		public void presize() {
-		    this.c = new Coord(0, (mainmenu.c.y - sz.y + (mainmenu.full?0:119)));
+		    this.c = new Coord(0, (mainmenu.c.y - sz.y + (Config.mainmenu_full?0:119)));
 		}
 
 		public Object tooltip(Coord c, Widget prev) {
@@ -1273,7 +1276,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		}
 
 		public void presize() {
-		    this.c = new Coord(90, (mainmenu.c.y - sz.y + (mainmenu.full?0:119)));
+		    this.c = new Coord(90, (mainmenu.c.y - sz.y + (Config.mainmenu_full?0:119)));
 		}
 
 		public Object tooltip(Coord c, Widget prev) {
@@ -1287,7 +1290,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	}
 	
         if(mainmenu.manual != null || mainmenu.cash != null)
-            mainmenu.toggle();
+            mainmenu.apply_visibility();
     }
     
     public boolean globtype(char key, KeyEvent ev) {
