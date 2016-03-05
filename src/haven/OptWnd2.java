@@ -826,6 +826,18 @@ public class OptWnd2 extends Window {
 		{tooltip = Text.render("The alt modifier will now only take items which contain the same ingredients, as well as having the same name.");}
 		
 	    }.a = Config.pickyalt;
+            //show borka fight radii?
+            new CheckBox(new Coord(300, 340), tab, "Combat radii for human characters."){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.borka_radii = val;
+		    Utils.setprefb("borka_radii", val);
+		}
+
+		{tooltip = Text.render("Any body will now show area of effect for roundhouse kick, cleave, and stomp.");}
+		
+	    }.a = Config.borka_radii;
         }
         
         /* RADAR TAB */

@@ -122,6 +122,8 @@ public class ColoredRadius extends Sprite {
     public static List<Gob.Overlay> getRadii(String name, Gob gob)
     {
         List<Gob.Overlay> list = new ArrayList<>();
+        if(name.contains("borka") && !Config.borka_radii)
+            return list;
 	if(Config.item_radius.containsKey(name)){
 	    ColoredRadius.Cfg cfg = Config.item_radius.get(name);
             float height = 8.0f;

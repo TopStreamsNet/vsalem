@@ -156,6 +156,7 @@ public class Config {
     public static boolean localmm_ridges = Utils.getprefb("localmm_ridges", false);
     //project peace and quiet
     public static boolean remove_animations = Utils.getprefb("remove_animations", false);
+    public static boolean borka_radii = Utils.getprefb("borka_radii",false);
     
     public static boolean hide_minimap = Utils.getprefb("hide_minimap", false);
     public static boolean hide_tempers = Utils.getprefb("hide_tempers", false);
