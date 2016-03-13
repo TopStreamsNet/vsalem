@@ -69,6 +69,7 @@ public class Config {
     public static String prefspec = "salem";
     public static final String confid = "";
     public static String userhome = System.getProperty("user.home")+"/Salem";
+    public static String pluginfolder = System.getProperty("user.home")+"/Salem/plugins";
     public static String version;
     public static boolean show_tempers = Utils.getprefb("show_tempers", false);
     public static boolean store_map = Utils.getprefb("store_map", true);
