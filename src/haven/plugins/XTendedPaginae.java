@@ -8,15 +8,20 @@ import haven.TimerPanel;
 import haven.UI;
 import haven.WikiBrowser;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.ServiceLoader;
 
 public class XTendedPaginae {
     
-    public interface Plugin {
-
-        void execute(UI ui);
+    public static abstract class Plugin {
+        public void load(UI ui){}
+        public void execute(UI ui){}
     }
 
     static Map<String, Plugin> dictionary = new HashMap<>();
@@ -29,8 +34,23 @@ public class XTendedPaginae {
     static void loadPluginXTendedPaginae(UI ui)
     {
         File plugin_folder = new File(Config.pluginfolder);
-        String[] plugin_names = plugin_folder.list();
-        
+        File[] plugin_jars = plugin_folder.listFiles();
+        URL[] plugin_urls = new URL[plugin_jars.length];
+        for (int i = 0; i < plugin_urls.length; i++) {
+            try {
+                plugin_urls[i] = plugin_jars[i].toURI().toURL();
+            } catch (MalformedURLException ex) {
+                //ignore this, shouldn't even happen
+            }   
+        }
+        URLClassLoader ucl = new URLClassLoader(plugin_urls);
+        ServiceLoader<Plugin> sl = ServiceLoader.load(Plugin.class, ucl);
+        Iterator<Plugin> plugins = sl.iterator();
+        while(plugins.hasNext())
+        {
+            Plugin plugin = plugins.next();
+            plugin.load(ui);
+        }
     }
     
     static void loadBaseXTendedPaginae(UI ui) {
