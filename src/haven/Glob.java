@@ -101,6 +101,18 @@ public class Glob {
 	    setChanged();
 	    notifyObservers(old);
 	}
+        
+        public String getName(){
+            return nm;
+        }
+        
+        public int getBase(){
+            return base;
+        }
+        
+        public int getComp(){
+            return comp;
+        }
     }
     
     public static class Pagina implements java.io.Serializable {
