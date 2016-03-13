@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-class HotkeyListWindow extends Window{
+public class HotkeyListWindow extends Window{
     static final String title = "List of Hotkeys";
         
     private static HotkeyListWindow instance; 

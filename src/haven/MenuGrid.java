@@ -36,7 +36,7 @@ import haven.ItemInfo.Tip;
 import haven.Resource.AButton;
 import haven.Glob.Pagina;
 import haven.ItemInfo.InfoFactory;
-import static haven.ItemInfo.catimgsh;
+import haven.plugins.XTendedPaginae;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -124,16 +124,7 @@ public class MenuGrid extends Widget {
 	super(c, Inventory.invsz(gsz), parent);
 	ui.mnu = this;
 	CRAFT = paginafor(Resource.load("paginae/act/craft"));
-	Glob glob = ui.sess.glob;
-	Collection<Pagina> p = glob.paginae;
-	p.add(glob.paginafor(Resource.load("paginae/act/add")));
-	p.add(glob.paginafor(Resource.load("paginae/add/timer")));
-	p.add(glob.paginafor(Resource.load("paginae/add/wiki")));
-	p.add(glob.paginafor(Resource.load("paginae/add/craft")));
-	p.add(glob.paginafor(Resource.load("paginae/add/radius")));
-	p.add(glob.paginafor(Resource.load("paginae/add/hotkey")));
-//	p.add(glob.paginafor(Resource.load("paginae/add/anime/raeg")));
-//	p.add(glob.paginafor(Resource.load("paginae/add/anime/facepalm")));
+        XTendedPaginae.loadXTendedPaginae(ui);
 
 	//cons(null);
     }
@@ -576,7 +567,8 @@ public class MenuGrid extends Widget {
 	    return false;
 	}
 	if(ad[0].equals("@")) {
-	    usecustom(ad);
+	    if(!XTendedPaginae.useXTended(ui,ad))
+                use(null);
 	} else {
 	    wdgmsg("act", (Object[])ad);
 	}
@@ -595,26 +587,6 @@ public class MenuGrid extends Widget {
     public void tick(double dt) {
 	if(loading || (pagseq != ui.sess.glob.pagseq))
 	    updlayout();
-    }
-
-
-    private void usecustom(String[] ad) {
-	if(ad[1].equals("act")) {
-	    String[] args = new String[ad.length - 2];
-	    System.arraycopy(ad, 2, args, 0, args.length);
-	    ui.gui.wdgmsg("act", (Object[])args);
-	} else if(ad[1].equals("timers")) {
-	    TimerPanel.toggle();
-	} else if(ad[1].equals("wiki")) {
-	    WikiBrowser.toggle();
-	} else if(ad[1].equals("craft")) {
-	    ui.gui.toggleCraftWnd();
-	} else if(ad[1].equals("radius")) {
-	    Config.toggleRadius();
-	} else if(ad[1].equals("hotkey")) {
-            HotkeyListWindow.instance(ui).toggle();
-	}
-	use(null);
     }
     
     public boolean mouseup(Coord c, int button) {
