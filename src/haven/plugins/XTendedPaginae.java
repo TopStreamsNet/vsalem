@@ -34,6 +34,8 @@ public class XTendedPaginae {
     static void loadPluginXTendedPaginae(UI ui) {
         File plugin_folder = new File(Config.pluginfolder);
         File[] plugin_jars = plugin_folder.listFiles();
+        if(plugin_jars==null)
+            return;
         URL[] plugin_urls = new URL[plugin_jars.length];
         for (int i = 0; i < plugin_urls.length; i++) {
             try {
