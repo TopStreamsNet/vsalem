@@ -4,6 +4,7 @@ import haven.Config;
 import haven.Glob;
 import haven.HotkeyListWindow;
 import haven.Resource;
+import haven.Resource.JarSource;
 import haven.TimerPanel;
 import haven.UI;
 import haven.WikiBrowser;
@@ -46,6 +47,7 @@ public class XTendedPaginae {
         Iterator<Plugin> plugins = sl.iterator();
         while (plugins.hasNext()) {
             Plugin plugin = plugins.next();
+            Resource.addplugin(plugin);
             plugin.load(ui);
         }
     }

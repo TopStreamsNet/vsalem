@@ -26,6 +26,7 @@
 
 package haven;
 
+import haven.plugins.Plugin;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.annotation.*;
@@ -131,6 +132,22 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		};
 	}
 	chainloader(new Loader(src));
+    }
+    
+    public static void addplugin(final Plugin plugin) {
+        final Class<? extends Plugin> cl = plugin.getClass();
+        chainloader(new Loader(new ResSource(){
+            public InputStream get(String name) throws FileNotFoundException {
+                InputStream s = cl.getResourceAsStream("/res/" + name + ".res");
+                if(s == null)
+                    throw(new FileNotFoundException("Could not find resource: " + name));
+                return(s);
+            }
+
+            public String toString() {
+                return("plugin resource source");
+            }
+        }));
     }
     
     private static void chainloader(Loader nl) {
@@ -380,7 +397,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 
-    private static class Loader implements Runnable {
+    static class Loader implements Runnable {
 	private ResSource src;
 	private Loader next = null;
 	private Queue<Resource> queue = new PrioQueue<Resource>();
