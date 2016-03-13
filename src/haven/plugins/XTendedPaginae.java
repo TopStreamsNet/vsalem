@@ -18,11 +18,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 
 public class XTendedPaginae {
-    
-    public static abstract class Plugin {
-        public void load(UI ui){}
-        public void execute(UI ui){}
-    }
 
     static Map<String, Plugin> dictionary = new HashMap<>();
 
@@ -31,8 +26,11 @@ public class XTendedPaginae {
         loadPluginXTendedPaginae(ui);
     }
 
-    static void loadPluginXTendedPaginae(UI ui)
-    {
+    public static void registerPlugin(String name, Plugin plugin) {
+        dictionary.put(name, plugin);
+    }
+
+    static void loadPluginXTendedPaginae(UI ui) {
         File plugin_folder = new File(Config.pluginfolder);
         File[] plugin_jars = plugin_folder.listFiles();
         URL[] plugin_urls = new URL[plugin_jars.length];
@@ -41,18 +39,17 @@ public class XTendedPaginae {
                 plugin_urls[i] = plugin_jars[i].toURI().toURL();
             } catch (MalformedURLException ex) {
                 //ignore this, shouldn't even happen
-            }   
+            }
         }
         URLClassLoader ucl = new URLClassLoader(plugin_urls);
         ServiceLoader<Plugin> sl = ServiceLoader.load(Plugin.class, ucl);
         Iterator<Plugin> plugins = sl.iterator();
-        while(plugins.hasNext())
-        {
+        while (plugins.hasNext()) {
             Plugin plugin = plugins.next();
             plugin.load(ui);
         }
     }
-    
+
     static void loadBaseXTendedPaginae(UI ui) {
         Glob glob = ui.sess.glob;
         Collection<Glob.Pagina> p = glob.paginae;
