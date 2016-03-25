@@ -51,6 +51,9 @@ public class Utils {
     private static Preferences prefs = null;
 
     static Coord imgsz(BufferedImage img) {
+        if(img==null)
+            return new Coord(0,0);
+        
 	return(new Coord(img.getWidth(), img.getHeight()));
     }
 	

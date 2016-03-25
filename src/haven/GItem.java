@@ -143,7 +143,14 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
     }
     
     public String resname(){
-	Resource res = resource();
+	Resource res = null;
+        try{
+           res = resource();
+        }
+        catch(Loading l)
+        {
+            
+        }
 	if(res != null){
 	    return res.name;
 	}
