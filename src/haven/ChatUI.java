@@ -55,7 +55,7 @@ public class ChatUI extends Widget {
     public static RichText.Foundry fnd = new RichText.Foundry(new ChatParser(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 12, TextAttribute.FOREGROUND, Color.BLACK));
     public static Text.Foundry qfnd = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 14), new Color(192, 255, 192));
     public static int selw = 100;
-    public Channel sel = null;
+    public Channel sel = null,prevsel = null;
     private final Selector chansel;
     private Coord base;
     private static int basesize = 12;
@@ -935,6 +935,9 @@ public class ChatUI extends Widget {
 	public PrivChat(Widget parent, int other) {
 	    super(parent);
 	    this.other = other;
+            if(!isIgnored()) {
+                this.getparent(ChatUI.class).select(this);
+            }
             super.startLogging();
 	}
 	
@@ -943,6 +946,15 @@ public class ChatUI extends Widget {
 		String t = (String)args[0];
 		String line = parseTags((String)args[1]);
 		if(t.equals("in") && line!=null) {
+                    
+                    if(msgs.isEmpty() && isIgnored())
+                    {
+                        send("[Automatic] This player has ignored you and will not see your messages.");
+                        //this will gracefully close the pmchat
+                        cbtn.click();
+                        return;
+                    }
+
 		    Message cmsg = new InMessage(line, iw());
 		    append(cmsg, true);
 		    notify(cmsg);
@@ -959,7 +971,12 @@ public class ChatUI extends Widget {
 		super.uimsg(msg, args);
 	    }
 	}
-	
+        
+        protected boolean isIgnored() {
+            String name = name();
+            return name.contains("[ignored]");
+        }
+        
 	public String name() {
 	    BuddyWnd.Buddy b = getparent(GameUI.class).buddies.find(other);
 	    if(b == null)
@@ -1139,11 +1156,11 @@ public class ChatUI extends Widget {
     }
     
     public void select(Channel chan) {
-	Channel prev = sel;
+	prevsel = sel;
 	sel = chan;
 	if(Config.chat_expanded) {
-	    if(prev != null)
-		prev.hide();
+	    if(prevsel != null)
+		prevsel.hide();
 	    sel.show();
 	    resize(sz);
 	}
@@ -1213,8 +1230,10 @@ public class ChatUI extends Widget {
     public void newchild(Widget w) {
 	if(w instanceof Channel) {
 	    Channel chan = (Channel)w;
-	    select(chan);
 	    chansel.add(chan);
+            //PrivChats handle selection themselves
+            if(!PrivChat.class.isInstance(chan))
+                select(chan);
 	    if(!Config.chat_expanded)
 		chan.hide();
 	}
