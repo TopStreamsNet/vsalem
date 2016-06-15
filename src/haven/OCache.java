@@ -28,7 +28,6 @@ package haven;
 
 import haven.minimap.Marker;
 import haven.minimap.Radar;
-import java.awt.Color;
 
 import java.util.*;
 
@@ -42,6 +41,10 @@ public class OCache implements Iterable<Gob> {
 	
     public OCache(Glob glob) {
 	this.glob = glob;
+    }
+    
+    public Collection<Gob> getGobs(){
+        return new ArrayList<Gob>(objs.values());
     }
 	
     public synchronized void remove(long id, int frame) {
