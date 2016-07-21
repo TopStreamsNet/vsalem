@@ -194,6 +194,7 @@ public class Config {
 	}
 
 	loadBuildVersion();
+	loadContentsIcons();
 	loadOptions();
 	window_props = loadProps("windows.conf");
 
@@ -315,6 +316,25 @@ public class Config {
         }
     }
 
+    private static void loadContentsIcons() {
+	InputStream in = Config.class.getResourceAsStream("/contents_icons.json");
+	try {
+	    try {
+		if (in != null) {
+		    Gson gson = new Gson();
+		    Type collectionType = new TypeToken<HashMap<String, String>>(){}.getType();
+		    String json = Utils.stream2str(in);
+		    contents_icons = gson.fromJson(json, collectionType);
+		}
+	    } catch (JsonSyntaxException ignore){
+	    } finally {
+		if (in != null) { in.close(); }
+	    }
+	} catch(IOException e) {
+	    throw(new Error(e));
+	}
+    }
+    
     public static void toggleRadius(){
 	show_radius = !show_radius;
 	Utils.setprefb("show_radius", show_radius);

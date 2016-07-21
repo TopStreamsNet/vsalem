@@ -411,28 +411,20 @@ public class WItem extends Widget implements DTarget {
 
 	g.image(tex, Coord.z,hsz);
     }
-    
-    private static Map<String,String> contents_translations = new HashMap<String,String>();
-    {
-        contents_translations.put("Yellow Cornmeal", "gfx/invobjs/cornmeal0");
-        contents_translations.put("White Cornmeal", "gfx/invobjs/cornmeal1");
-        contents_translations.put("Blue Cornmeal", "gfx/invobjs/cornmeal2");
-        contents_translations.put("Golden Cornmeal", "gfx/invobjs/cornmeal3");
         
-        contents_translations.put("Oatmeal", "gfx/invobjs/flour0");
-        contents_translations.put("Rye Flour", "gfx/invobjs/flour1");
-        contents_translations.put("Barley Flour", "gfx/invobjs/flour2");
-        contents_translations.put("Wheat Flour", "gfx/invobjs/flour3");
-        
-        contents_translations.put("Bonemeal", "gfx/invobjs/bonemeal");
-        contents_translations.put("Sugar", "gfx/invobjs/sugar");
-    }
-    
     private Tex getContentTex(String contents) {
-        String name = contents_translations.get(contents.substring(contents.indexOf("of ")+3));
+	if(Config.contents_icons == null){ return null;}
+
+	String name = Config.contents_icons.get(contents);
+	for(Map.Entry<String, String> entry : Config.contents_icons.entrySet()) {
+	    if(contents.contains(entry.getKey())){
+	    	name = entry.getValue();
+		break;
+	    }
+	}
 
 	Tex tex = null;
-	if(name != null && !name.equals("silver")){
+	if(name != null){
 	    try {
 		//return Resource.loadtex(name);
 		Resource res = Resource.load(name);
@@ -443,7 +435,7 @@ public class WItem extends Widget implements DTarget {
 	}
 	return tex;
     }
-    
+        
     private void heurmeters(GOut g) {
 	Coord c0 = sz.sub(0, 4);
 
