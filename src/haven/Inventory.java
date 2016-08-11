@@ -118,13 +118,20 @@ public class Inventory extends Widget implements DTarget {
 	isz = sz;
         isz_client = sz;
         
-        if(sz.equals(new Coord(1,1))|| !Window.class.isInstance(parent))
+        Widget window_parent = parent;
+        while(!Window.class.isInstance(window_parent) && !RootWidget.class.isInstance(window_parent))
+        {
+            window_parent = window_parent.parent;
+        }
+        
+        if(sz.equals(new Coord(1,1)) || !(Window.class.isInstance(window_parent)))
         {
             return;
         }
         dictionaryClientServer = HashBiMap.create();
         
-        IButton sbtn = new IButton(Coord.z, parent, Window.obtni[0], Window.obtni[1], Window.obtni[2]){
+        
+        IButton sbtn = new IButton(Coord.z, window_parent, Window.obtni[0], Window.obtni[1], Window.obtni[2]){
             {tooltip = Text.render("Sort the items in this inventory by name.");}
 
             @Override
@@ -137,8 +144,8 @@ public class Inventory extends Widget implements DTarget {
             }
         };
         sbtn.visible = true;
-        ((Window)parent).addtwdg(sbtn);
-        IButton sgbtn = new IButton(Coord.z, parent, Window.gbtni[0], Window.gbtni[1], Window.gbtni[2]){
+        ((Window)window_parent).addtwdg(sbtn);
+        IButton sgbtn = new IButton(Coord.z, window_parent, Window.gbtni[0], Window.gbtni[1], Window.gbtni[2]){
             {tooltip = Text.render("Sort the items in this inventory by gobble values.");}
 
             @Override
@@ -151,8 +158,8 @@ public class Inventory extends Widget implements DTarget {
             }
         };
         sgbtn.visible = true;
-        ((Window)parent).addtwdg(sgbtn);
-        IButton nsbtn = new IButton(Coord.z, parent, Window.lbtni[0], Window.lbtni[1], Window.lbtni[2]){
+        ((Window)window_parent).addtwdg(sgbtn);
+        IButton nsbtn = new IButton(Coord.z, window_parent, Window.lbtni[0], Window.lbtni[1], Window.lbtni[2]){
             {tooltip = Text.render("Undo client-side sorting.");}
 
             @Override
@@ -165,7 +172,7 @@ public class Inventory extends Widget implements DTarget {
             }
         };
         nsbtn.visible = true;
-        ((Window)parent).addtwdg(nsbtn);
+        ((Window)window_parent).addtwdg(nsbtn);
     }
 
     public void sortItemsLocally(Comparator<WItem> comp)
