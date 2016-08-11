@@ -100,7 +100,14 @@ public class Scrollport extends Widget {
     }
     
     public boolean mousewheel(Coord c, int amount) {
-	bar.ch(amount * 15);
+        if(this.ui.modshift)
+        {
+            this.cont.child.wdgmsg("xfer", amount);
+        }
+        else
+        {
+            bar.ch(amount * 15);
+        }
 	return(true);
     }
     
