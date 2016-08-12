@@ -48,6 +48,7 @@
 	<marker pattern="gfx/kritter/deer/.+" text="Deer" color="#e59363" />
 	<marker pattern="gfx/kritter/beaver/.+" text="Beaver" color="#6091ea" />
 	<marker pattern="gfx/kritter/bear/.+" text="Bear" color="#e34444" />
+	<marker pattern="gfx/kritter/cougar/.+" text="Cougar" color="#44e344" />
 	<marker pattern="gfx/kritter/rattler/.+" text="Timber Rattler" color="#22ff22" />
 	<marker pattern="gfx/kritter/crab/.+" text="Crab" color="#26C166" />
 	<marker pattern="gfx/kritter/spider/.+" text="Spider" color="#ffff00" />
