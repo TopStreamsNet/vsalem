@@ -1056,20 +1056,6 @@ public class MapView extends PView implements DTarget, Console.Directory {
             if(Config.showgobpath)
                 drawGobPath(g, dgpcam, dgpwxf);
             
-            
-            //locator tool
-            if(this.player()!=null)
-            {
-                Moving m = this.player().getattr(Moving.class);
-                if(m!=null){
-                    if(m instanceof LinMove)
-                    {
-                        LinMove gobpath = (LinMove) m;
-                        LocatorTool.addPath(gobpath);
-                    }
-                }
-            }
-            
             //project awareness
             if(Config.watchguard)
                 orientToEnemy();
