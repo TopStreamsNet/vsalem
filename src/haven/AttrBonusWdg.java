@@ -31,6 +31,7 @@ public class AttrBonusWdg extends Widget {
 	    "Affluence",
 	    "Criminality",
 	    "Spellcraft",
+            "Thermal",
     };
 
     private BufferedImage bonusImg;
@@ -44,7 +45,7 @@ public class AttrBonusWdg extends Widget {
 	bar = new Scrollbar(new Coord(170, bonusc.y), SZ.y-bonusc.y, this, 0, 1);
 	bar.visible = false;
 	visible = Utils.getprefb("artifice_bonuses", true);
-	new Label(new Coord(5, 0), this, "Artifice bonuses:", new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12)));
+	new Label(new Coord(5, 0), this, "Clothing bonuses:", new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12)));
     }
 
     @Override
@@ -81,7 +82,8 @@ public class AttrBonusWdg extends Widget {
     private void doUpdate() {
 	Map<String, Integer> map = new HashMap<String, Integer>();
 	needUpdate = false;
-
+        int thermal = 0;
+        
 	for (WItem wi : witems) {
 	    if (wi != null && wi.item != null) {
 		try {
@@ -108,19 +110,26 @@ public class AttrBonusWdg extends Widget {
 				}
 			    } catch (Exception ignored) { }
 			}
+                        else if (ii.getClass().getName().contains("AdHoc")) {
+			    try {
+                                ItemInfo.AdHoc ah = (ItemInfo.AdHoc) ii;
+                                if (ah.str.text.startsWith("Thermal")) {
+                                    thermal += Integer.parseInt(ah.str.text.split(" ")[1]);
+                                }
+			    } catch (Exception ignored) { }
+                        }
 		    }
 		} catch (Loading e) {
 		    needUpdate = true;
 		}
 	    }
-	}
+	}        
 	int n = map.size();
 
+        Object[] bonuses = new Object[2 * n + 3];
+        bonuses[0] = null;
+        
 	if (n > 0) {
-	    Resource res = Resource.load("ui/tt/dattr");
-	    ItemInfo.InfoFactory f = res.layer(Resource.CodeEntry.class).get(ItemInfo.InfoFactory.class);
-	    Object[] bonuses = new Object[2 * n + 1];
-	    bonuses[0] = null;
 	    int k = 0;
 	    for (String name : order) {
 		if(map.containsKey(name)){
@@ -134,12 +143,23 @@ public class AttrBonusWdg extends Widget {
 		bonuses[2 + 2 * k] = entry.getValue();
 		k++;
 	    }
-	    LinkedList<ItemInfo> list = new LinkedList<ItemInfo>();
-	    list.add(f.build(null, bonuses));
-	    bonusImg = ItemInfo.longtip(list);
-	} else {
-	    bonusImg = null;
-	}
+        }
+        
+        bonuses[2*n+1] = "Thermal";
+        bonuses[2*n+2] = thermal;
+        
+        try {
+	    Resource res = Resource.load("ui/tt/dattr");
+	    ItemInfo.InfoFactory f = res.layer(Resource.CodeEntry.class).get(ItemInfo.InfoFactory.class);
+            LinkedList<ItemInfo> list = new LinkedList<ItemInfo>();
+            list.add(f.build(null, bonuses));
+            bonusImg = ItemInfo.longtip(list);
+        }
+        catch(Exception ignored)
+        {
+            bonusImg = null;
+        }
+        
 	int delta = 0;
 	if(bonusImg != null) {
 	    delta = bonusImg.getHeight() - SZ.y + bonusc.y;
