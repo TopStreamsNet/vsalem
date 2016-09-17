@@ -593,8 +593,7 @@ public class OptWnd2 extends Window {
 	    }.a = Config.laptopcontrols;
             
             final Label laptopcontrol1 = new Label(new Coord(10, 160), tab, "Laptop controls: Move the camera by pressing LMB, then dragging RMB.");
-            final Label laptopcontrol2 = new Label(new Coord(10, 170), tab, "Zoom in with + and out with -, and rotate objects like that while pressing shift.");
-            final Label laptopcontrol3 = new Label(new Coord(10, 180), tab, "Rotate in precise mode by pressing shift-alt rather than shift-ctrl.");
+            final Label laptopcontrol2 = new Label(new Coord(10, 170), tab, "Zoom in with + and out with -, and rotate objects like that while pressing shift-alt.");
             
             //project raider trees
 	    new CheckBox(new Coord(0, 200), tab, "Raider mode trees"){
