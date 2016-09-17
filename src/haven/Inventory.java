@@ -451,7 +451,12 @@ public class Inventory extends Widget implements DTarget {
     
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(msg.equals("transfer-same")){
-	    process(getSame((GItem) args[0],(Boolean)args[1]), "transfer");
+            if(Config.limit_transfer_amount) {
+                process(getSame((GItem) args[0],(Boolean)args[1]), "transfer", 72);
+            }
+            else {
+                process(getSame((GItem) args[0],(Boolean)args[1]), "transfer");
+            }
 	} else if(msg.equals("drop-same")){
 	    process(getSame((GItem) args[0], (Boolean) args[1]), "drop");
 	} else {
@@ -461,6 +466,15 @@ public class Inventory extends Widget implements DTarget {
 
     private void process(List<WItem> items, String action) {
 	for (WItem item : items){
+	    item.item.wdgmsg(action, Coord.z);
+	}
+    }
+    
+    private void process(List<WItem> items, String action, int limitation) {
+        int count = 0;
+	for (WItem item : items){
+            if(++count > limitation)
+                break;
 	    item.item.wdgmsg(action, Coord.z);
 	}
     }

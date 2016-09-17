@@ -170,6 +170,8 @@ public class Config {
     public static boolean show_contents_icons = Utils.getprefb("show_contents_icons", false);
     public static Map<String, String> contents_icons;
     
+    public static boolean limit_transfer_amount = Utils.getprefb("limit_transfer_amounts", true);
+    
     public static boolean show_radius = Utils.getprefb("show_radius", false);
     public static Map<String, ColoredRadius.Cfg> item_radius;
     public static boolean autosift = Utils.getprefb("autosift", false);

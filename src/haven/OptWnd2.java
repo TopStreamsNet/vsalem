@@ -621,7 +621,6 @@ public class OptWnd2 extends Window {
 		
 	    }.a = Config.raidermodebraziers;
             
-            //project raider braziers
 	    new CheckBox(new Coord(300, 200), tab, "Farmer mode trees/bushes"){
 		@Override
 		public void changed(boolean val) {
@@ -633,9 +632,21 @@ public class OptWnd2 extends Window {
 		{tooltip = Text.render("Fruit-bearing trees and flowered thornbushes are made clear.");}
 		
 	    }.a = Config.farmermodetrees;
+                    
+	    new CheckBox(new Coord(300, 200), tab, "Limit the transfer amount"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.limit_transfer_amount = val;
+		    Utils.setprefb("limit_transfer_amount", val);
+		}
+
+		{tooltip = Text.render("Limits the maximum number of items transferred with shift-clicking things to 72 (stock bins are unaffected).");}
+		
+	    }.a = Config.limit_transfer_amount;
             
             //project climber
-	    new CheckBox(new Coord(150, 220), tab, "Show ridges on the minimap."){
+	    new CheckBox(new Coord(150, 220), tab, "Show ridges on the map."){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
