@@ -186,8 +186,17 @@ public class Inventory extends Widget implements DTarget {
             //flexible size
             int nr_items = wmap.size();
             float aspect_ratio = 8/4;
-            width  = Math.max(4,(int) Math.ceil(Math.sqrt(aspect_ratio*nr_items)));
-            height = Math.max(4,(int) Math.ceil(nr_items/width));
+            height = 4;
+            width = 4;
+            while(nr_items > height*width)
+            {
+                if(width==height*2 || width == 32) {
+                    height++;
+                }
+                else {
+                    width++;
+                }
+            }
         }
         //now sort the item array
         List<WItem> array = new ArrayList<WItem>(wmap.values());
@@ -249,6 +258,17 @@ public class Inventory extends Widget implements DTarget {
         return server;
     }
     
+    Coord getEmptyLocalSpot(BiMap<Coord,Coord> dictionary, int width)
+    {
+        int index = 0;
+        Coord newloc;
+        do{
+            newloc = new Coord((index%(width-1)),(int)(index/(width-1)));
+            index++;
+        }while(dictionary.containsKey(newloc));
+        return newloc;
+    }
+    
     public Coord translateCoordinatesServerClient(Coord server)
     {
         if(!isTranslated)
@@ -263,17 +283,12 @@ public class Inventory extends Widget implements DTarget {
             //find a spot for it
             int width = isz_client.x;
             int height = isz_client.y;
-            int index = 0;
-            Coord newloc;
-            do{
-                newloc = new Coord((index%(width-1)),(int)(index/(width-1)));
-                index++;
-            }while(dictionaryClientServer.containsKey(newloc));
+            Coord newloc = getEmptyLocalSpot(dictionaryClientServer, width);
             //if we're going too deep: add another row
             boolean expanded = false;
-            if(newloc.y >= height-1 && 2*height>=width)
+            if(newloc.y >= height && 2*height>=width)
             {
-                newloc = new Coord(width,0);
+                newloc = new Coord(0,height);
                 expanded = true;
             }
             client = newloc;
@@ -309,7 +324,7 @@ public class Inventory extends Widget implements DTarget {
                 maxx = Math.max(wc.x,maxx);
                 maxy = Math.max(wc.y,maxy);
             }
-            this.isz_client = new Coord(maxx+2,maxy+2);
+            this.isz_client = new Coord(Math.min(maxx,30)+2,Math.min(maxy,30)+2);
             this.resize(invsz(isz_client));
             return isz_client;
         }
@@ -439,7 +454,7 @@ public class Inventory extends Widget implements DTarget {
 	    isz = (Coord)args[0];
             if(isTranslated)
             {
-                resize(invsz(updateClientSideSize()));
+                updateClientSideSize();
             }
             else
             {
