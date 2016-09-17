@@ -113,7 +113,9 @@ public class RootWidget extends ConsoleHost {
                     if(Window.class.isInstance(w))
                     {
                         Window ww = (Window)w;
-                        if(ww.cap.text.contains("belt"))
+                        if(ww.cap.text.toLowerCase().contains("belt") || 
+                           ww.cap.text.toLowerCase().contains("sash") ||
+                           ww.cap.text.toLowerCase().contains("pouch"))
                         {
                             toolbelt_window = ww;
                         }
