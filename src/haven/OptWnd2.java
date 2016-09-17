@@ -633,7 +633,7 @@ public class OptWnd2 extends Window {
 		
 	    }.a = Config.farmermodetrees;
                     
-	    new CheckBox(new Coord(300, 200), tab, "Limit the transfer amount"){
+	    new CheckBox(new Coord(300, 220), tab, "Limit the transfer amount"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
