@@ -451,8 +451,8 @@ public class MapView extends PView implements DTarget, Console.Directory {
 
 	protected float stepify(float a) {
 	    if(Config.isocam_steps) {
-		a = Math.round(2 * a / Math.PI);
-		a = (float) (a * Math.PI / 2);
+		a = Math.round(4 * a / Math.PI);
+		a = (float) (a * Math.PI / 4);
 	    }
 	    return a;
 	}
