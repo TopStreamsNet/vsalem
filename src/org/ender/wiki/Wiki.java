@@ -431,7 +431,7 @@ public class Wiki {
 	    }
 	    return content;
 	} catch (JSONException e) {
-	    System.err.println(String.format("Error while parsing '%s':\n%s\nData:'%s'", name, e.getMessage(), data));
+            System.err.println(String.format("Could not get '%s' from the wiki: page does not exist.",name));
 	} catch (IOException e) {
 	    e.printStackTrace(System.out);
 	} catch (URISyntaxException e) {
