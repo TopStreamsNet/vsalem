@@ -281,15 +281,19 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
             
             if(fruittree)
             {            
-                if(rd.spr!= null && ((StaticSprite)rd.spr).parts.length > 2)
-                {
-                    Material.Colors fx = new Material.Colors();
-                    Color c = new Color(205, 205, 255, 200);
-                    fx.amb = Utils.c2fa(c);
-                    fx.dif = Utils.c2fa(c);
-                    fx.emi = Utils.c2fa(c);
-                    rl.prepc(fx);
-                }
+		if(rd.spr!= null && ((StaticSprite)rd.spr).parts.length > 2 && !rd.sdt.toString().equals("Message(0): 03 00 00 00 "))
+		{
+			Material.Colors fx = new Material.Colors();
+			Color c = new Color(205, 205, 255, 200);
+			fx.amb = Utils.c2fa(c);
+			fx.dif = Utils.c2fa(c);
+			fx.emi = Utils.c2fa(c);
+			rl.prepc(fx);
+		}
+		else if(rd.spr!= null && ((StaticSprite)rd.spr).parts.length > 2 && rd.sdt.toString().equals("Message(0): 03 00 00 00 "))
+		{
+				((StaticSprite)rd.spr).prepc_location = TreeSprite.mkscale(0.5f);
+		}
                 else
                 {
                     if(rd.spr!=null)
