@@ -116,7 +116,7 @@ class OverviewTool extends Window{
         for(Entry<String,Entry<Float,String>> e : object_counts)
         {
             height += 15;
-            ls.add(new Label(new Coord(0,height), this, "   "+e.getKey()+":"));
+            ls.add(new Label(new Coord(0,height), this, "   "+shortify(e.getKey())+":"));
             String unit = e.getValue().getValue();
             if(unit != null)
                 ls.add(new Label(new Coord(150, height),this," " + String.format("%.2f",e.getValue().getKey())+" "+e.getValue().getValue()));
@@ -125,6 +125,19 @@ class OverviewTool extends Window{
         }
         
         this.pack();
+    }
+    
+    public static String shortify(String text)
+    {
+        int maxlength = 22;
+        if(text.length()<=maxlength)
+        {
+            return text;
+        }
+        else
+        {
+            return text.substring(0, maxlength+1)+"...";
+        }
     }
     
     private boolean invalidated = false;
