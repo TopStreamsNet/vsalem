@@ -75,9 +75,9 @@ public class OptWnd2 extends Window {
     }
 
     public OptWnd2(Coord c, Widget parent) {
-	super(c, new Coord(500, 360), parent, "Options");
+	super(c, new Coord(610, 360), parent, "Options");
 	justclose = true;
-	body = new Tabs(Coord.z, new Coord(500, 360), this) {
+	body = new Tabs(Coord.z, new Coord(610, 360), this) {
 		public void changed(Tab from, Tab to) {
 		    Utils.setpref("optwndtab", to.btn.text.text);
 		    from.btn.c.y = 0;
@@ -95,7 +95,7 @@ public class OptWnd2 extends Window {
 		public void click() {
 		    ui.gui.act("lo", "cs");
 		}};
-	    new Button(new Coord(0, 60), 125, tab, "Log out") {
+	    new Button(new Coord(270, 30), 120, tab, "Log out") {
 		public void click() {
 		    ui.gui.act("lo");
 		}};
@@ -109,30 +109,73 @@ public class OptWnd2 extends Window {
 		}};
 	    */
 
-	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
-	    new Label(new Coord(20, 10), editbox, "Edit mode:");
+	    Widget editbox = new Frame(new Coord(270, 60), new Coord(120, 82), tab);
+	    new Label(new Coord(15, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
 		    public void changed(int btn, String lbl) {
 			Utils.setpref("editmode", lbl.toLowerCase());
 		    }};
-	    editmode.add("Emacs", new Coord(10, 25));
-	    editmode.add("PC",    new Coord(10, 50));
+	    editmode.add("Emacs", new Coord(30, 30));
+	    editmode.add("PC",    new Coord(30, 55));
 	    if(Utils.getpref("editmode", "pc").equals("emacs")) editmode.check("Emacs");
 	    else                                                editmode.check("PC");
 	    
-	    int y = 100;
-	    opt_show_tempers = new CheckBox(new Coord(0, y), tab, "Always show humor numbers"){
+            Widget fontsizebox = new Frame(new Coord(410, 30), new Coord(200,112), tab);
+	    final RadioGroup fontsizes = new RadioGroup(fontsizebox) {
+                    public void changed(int btn, String lbl) {
+                        int basesize = 12;
+                        if(lbl.equals("Base size 14"))
+                        {
+                            basesize=14;
+                        }
+                        else if(lbl.equals("Base size 16"))
+                        {
+                            basesize=16;
+                        }
+                        else if(lbl.equals("Base size 20"))
+                        {
+                            basesize=20;
+                        }
+                        OptWnd2.this.ui.gui.chat.setbasesize(basesize);
+                        Utils.setpreff("chatfontsize", basesize);
+                    }
+                };
+            new Label(new Coord(15,10),fontsizebox, "font size:");
+            fontsizes.add("Base size 12", new Coord(95,10));
+            fontsizes.add("Base size 14", new Coord(95,35));
+            fontsizes.add("Base size 16", new Coord(95,60));
+            fontsizes.add("Base size 20", new Coord(95,85));
+            int basesize = (int) Utils.getpreff("chatfontsize", 12);
+	    fontsizes.check("Base size "+basesize);	    
+            
+	    int y = 37;
+            int x = 0;
+	    
+	    new CheckBox(new Coord(x, y += 25), tab, "Fast flower menus"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
-		    Config.show_tempers = val;
-		    Utils.setprefb("show_tempers", val);
+		    Config.fast_menu = val;
+		    Utils.setprefb("fast_flowers", val);
 		}
-	    };
-	    opt_show_tempers.a = Config.show_tempers;
-	    //opt_show_tempers.enabled = Config.plain_tempers;
-	    
-	    new CheckBox(new Coord(0, y += 25), tab, "Store minimap"){
+
+		{tooltip = Text.render("Get rid of the delays when opening flower menus.");}
+		
+	    }.a = Config.fast_menu;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Enable tracking on log-in"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.alwaystrack = val;
+		    Utils.setprefb("alwaystrack", val);
+		}
+
+		{tooltip = Text.render("Enable tracking as soon as a character logs in.");}
+		
+	    }.a = Config.alwaystrack;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Store minimap"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -142,31 +185,19 @@ public class OptWnd2 extends Window {
 		}
 	    }.a = Config.store_map;
 	    
-	    new CheckBox(new Coord(0, y += 25), tab, "Study protection"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Store chat logs"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
-		    Config.flower_study = val;
-		    Utils.setprefb("flower_study", val);
+		    Config.chatlogs = val;
+		    Utils.setprefb("chatlogs", val);
 		}
 
-		{tooltip = Text.render("Leave only 'Study' option in right-click menus, if they have one.");}
+		{tooltip = Text.render("Chat messages will be available in \"C:\\Users\\<account>\\Salem\\logs\\<character>\\<channel>\\\" or similar.\nChanges only apply to new channels.");}
 		
-	    }.a = Config.flower_study;
-	    
-	    new CheckBox(new Coord(0, y += 25), tab, "Show aether as multiplier"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.pure_mult = val;
-		    Utils.setprefb("pure_mult", val);
-		}
-
-		{tooltip = Text.render("Makes aether be displayed as the effective multiplier rather than the percentage.");}
-		
-	    }.a = Config.pure_mult;
-	    
-	    new CheckBox(new Coord(0, y += 25), tab, "Radar icons"){
+	    }.a = Config.chatlogs;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Radar icons"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -178,19 +209,127 @@ public class OptWnd2 extends Window {
 		
 	    }.a = Config.radar_icons;
 	    
-	    new CheckBox(new Coord(0, y += 25), tab, "Blink radar objects"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Show weight widget"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
-		    Config.blink = val;
-		    Utils.setprefb("blink", val);
+		    Config.weight_wdg = val;
+		    Utils.setprefb("weight_wdg", val);
 		}
 
-		{tooltip = Text.render("Objects detected by radar will blink");}
+		{tooltip = Text.render("Shows small floating widget with current carrying weight");}
+
+	    }.a = Config.weight_wdg;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Auto open craft window"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.autoopen_craftwnd = val;
+		    Utils.setprefb("autoopen_craftwnd", val);
+		}
+
+		{tooltip = Text.render("Makes craft window open if you click on any crafting item in menugrid or toolbelt.");}
+	    }.a = Config.autoopen_craftwnd;
+
+	    new CheckBox(new Coord(x, y += 25), tab, "Crafting menu resets"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+                    Config.menugrid_resets = val;
+                    Utils.setprefb("menugrid_resets", val);
+		}
+
+		{tooltip = Text.render("Makes the crafting menu reset after selecting a recipe.");}
+	    }.a = Config.menugrid_resets;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Translate"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.translate = val;
+		    Utils.setprefb("translate", val);
+		}
+
+		{tooltip = Text.render("Translate texts using trans.txt.");}
+	    }.a = Config.translate;
+            
+            new CheckBox(new Coord(x, y += 25), tab, "Combat radii for people"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.borka_radii = val;
+		    Utils.setprefb("borka_radii", val);
+		}
+
+		{tooltip = Text.render("Any body will now show area of effect for roundhouse kick, cleave, and stomp.");}
 		
-	    }.a = Config.blink;
+	    }.a = Config.borka_radii;
+            
+            new CheckBox(new Coord(x, y += 25), tab, "Lower framerate on unfocused instances"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.slowmin = val;
+		    Utils.setprefb("slowmin", val);
+		}
+
+		{tooltip = Text.render("Lowers the target framerate for unfocused windows from 50 to 10. Recommended.");}
+		
+	    }.a = Config.slowmin;
+            
+            x = 250;
+            y = 137;
+                        
+            new CheckBox(new Coord(x, y += 25), tab, "Hide the minimap"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.hide_minimap = val;
+		    Utils.setprefb("hide_minimap", val);
+                    this.ui.gui.updateRenderFilter();
+		}
+
+		{tooltip = Text.render("The minimap will not be rendered.");}
+		
+	    }.a = Config.hide_minimap;
+            
+	    opt_show_tempers = new CheckBox(new Coord(x, y += 25), tab, "Always show humor numbers"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.show_tempers = val;
+		    Utils.setprefb("show_tempers", val);
+		}
+	    };
+	    opt_show_tempers.a = Config.show_tempers;
+            
+            new CheckBox(new Coord(x, y += 25), tab, "Hide the humours"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.hide_tempers = val;
+		    Utils.setprefb("hide_tempers", val);
+                    this.ui.gui.updateRenderFilter();
+		}
+
+		{tooltip = Text.render("The humours will not be rendered.");}
+		
+	    }.a = Config.hide_tempers;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Include UI on screenshots"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.ss_ui = val;
+		    Utils.setprefb("ss_ui", val);
+		}
+
+		{tooltip = Text.render("Sets default value of include UI on screenshot dialog.");}
+		
+	    }.a = Config.ss_ui;
 	    
-	    new CheckBox(new Coord(0, y += 25), tab, "Take screenshots silently"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Take screenshots silently"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -202,7 +341,7 @@ public class OptWnd2 extends Window {
 		
 	    }.a = Config.ss_silent;
 	    
-	    new CheckBox(new Coord(200, y), tab, "Compress screenshots"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Compress screenshots"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -213,109 +352,14 @@ public class OptWnd2 extends Window {
 		{tooltip = Text.render("Compressed screenshots use .JPEG, non-compressed .PNG");}
 		
 	    }.a = Config.ss_compress;
-	    
-	    new CheckBox(new Coord(200, y + 25), tab, "Include UI on screenshots"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.ss_ui = val;
-		    Utils.setprefb("ss_ui", val);
-		}
-
-		{tooltip = Text.render("Sets default value of include UI on screenshot dialog");}
-		
-	    }.a = Config.ss_ui;
-
-	    new CheckBox(new Coord(0, y += 25), tab, "Show weight widget"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.weight_wdg = val;
-		    Utils.setprefb("weight_wdg", val);
-		}
-
-		{tooltip = Text.render("Shows small floating widget with current carrying weight");}
-
-	    }.a = Config.weight_wdg;
-	    
-	    new CheckBox(new Coord(0, y += 25), tab, "Arrow home pointer"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-                    Config.hptr = val;
-                    Utils.setprefb("hptr", val);
-		    ui.gui.mainmenu.pv = Config.hpointv && !val; 
-		}
-
-		{tooltip = Text.render("Makes home pointer display as green arrow over character head");}
-	    }.a = Config.hptr;
-            
-	    new CheckBox(new Coord(0, y += 25), tab, "Crafting menu resets"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-                    Config.menugrid_resets = val;
-                    Utils.setprefb("menugrid_resets", val);
-		}
-
-		{tooltip = Text.render("Makes the crafting menu reset after selecting a recipe.");}
-	    }.a = Config.menugrid_resets;
-            
-	    y = 125;
-	    new CheckBox(new Coord(200, y += 25), tab, "Show item contents as icons"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.show_contents_icons = val;
-		    Utils.setprefb("show_contents_icons", val);
-		}
-
-		{tooltip = Text.render("draws small icons of content of seed and flour bags");}
-	    }.a = Config.show_contents_icons;
-	    
-	    new CheckBox(new Coord(200, y += 25), tab, "Auto open craft window"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.autoopen_craftwnd = val;
-		    Utils.setprefb("autoopen_craftwnd", val);
-		}
-
-		{tooltip = Text.render("Makes craft window open if you click on any crafting item in menugrid or toolbelt.");}
-	    }.a = Config.autoopen_craftwnd;
-
-            
-	    new CheckBox(new Coord(200, y += 25), tab, "Show gobble meters"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.gobble_meters = val;
-		    Utils.setprefb("gobble_meters", val);
-		}
-
-		{tooltip = Text.render("During gobbling displays meters that show food efficiency.");}
-	    }.a = Config.gobble_meters;
-            
-	    new CheckBox(new Coord(200, y += 25), tab, "Translate"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.translate = val;
-		    Utils.setprefb("translate", val);
-		}
-
-		{tooltip = Text.render("Translate texts using trans.txt.");}
-	    }.a = Config.translate;
-            
 	}
-
 	
-	{ //-* CAMERA TAB *-
+	{ //-* CAMERA & GRAPHICS TAB *-
 	    curcam = Utils.getpref("defcam", MapView.DEFCAM);
-	    tab = body.new Tab(new Coord(70, 0), 60, "Camera");
+	    tab = body.new Tab(new Coord(70, 0), 120, "Camera & Graphics");
 
 	    new Label(new Coord(10, 30), tab, "Camera type:");
-	    final RichTextBox caminfo = new RichTextBox(new Coord(180, 25), new Coord(210, 180), tab, "", foundry);
+	    final RichTextBox caminfo = new RichTextBox(new Coord(10, 225), new Coord(210, 135), tab, "", foundry);
 	    caminfo.bg = new java.awt.Color(0, 0, 0, 64);
 	    addinfo("ortho",	"Isometric Cam",	"Isometric camera centered on character. Use mousewheel scrolling to zoom in and out. Drag with middle mouse button to rotate camera.", null);
 	    addinfo("sortho",	"Smooth Isometric Cam",	"Isometric camera centered on character with smoothed movement. Use mousewheel scrolling to zoom in and out. Drag with middle mouse button to rotate camera.", null);
@@ -323,7 +367,8 @@ public class OptWnd2 extends Window {
 	    addinfo("sfollow",	"Smooth Follow Cam",	"The camera smoothly follows the character. Use mousewheel scrolling to zoom in and out. Drag with middle mouse button to rotate camera.", null);
 	    addinfo("free",	"Freestyle Cam",	"You can move around freely within the larger area around character. Use mousewheel scrolling to zoom in and out. Drag with middle mouse button to rotate camera.", null);
 	    addinfo("best",	"Smooth Freestyle Cam",	"You can move around freely within the larger area around character. Use mousewheel scrolling to zoom in and out. Drag with middle mouse button to rotate camera.", null);
-
+            addinfo("sucky",    "Sucky", "You can move around freely within the larger area around character. Use mousewheel scrolling to zoom in and out. Drag with middle mouse button to rotate camera.", null);
+            
 	    final Tabs cambox = new Tabs(new Coord(100, 60), new Coord(300, 200), tab);
 	    
 	    final RadioGroup cameras = new RadioGroup(tab) {
@@ -351,24 +396,10 @@ public class OptWnd2 extends Window {
 		cameras.add(camname, new Coord(10, y += 25));
 	    cameras.check(caminfomap.containsKey(curcam) ? caminfomap.get(curcam).name : curcam);
 
-	    y+=40;
-	    new CheckBox(new Coord(5, y), tab, "Rotate isometric cams by steps"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.isocam_steps = val;
-		    Utils.setprefb("isocam_steps", val);
-		    if(ui.gui != null && ui.gui.map != null && ui.gui.map.camera != null){
-			ui.gui.map.camera.fixangle();
-		    }
-		}
-
-		{tooltip = Text.render("Makes isometric cameras rotate in 90 degree steps.");}
-	    }.a = Config.isocam_steps;
-
-	    y = 200;
-	    
-	    opt_aa = new CheckBox(new Coord(180, y+=25), tab, "Antialiasing"){
+            int x = 240;
+            y = 15;
+            
+	    opt_aa = new CheckBox(new Coord(x, y+=25), tab, "Antialiasing"){
 		@Override
 		public void set(boolean val) {
 		    try {
@@ -387,7 +418,7 @@ public class OptWnd2 extends Window {
 	    opt_aa.a = Config.fsaa;//Config.glcfg.fsaa.val;
 	    checkVideoOpt(opt_aa, Config.glcfg.fsaa);
 	    
-	    opt_qw = new CheckBox(new Coord(180, y+=25), tab, "Quality water"){
+	    opt_qw = new CheckBox(new Coord(x, y+=25), tab, "Quality water"){
 		@Override
 		public void set(boolean val) {
 		    try {
@@ -406,7 +437,7 @@ public class OptWnd2 extends Window {
 	    opt_qw.a = Config.water;
 	    checkVideoOpt(opt_qw, Config.glcfg.wsurf, Text.render("If character textures glitch, try turning Per-pixel lighting on."));
 	    
-	    opt_sb = new CheckBox(new Coord(180, y+=25), tab, "Skybox"){
+	    opt_sb = new CheckBox(new Coord(x, y+=25), tab, "Skybox"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -419,8 +450,9 @@ public class OptWnd2 extends Window {
 	    };
             opt_sb.a = Config.skybox;
 	    
-	    y = 200;
-	    int x = 290;
+            y = 15;
+            x += 200;
+            
 	    opt_flight = new CheckBox(new Coord(x, y+=25), tab, "Per-pixel lighting"){
 		@Override
 		public void set(boolean val) {
@@ -486,10 +518,11 @@ public class OptWnd2 extends Window {
 	    };
 	    opt_cel.a = Config.cellshade;
 	    checkVideoOpt(opt_cel, Config.glcfg.cel);
-	    
-	    y = tab.sz.y - 50;
-	    new Label(new Coord(10, y), tab, "Camera FOV:");
-	    new HSlider(new Coord(85, y+5), 200, tab, 0, 1000, (int)(Config.camera_field_of_view * 1000)) {
+            
+            x -= 200;
+            
+	    new Label(new Coord(x, y += 30), tab, "Camera FOV:");
+	    new HSlider(new Coord(x+75, y += 5), 200, tab, 0, 1000, (int)(Config.camera_field_of_view * 1000)) {
 		public void changed() {
                     Config.camera_field_of_view = val/1000.0f;
 		    Utils.setpreff("camera_field_of_view",  val/1000.0f);
@@ -498,19 +531,164 @@ public class OptWnd2 extends Window {
 		}
 	    };
             
-	    y = tab.sz.y - 20;
-	    new Label(new Coord(10, y), tab, "Brightness:");
-	    new HSlider(new Coord(85, y+5), 200, tab, 0, 1000, (int)(Config.brighten * 1000)) {
+	    new Label(new Coord(x, y += 20), tab, "Brightness:");
+	    new HSlider(new Coord(x+75, y += 5), 200, tab, 0, 1000, (int)(Config.brighten * 1000)) {
 		public void changed() {
 		    Config.setBrighten(val/1000.0f);
 		    ui.sess.glob.brighten();
 		}
 	    };
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Steplocked isometric camera"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.isocam_steps = val;
+		    Utils.setprefb("isocam_steps", val);
+		    if(ui.gui != null && ui.gui.map != null && ui.gui.map.camera != null){
+			ui.gui.map.camera.fixangle();
+		    }
+		}
+
+		{tooltip = Text.render("Makes isometric cameras rotate in 45 degree steps.");}
+	    }.a = Config.isocam_steps;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Blink radar objects"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.blink = val;
+		    Utils.setprefb("blink", val);
+		}
+
+		{tooltip = Text.render("Objects detected by radar will blink");}
+		
+	    }.a = Config.blink;
+	    
+            
+            new CheckBox(new Coord(x, y += 25), tab, "Only show one plant per field"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.fieldfix = val;
+		    Utils.setprefb("fieldfix", val);
+		}
+
+		{tooltip = Text.render("Only show a single instance of a crop, at the center of its field.");}
+		
+	    }.a = Config.fieldfix;
+            final Label cropscale = new Label(new Coord(x + 10, y += 25), tab, "Crop scaling: x"+Config.fieldproducescale);
+	    new HSlider(new Coord(x + 10, y += 20), 170, tab, 0, 9, Config.fieldproducescale-1) {
+		public void changed() {
+		    Config.setFieldproducescale(val+1);
+                    cropscale.settext("Crop scaling: x"+Config.fieldproducescale);
+		}
+	    };
+            
+	    new CheckBox(new Coord(x, y += 20), tab, "Show ridges on the map."){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.localmm_ridges = val;
+		    Utils.setprefb("localmm_ridges", val);
+		}
+	    }.a = Config.localmm_ridges;
+            
+            new CheckBox(new Coord(x, y += 25), tab, "Alternate prospecting"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.altprosp = val;
+		    Utils.setprefb("altprosp", val);
+		}
+
+		{tooltip = Text.render("Shows the rough direction and the pie slice to search in, rather than the erratic arrow. Give it some time!");}
+		
+	    }.a = Config.altprosp;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Arrow home pointer"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+                    Config.hptr = val;
+                    Utils.setprefb("hptr", val);
+		    ui.gui.mainmenu.pv = Config.hpointv && !val; 
+		}
+
+		{tooltip = Text.render("Makes home pointer display as green arrow over character head");}
+	    }.a = Config.hptr;
+            
+            x += 200;
+            y = 145;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Show gob paths"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.showgobpath = val;
+		    Utils.setprefb("showgobpath", val);
+		}
+
+		{tooltip = Text.render("Show paths of moving entities of the world.");}
+		
+	    }.a = Config.showgobpath;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Raider mode trees"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.raidermodetrees = val;
+		    Utils.setprefb("raidermodetrees", val);
+		}
+
+		{tooltip = Text.render("All trees are rendered as tiny versions of themselves. Re-load your area after changing.");}
+		
+	    }.a = Config.raidermodetrees;
+            
+            new CheckBox(new Coord(x, y += 25), tab, "Raider mode braziers"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.raidermodebraziers = val;
+		    Utils.setprefb("raidermodebraziers", val);
+		}
+
+		{tooltip = Text.render("Braziers are rendered in hot pink.");}
+		
+	    }.a = Config.raidermodebraziers;
+            
+            new CheckBox(new Coord(x, y += 25), tab, "Farmer mode trees/bushes"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.farmermodetrees = val;
+		    Utils.setprefb("farmermodetrees", val);
+		}
+
+		{tooltip = Text.render("Fruit-bearing trees and flowered thornbushes are made clear.");}
+		
+	    }.a = Config.farmermodetrees;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Laptop mode for the mouse"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.laptopcontrols = val;
+		    Utils.setprefb("laptopcontrols", val);
+		}
+
+		{tooltip = Text.render("Switches the mode for the mouse and world interactions");}
+		
+	    }.a = Config.laptopcontrols;
+            new Label(new Coord(x, y += 20), tab, "To move the camera with a laptop,");
+            new Label(new Coord(x, y += 10), tab, "press LMB then drag RMB. Zoom in");
+            new Label(new Coord(x, y += 10), tab, "and out with + and -, and rotate");
+            new Label(new Coord(x, y += 10), tab, "objects like that with shift-alt.");
 	}
 	
 
 	{ /* AUDIO TAB */
-	    tab = body.new Tab(new Coord(140, 0), 60, "Audio");
+	    tab = body.new Tab(new Coord(200, 0), 60, "Audio");
 
             int y = 30;
             new Label(new Coord(0, y), tab, "Audio volume");
@@ -528,46 +706,61 @@ public class OptWnd2 extends Window {
                     Music.setvolume(val / 1000.0);
                 }
             };
+            
+	    new CheckBox(new Coord(0, y+=30), tab, "Mute the violin player"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.mute_violin = val;
+		    Utils.setprefb("mute_violin", val);
+		}
+
+		{tooltip = Text.render("The violin player will lose his strings. Please remember that he has a family of his own to support!");}
+		
+	    }.a = Config.mute_violin;
 	}
 
-        { /* LATIKAI TAB */
-            tab = body.new Tab(new Coord(210,0), 60, "Latikai");
+        { /* INVENTORY & ITEMS TAB */
+            tab = body.new Tab(new Coord(270,0), 120, "Inventory & Items");
+            int y = 15;
+            int x = 0;
             
-            //project overgrown
-	    new CheckBox(new Coord(0, 35), tab, "Enable 1x1 field fix"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Study protection"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
-		    Config.fieldfix = val;
-		    Utils.setprefb("fieldfix", val);
+		    Config.flower_study = val;
+		    Utils.setprefb("flower_study", val);
 		}
 
-		{tooltip = Text.render("Only show a single instance of a crop, at the center of its field.");}
+		{tooltip = Text.render("Leave only 'Study' option in right-click menus, if they have one.");}
 		
-	    }.a = Config.fieldfix;
-            final Label cropscale = new Label(new Coord(0, 60), tab, "Crop scaling: x"+Config.fieldproducescale);
-	    new HSlider(new Coord(15, 80), 200, tab, 0, 9, Config.fieldproducescale-1) {
-		public void changed() {
-		    Config.setFieldproducescale(val+1);
-                    cropscale.settext("Crop scaling: x"+Config.fieldproducescale);
-		}
-	    };
-            
-            //project marathon
-	    new CheckBox(new Coord(0, 100), tab, "Show gob paths"){
+	    }.a = Config.flower_study;
+	    
+	    new CheckBox(new Coord(x, y += 25), tab, "Show item contents as icons"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
-		    Config.showgobpath = val;
-		    Utils.setprefb("showgobpath", val);
+		    Config.show_contents_icons = val;
+		    Utils.setprefb("show_contents_icons", val);
 		}
 
-		{tooltip = Text.render("Show paths of moving entities of the world.");}
+		{tooltip = Text.render("draws small icons of content of seed and flour bags");}
+	    }.a = Config.show_contents_icons;
+	    
+	    new CheckBox(new Coord(x, y += 25), tab, "Show purity as multiplier"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.pure_mult = val;
+		    Utils.setprefb("pure_mult", val);
+		}
+
+		{tooltip = Text.render("Makes purity be displayed as the effective multiplier rather than the percentage.");}
 		
-	    }.a = Config.showgobpath;
+	    }.a = Config.pure_mult;
             
-            //project purity
-	    new CheckBox(new Coord(0, 120), tab, "Always show purity percentage/multiplier"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Always show purity percentage/multiplier"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -579,61 +772,18 @@ public class OptWnd2 extends Window {
 		
 	    }.a = Config.alwaysshowpurity;
             
-            //project free the camera
-	    new CheckBox(new Coord(0, 140), tab, "Laptop mode for the mouse"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Show gobble meters"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
-		    Config.laptopcontrols = val;
-		    Utils.setprefb("laptopcontrols", val);
+		    Config.gobble_meters = val;
+		    Utils.setprefb("gobble_meters", val);
 		}
 
-		{tooltip = Text.render("Switches the mode for the mouse and world interactions");}
-		
-	    }.a = Config.laptopcontrols;
+		{tooltip = Text.render("During gobbling displays meters that show food efficiency.");}
+	    }.a = Config.gobble_meters;
             
-            final Label laptopcontrol1 = new Label(new Coord(10, 160), tab, "Laptop controls: Move the camera by pressing LMB, then dragging RMB.");
-            final Label laptopcontrol2 = new Label(new Coord(10, 170), tab, "Zoom in with + and out with -, and rotate objects like that while pressing shift-alt.");
-            
-            //project raider trees
-	    new CheckBox(new Coord(0, 200), tab, "Raider mode trees"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.raidermodetrees = val;
-		    Utils.setprefb("raidermodetrees", val);
-		}
-
-		{tooltip = Text.render("All trees are rendered as tiny versions of themselves. Re-load your area after changing.");}
-		
-	    }.a = Config.raidermodetrees;
-            
-            //project raider braziers
-	    new CheckBox(new Coord(150, 200), tab, "Raider mode braziers"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.raidermodebraziers = val;
-		    Utils.setprefb("raidermodebraziers", val);
-		}
-
-		{tooltip = Text.render("Braziers are rendered in hot pink.");}
-		
-	    }.a = Config.raidermodebraziers;
-            
-	    new CheckBox(new Coord(300, 200), tab, "Farmer mode trees/bushes"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.farmermodetrees = val;
-		    Utils.setprefb("farmermodetrees", val);
-		}
-
-		{tooltip = Text.render("Fruit-bearing trees and flowered thornbushes are made clear.");}
-		
-	    }.a = Config.farmermodetrees;
-                    
-	    new CheckBox(new Coord(300, 220), tab, "Limit the transfer amount"){
+	    new CheckBox(new Coord(x, y += 25), tab, "Limit the transfer amount"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -645,187 +795,19 @@ public class OptWnd2 extends Window {
 		
 	    }.a = Config.limit_transfer_amount;
             
-            //project climber
-	    new CheckBox(new Coord(150, 220), tab, "Show ridges on the map."){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.localmm_ridges = val;
-		    Utils.setprefb("localmm_ridges", val);
-		}
-	    }.a = Config.localmm_ridges;
+            new CheckBox(new Coord(x, y += 25), tab, "Enable continuous sorting"){
+                @Override
+                public void changed(boolean val) {
+                    super.changed(val);
+                    Config.alwayssort = val;
+                    Utils.setprefb("alwayssort", val);
+                }
+
+                {tooltip = Text.render("Toggle between on-demand sorting and continuous sorting.");}
             
-            //project ironborn
-	    new CheckBox(new Coord(0, 220), tab, "Alternate prospecting"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.altprosp = val;
-		    Utils.setprefb("altprosp", val);
-		}
-
-		{tooltip = Text.render("Shows the rough direction and the pie slice to search in, rather than the erratic arrow. Give it some time!");}
-		
-	    }.a = Config.altprosp;
+            }.a = Config.alwayssort;
             
-            //project lazy tracker
-	    new CheckBox(new Coord(0, 240), tab, "Enable tracking on log-in"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.alwaystrack = val;
-		    Utils.setprefb("alwaystrack", val);
-		}
-
-		{tooltip = Text.render("Enable tracking as soon as a character logs in.");}
-		
-	    }.a = Config.alwaystrack;
-            
-            //project silent witness
-	    new CheckBox(new Coord(0, 260), tab, "Lower framerate on unfocused instances"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.slowmin = val;
-		    Utils.setprefb("slowmin", val);
-		}
-
-		{tooltip = Text.render("Lowers the target framerate for unfocused windows from 50 to 10.");}
-		
-	    }.a = Config.slowmin;
-            
-            //project awareness
-	    new CheckBox(new Coord(0, 280), tab, "Always face the primary target"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.watchguard = val;
-		    Utils.setprefb("watchguard", val);
-		}
-
-		{tooltip = Text.render("Always face the target at the top of the aggro list. WARNING: will not work when not rendering, e.g. when minimized.");}
-		
-	    }.a = Config.watchguard;
-            
-            //project patience
-	    new CheckBox(new Coord(0, 300), tab, "Fast flower menus"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.fast_menu = val;
-		    Utils.setprefb("fast_flowers", val);
-		}
-
-		{tooltip = Text.render("Get rid of the delays when opening flower menus.");}
-		
-	    }.a = Config.fast_menu;
-            
-            //project silent lamb
-	    new CheckBox(new Coord(0, 320), tab, "Mute the violin player"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.mute_violin = val;
-		    Utils.setprefb("mute_violin", val);
-		}
-
-		{tooltip = Text.render("The violin player will lose his strings. Please remember that he has a family of his own to support!");}
-		
-	    }.a = Config.mute_violin;
-            
-            //project librarian
-            //chatlogs
-	    new CheckBox(new Coord(0, 340), tab, "Log all chat messages to file"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.chatlogs = val;
-		    Utils.setprefb("chatlogs", val);
-		}
-
-		{tooltip = Text.render("Chat messages will be available in \"C:\\Users\\<account>\\Salem\\logs\\<character>\\<channel>\\\" or similar.\nChanges only apply to new channels.");}
-		
-	    }.a = Config.chatlogs;
-            
-            //scalable chat UI
-	    final RadioGroup fontsizes = new RadioGroup(tab) {
-                    public void changed(int btn, String lbl) {
-                        int basesize = 12;
-                        if(lbl.equals("Base size 14"))
-                        {
-                            basesize=14;
-                        }
-                        else if(lbl.equals("Base size 16"))
-                        {
-                            basesize=16;
-                        }
-                        else if(lbl.equals("Base size 20"))
-                        {
-                            basesize=20;
-                        }
-                        OptWnd2.this.ui.gui.chat.setbasesize(basesize);
-                        Utils.setpreff("chatfontsize", basesize);
-                    }
-                };
-            new Label(new Coord(280,40),tab, "Chat font size:");
-            fontsizes.add("Base size 12", new Coord(300,60));
-            fontsizes.add("Base size 14", new Coord(300,85));
-            fontsizes.add("Base size 16", new Coord(300,110));
-            fontsizes.add("Base size 20", new Coord(300,135));
-            int basesize = (int) Utils.getpreff("chatfontsize", 12);
-	    fontsizes.check("Base size "+basesize);	    
-            
-            
-	    new CheckBox(new Coord(300, 240), tab, "Remove all animations"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.remove_animations = val;
-		    Utils.setprefb("remove_animations", val);
-		}
-
-		{tooltip = Text.render("Removes all animations of more than a single frame, should ease processing times.");}
-		
-	    }.a = Config.remove_animations;
-            //not drawing parts of the UI
-            new CheckBox(new Coord(300, 260), tab, "Hide the minimap"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.hide_minimap = val;
-		    Utils.setprefb("hide_minimap", val);
-                    this.ui.gui.updateRenderFilter();
-		}
-
-		{tooltip = Text.render("The minimap will not be rendered.");}
-		
-	    }.a = Config.hide_minimap;
-            new CheckBox(new Coord(300, 280), tab, "Hide the humours"){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.hide_tempers = val;
-		    Utils.setprefb("hide_tempers", val);
-                    this.ui.gui.updateRenderFilter();
-		}
-
-		{tooltip = Text.render("The humours will not be rendered.");}
-		
-	    }.a = Config.hide_tempers;
-            //sorting toggle
-            new CheckBox(new Coord(300, 300), tab, "Enable continuous sorting."){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.alwayssort = val;
-		    Utils.setprefb("alwayssort", val);
-		}
-
-		{tooltip = Text.render("Toggle between on-demand sorting and continuous sorting.");}
-		
-	    }.a = Config.alwayssort;
-            //picky food transfer-same toggle
-            new CheckBox(new Coord(300, 320), tab, "Picky Alt modifier."){
+            new CheckBox(new Coord(x, y += 25), tab, "Picky Alt modifier"){
 		@Override
 		public void changed(boolean val) {
 		    super.changed(val);
@@ -836,27 +818,14 @@ public class OptWnd2 extends Window {
 		{tooltip = Text.render("The alt modifier will now only take items which contain the same ingredients, as well as having the same name.");}
 		
 	    }.a = Config.pickyalt;
-            //show borka fight radii?
-            new CheckBox(new Coord(300, 340), tab, "Combat radii for human characters."){
-		@Override
-		public void changed(boolean val) {
-		    super.changed(val);
-		    Config.borka_radii = val;
-		    Utils.setprefb("borka_radii", val);
-		}
-
-		{tooltip = Text.render("Any body will now show area of effect for roundhouse kick, cleave, and stomp.");}
-		
-	    }.a = Config.borka_radii;
         }
         
         /* RADAR TAB */
         makeRadarTab();
         
         /* HOTKEY TAB */
-        {
-            
-	    tab = body.new Tab(new Coord(360, 0), 60, "Hotkeys");
+        {   
+	    tab = body.new Tab(new Coord(480, 0), 60, "Hotkeys");
             
             new Label(new Coord(10, 25), tab, "Enter commands to execute for configureable hotkeys.");
             new Label(new Coord(10, 35), tab, "Use your hotkeys through shift+ctrl+<key>.");
@@ -906,7 +875,7 @@ public class OptWnd2 extends Window {
         }
         
         {
-            tab = body.new Tab(new Coord(430, 0), 60, "Cheats"){
+            tab = body.new Tab(new Coord(550, 0), 60, "Cheats"){
                 FlowerList list = new FlowerList(new Coord(200, 55), this);
                 Button add = new Button(new Coord(355, 308), 45, this, "Add");
                 TextEntry value = new TextEntry(new Coord(200, 310), 150, this, "");
@@ -1039,7 +1008,7 @@ public class OptWnd2 extends Window {
         }
         
         //create the new one
-        radartab = body.new Tab(new Coord(280,0), 70, "Radar config");
+        radartab = body.new Tab(new Coord(400,0), 70, "Radar config");
 
         int x = 0, y = 35;
         for(final ConfigGroup cg : rc.getGroups())
