@@ -1056,10 +1056,10 @@ public class OptWnd2 extends Window {
                 }		
             }.a = cg.show;
             y+=25;
-            if(y > radartab.sz.y)
+            if(y > radartab.sz.y-25)
             {
                 y = 35;
-                x += 100;
+                x += 200;
             }
         }
         
