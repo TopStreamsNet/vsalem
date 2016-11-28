@@ -138,8 +138,6 @@ public class Config {
     public static boolean alwaystrack = Utils.getprefb("alwaystrack", false);
     //project silent witness
     public static boolean slowmin = Utils.getprefb("slowmin", false);
-    //project awareness
-    public static boolean watchguard = Utils.getprefb("watchguard", false);
     //project nighteye
     public static boolean alwaysbright = Utils.getprefb("alwaysbright", false);
     public static float brightang = Utils.getpreff("brightang", 0);
@@ -157,8 +155,6 @@ public class Config {
     public static String[] hcommands = new String[hotkeynr];
     //project climber
     public static boolean localmm_ridges = Utils.getprefb("localmm_ridges", false);
-    //project peace and quiet
-    public static boolean remove_animations = Utils.getprefb("remove_animations", false);
     public static boolean borka_radii = Utils.getprefb("borka_radii",false);
     
     public static boolean hide_minimap = Utils.getprefb("hide_minimap", false);

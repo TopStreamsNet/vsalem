@@ -135,8 +135,6 @@ public class Composite extends Drawable {
 	} else if(!retainequ) {
 	    updequ();
 	}
-        if(Config.remove_animations)
-            return;
         
 	comp.tick(dt);
     }
