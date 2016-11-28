@@ -798,8 +798,7 @@ public class Skeleton {
 		for(int o = 0; o < 3; o++) {
 		    rax[o] = (float)Utils.floatd(buf, off[0]); off[0] += 5;
 		}
-                if(i == 0)
-                    frames[i] = new Track.Frame(tm, trans, rotasq(new float[4], rax, rang));
+                frames[i] = new Track.Frame(tm, trans, rotasq(new float[4], rax, rang));
 	    }
 	    return(frames);
 	}
