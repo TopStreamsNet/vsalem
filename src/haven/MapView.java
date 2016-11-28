@@ -972,7 +972,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	    else
 		a = (int)((255 * (2000 - (poldt - 4000))) / 2000);
 	    g.chcolor(255, 255, 255, a);
-	    g.aimage(polownert.tex(), sz.div(2), 0.5, 0.5);
+	    g.aimage(polownert.tex(), sz.div(new Coord(2,4)), 0.5, 0.5);
 	    g.chcolor();
 	}
     }
