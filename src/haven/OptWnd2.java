@@ -352,6 +352,21 @@ public class OptWnd2 extends Window {
 		{tooltip = Text.render("Compressed screenshots use .JPEG, non-compressed .PNG");}
 		
 	    }.a = Config.ss_compress;
+            
+            x = 450;
+            y = 137;
+            
+	    new CheckBox(new Coord(x, y += 25), tab, "Remove all animations"){
+		@Override
+		public void changed(boolean val) {
+		    super.changed(val);
+		    Config.remove_animations = val;
+		    Utils.setprefb("remove_animations", val);
+		}
+
+		{tooltip = Text.render("Remove all animations. This should ease up on processing slightly, and save a fair bit of memory.");}
+		
+	    }.a = Config.remove_animations;
 	}
 	
 	{ //-* CAMERA & GRAPHICS TAB *-
