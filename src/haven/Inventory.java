@@ -494,6 +494,19 @@ public class Inventory extends Widget implements DTarget {
 	}
     }
 
+
+    public List<WItem> getSameName(String name, Boolean ascending) {
+	List<WItem> items = new ArrayList<WItem>();
+	for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+	    if (wdg.visible && wdg instanceof WItem) {
+		if (((WItem) wdg).item.resname().contains(name))
+		    items.add((WItem) wdg);
+	    }
+	}
+	Collections.sort(items, ascending?cmp_asc:cmp_desc);
+	return items;
+    }
+                  
     private List<WItem> getSame(GItem item, Boolean ascending) {
         String name = item.resname();
 	List<WItem> items = new ArrayList<WItem>();
