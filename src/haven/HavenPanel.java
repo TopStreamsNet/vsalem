@@ -55,9 +55,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Console.Directory 
     private GLConfig glconf = null;
     
     private static GLCapabilities stdcaps() {
-        //TESTING
-//        GLProfile prof = GLProfile.getDefault();
-        GLProfile prof = GLProfile.get(GLProfile.GL2);
+        GLProfile prof = GLProfile.getDefault();
 	GLCapabilities cap = new GLCapabilities(prof);
 	cap.setDoubleBuffered(true);
 	cap.setAlphaBits(8);
