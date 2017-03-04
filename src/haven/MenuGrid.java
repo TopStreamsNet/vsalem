@@ -47,7 +47,7 @@ import org.ender.wiki.Wiki;
 public class MenuGrid extends Widget {
     public final static Tex bg = Resource.loadtex("gfx/hud/invsq");
     public final static Coord bgsz = bg.sz().add(-1, -1);
-    private final Pagina CRAFT;
+    public final Pagina CRAFT;
     public final Pagina next = paginafor(Resource.load("gfx/hud/sc-next").loadwait());
     public final Pagina bk = paginafor(Resource.load("gfx/hud/sc-back").loadwait());
     public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);

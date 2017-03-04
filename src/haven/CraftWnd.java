@@ -17,7 +17,6 @@ public class CraftWnd extends Window implements DTarget2{
     private Tex description;
     private Widget makewnd;
     private MenuGrid menu;
-    private Pagina CRAFT;
     private Breadcrumbs breadcrumbs;
     private static Pagina current = null;
     private ItemData data;
@@ -33,6 +32,7 @@ public class CraftWnd extends Window implements DTarget2{
 
     @Override
     public void destroy() {
+        current = null;
 	box.destroy();
 	super.destroy();
     }
@@ -54,7 +54,6 @@ public class CraftWnd extends Window implements DTarget2{
 	    }
 	};
 	box.bgcolor = null;
-	CRAFT = paginafor("paginae/act/craft");
 	menu = ui.gui.menu;
 	breadcrumbs = new Breadcrumbs(new Coord(0, -2), new Coord(WND_SZ.x, SZ), this) {
 	    @Override
@@ -62,13 +61,10 @@ public class CraftWnd extends Window implements DTarget2{
 		select((Pagina) data, false);
 	    }
 	};
-	Pagina selected = current;
-	if(selected == null) {
-	    selected = menu.cur;
-	    if (selected == null || !menu.isCrafting(selected)) {
-		selected = CRAFT;
-	    }
-	}
+	Pagina selected = menu.cur;
+        if (selected == null || !menu.isCrafting(selected)) {
+            selected = menu.CRAFT;
+        }
 	select(selected, true);
     }
 
@@ -115,7 +111,7 @@ public class CraftWnd extends Window implements DTarget2{
 		closemake();
 	    }
 	    Collections.sort(children, MenuGrid.sorter);
-	    if(p != CRAFT){
+	    if(p != menu.CRAFT){
 		children.add(0, menu.bk);
 	    }
 	    box.setitems(children);
