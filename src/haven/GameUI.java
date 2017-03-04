@@ -1343,6 +1343,10 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    fv.c = new Coord(sz.x - Fightview.width, 0);
 	mainmenu.c = new Coord(0, sz.y - mainmenu.sz.y);
 //	beltwdg.c = new Coord(mainmenu.sz.x + 10, sz.y - beltwdg.sz.y);
+	for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+	    if(wdg.visible)
+                fitwdg(wdg);
+	}
 	super.resize(sz);
     }
     
