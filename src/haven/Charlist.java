@@ -31,6 +31,8 @@ import java.awt.event.KeyEvent;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Charlist extends Widget {
     public static final Tex bg = Resource.loadtex("gfx/hud/avakort");
@@ -134,7 +136,7 @@ public class Charlist extends Widget {
         };
         reverselist.a = Config.reversesort;
         
-        TextEntry filter = new TextEntry(new Coord(225, sz.y-30), new Coord(100,18), this, ""){
+        TextEntry filter = new TextEntry(new Coord(225, sz.y-30), new Coord(60,18), this, ""){
             @Override
             public void changed(){
                 super.changed();
@@ -151,6 +153,18 @@ public class Charlist extends Widget {
             }
         };
         filter.changed();
+        
+        Button logoutbutton = new Button(new Coord(295, sz.y-32),80, this, "Logout"){
+            @Override
+            public void click() {
+                try {
+                    ui.cons.run("lo");
+                } catch (Exception ex) {
+                    //this is really only thrown when the command doesn't exist
+                    throw(new RuntimeException(ex));
+                }
+            }
+        };
     }
     
     public void scroll(int amount) {
