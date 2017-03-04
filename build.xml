@@ -75,9 +75,9 @@
 	</target>
 
 	<target name="resources">
-		<exec executable="java" failifexecutionfails="true">
-			<arg line="-jar resources/LayerUtil.jar -re resources/src resources/compiled/res" />
-		</exec>
+		<java jar="resources/LayerUtil.jar" >
+			<arg line="-re resources/src resources/compiled/res"/>
+		</java>
 		<jar destfile="build/lclient-res.jar" update="true">
 			<fileset dir="resources/compiled" />
 			<fileset dir="resources/item_data" />
