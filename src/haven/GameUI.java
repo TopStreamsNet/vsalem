@@ -843,14 +843,23 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     }
 
     private void fitwdg(Widget wdg) {
-	if(wdg.c.x < 0)
-	    wdg.c.x = 0;
-	if(wdg.c.y < 0)
-	    wdg.c.y = 0;
-	if(wdg.c.x + wdg.sz.x > sz.x)
-	    wdg.c.x = sz.x - wdg.sz.x;
-	if(wdg.c.y + wdg.sz.y > sz.y)
-	    wdg.c.y = sz.y - wdg.sz.y;
+        wdg.render_c = new Coord(wdg.c);
+	if(wdg.render_c.x < 0)
+	    wdg.render_c.x = 0;
+	if(wdg.render_c.y < 0)
+	    wdg.render_c.y = 0;
+	if(wdg.render_c.x + wdg.sz.x > sz.x)
+	    wdg.render_c.x = sz.x - wdg.sz.x;
+	if(wdg.render_c.y + wdg.sz.y > sz.y)
+	    wdg.render_c.y = sz.y - wdg.sz.y;
+        if(wdg.c.compareTo(wdg.render_c) == 0)
+        {
+            wdg.render_c = null;
+        }
+        else
+        {
+            System.out.println("Success!");
+        }
     }
 
     /* Directional walking. Apparently AWT send repeated keyup/keydown

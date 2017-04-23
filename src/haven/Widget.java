@@ -33,7 +33,7 @@ import java.awt.event.KeyEvent;
 
 public class Widget {
     public UI ui;
-    public Coord c, sz;
+    public Coord c, sz, render_c = null;
     public Widget next, prev, child, lchild, parent;
     public boolean focustab = false, focusctl = false, hasfocus = false, visible = true;
     private boolean canfocus = false, autofocus = false;
@@ -505,7 +505,9 @@ public class Widget {
 	    next = wdg.next;
 	    if(!wdg.visible)
 		continue;
-	    Coord cc = xlate(wdg.c, true);
+	    Coord cc = xlate(wdg.c,true);
+            if(wdg.render_c != null)
+                cc = xlate(wdg.render_c,true);
 	    GOut g2;
 	    if(strict)
 		g2 = g.reclip(cc, wdg.sz);

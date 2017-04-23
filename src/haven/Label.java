@@ -45,7 +45,7 @@ public class Label extends Widget {
     }
 	
     public void draw(GOut g) {
-	g.image(text.tex(), Coord.z);
+        if(text != null) g.image(text.tex(), Coord.z);
     }
 	
     public Label(Coord c, Widget parent, String text, int w, Text.Foundry f) {
