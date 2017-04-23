@@ -852,14 +852,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    wdg.render_c.x = sz.x - wdg.sz.x;
 	if(wdg.render_c.y + wdg.sz.y > sz.y)
 	    wdg.render_c.y = sz.y - wdg.sz.y;
-        if(wdg.c.compareTo(wdg.render_c) == 0)
-        {
-            wdg.render_c = null;
-        }
-        else
-        {
-            System.out.println("Success!");
-        }
+        wdg.c = wdg.render_c;
     }
 
     /* Directional walking. Apparently AWT send repeated keyup/keydown

@@ -506,8 +506,6 @@ public class Widget {
 	    if(!wdg.visible)
 		continue;
 	    Coord cc = xlate(wdg.c,true);
-            if(wdg.render_c != null)
-                cc = xlate(wdg.render_c,true);
 	    GOut g2;
 	    if(strict)
 		g2 = g.reclip(cc, wdg.sz);
