@@ -178,7 +178,16 @@ public class Inventory extends Widget implements DTarget {
     public void sortItemsLocally(Comparator<WItem> comp)
     {
         isTranslated = true;
-        //first step: deciding the size of the sorted inventory
+        //if we can't sort the inventory due to items being updated while we're sorting
+        //just abort
+        List<WItem> array = new ArrayList<WItem>(wmap.values());
+        try{
+            Collections.sort(array, comp);
+        }
+        catch(IllegalArgumentException e){
+            return;
+        }
+        //deciding the size of the sorted inventory
         int width = this.isz.x;
         int height = this.isz.y;
         if(this.equals(this.ui.gui.maininv))
@@ -198,9 +207,6 @@ public class Inventory extends Widget implements DTarget {
                 }
             }
         }
-        //now sort the item array
-        List<WItem> array = new ArrayList<WItem>(wmap.values());
-        Collections.sort(array, comp);
         //assign the new locations to each of the items and add new translations
         int index = 0;
         BiMap<Coord,Coord> newdictionary = HashBiMap.create();
