@@ -56,6 +56,7 @@ public class Tempers extends SIWidget {
 	Resource.loadimg("gfx/hud/tempers/gbtn"),
 	Resource.loadimg("gfx/hud/tempers/gbtn"),
     };
+    public static final Tex crbg = Resource.loadtex("gfx/hud/tempers/crframe");
     public static final Coord boxc = new Coord(96, 0), boxsz = new Coord(339, 62);
     public static final Color[] colors = {
 	new Color(255, 64, 64),
@@ -73,8 +74,9 @@ public class Tempers extends SIWidget {
     int[] lmax = new int[4];
     int insanity = 0;
     public boolean gavail = true;
+    public Indir<Resource> cravail = null;
     Tex tt = null;
-    public Widget gbtn;
+    public Widget gbtn, crimg;
     private Tex[] texts = null;
 
     static {
@@ -154,6 +156,66 @@ public class Tempers extends SIWidget {
 	} else if(!gavail && (gbtn != null)) {
 	    gbtn.reqdestroy();
 	    gbtn = null;
+	}
+
+	if((cravail != null) && (crimg == null)) {
+	    final Indir<Resource> crres = cravail;
+	    crimg = new Widget(Coord.z, crbg.sz(), parent) {
+		    final int xoff = ((Tempers.this.sz.x - gbtni[0].getWidth()) / 2) - 10 - sz.x;
+		    Tex img = null;
+
+		    void move(double a) {
+			c = new Coord(Tempers.this.c.x + xoff,
+				      (int)(Tempers.this.c.y + boxsz.y + ((a - 1.0) * sz.y)));
+		    }
+
+		    public void draw(GOut g) {
+			g.image(crbg, Coord.z);
+			try {
+			    if(img == null)
+				img = crres.get().layer(Resource.imgc).tex();
+			    g.image(img, sz.sub(img.sz()).div(2));
+			} catch(Loading l) {
+			}
+		    }
+
+		    Text tip = null;
+		    public Object tooltip(Coord c, Widget prev) {
+			try {
+			    if(tip == null)
+				tip = Text.render("Craving: " + crres.get().layer(Resource.tooltip).t);
+			    return(tip);
+			} catch(Loading l) {
+			    return("...");
+			}
+		    }
+
+		    public void reqdestroy() {
+			new NormAnim(0.25) {
+			    public void ntick(double a) {
+				move(1.0 - a);
+				if(a == 1.0)
+				    destroy();
+			    }
+			};
+		    }
+
+		    public void presize() {move(1.0);}
+
+		    {
+			if(!Tempers.this.visible)
+			    hide();
+			new NormAnim(0.25) {
+			    public void ntick(double a) {
+				double f = Math.abs(1.0 - (6 * Math.pow(a, 2)) + (5 * Math.pow(a, 3)));
+				move(1.0 - f);
+			    }
+			}.ntick(0.0);
+		    }
+		};
+	} else if ((cravail == null) && (crimg != null)) {
+	    crimg.reqdestroy();
+	    crimg = null;
 	}
 
 	FoodInfo food = null;

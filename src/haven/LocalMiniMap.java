@@ -693,4 +693,6 @@ public class LocalMiniMap extends Window implements Console.Directory{
 	    mv.wdgmsg("click", rootpos().add(c), c2p(c), button, ui.modflags(), 0, (int)gob.id, gob.rc, 0, -1);
 	return(true);*/
 
+    public void wdgmsg(String msg, Object... args) {
+    }
 }
