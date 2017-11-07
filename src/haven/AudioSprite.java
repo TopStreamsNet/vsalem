@@ -30,6 +30,7 @@ import java.util.*;
 import java.io.*;
 
 public class AudioSprite {
+    public static final Map<Resource,Long> last_instances = new HashMap<>();
     public static final Sprite.Factory fact = new Sprite.Factory() {
 	    private Resource.Audio randoom(Resource res, String id) {
 		List<Resource.Audio> cl = new ArrayList<Resource.Audio>();
@@ -43,6 +44,16 @@ public class AudioSprite {
 	    }
 
 	    public Sprite create(Sprite.Owner owner, Resource res, Message sdt) {
+                                synchronized(last_instances) {
+                                    Long lasttime = last_instances.get(res);
+                                    Long now = System.currentTimeMillis();
+                                    if(lasttime != null) {
+                                        if(now  - lasttime < 300) {
+                                            throw new Loading("Too many sounds playing at once.");
+                                        }
+                                    }
+                                    last_instances.put(res, now);
+                                }
 		{
 		    Resource.Audio clip = randoom(res, "cl");
 		    if(clip != null)
