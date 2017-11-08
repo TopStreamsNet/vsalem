@@ -99,7 +99,9 @@ public class Makewindow extends Widget {
 	for(int i = 0; i < inputs.length; i++) {
 	    Coord ic = c.add(Inventory.sqoff(new Coord(i, 0)));
 	    Spec s = inputs[i];
-	    try {
+	    try { 
+                                if(s.res.get() == null || s.res.get().layer(Resource.imgc) == null)
+                                    throw new Loading("Some part of this resource image is null!");
 		g.image(s.res.get().layer(Resource.imgc).tex(), ic);
 	    } catch(Loading e) {
 	    }

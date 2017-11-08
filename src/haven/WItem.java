@@ -262,6 +262,8 @@ public class WItem extends Widget implements DTarget {
     public void draw(GOut g) {
 	try {
 	    Resource res = item.res.get();
+                    if(res == null || res.layer(Resource.imgc) == null)
+                        throw new Loading("Somehow the resource is null!");
 	    Tex tex = res.layer(Resource.imgc).tex();
 	    drawmain(g, tex);
 	    draw_highlight(g, res, tex);
