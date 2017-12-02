@@ -518,6 +518,15 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	public void drag(Coord c) {
 	    float delta = stepify((float) (c.x - dragorig.x) / 100.0f);
 	    tangl = anglorig + delta;
+            
+            if(Config.isocam_steps) {
+               float tangl_by10k = tangl * 10000;
+               float oneStep_by10k = (pi2/8) * 10000;
+               float mod_result = tangl_by10k % oneStep_by10k;
+               if(mod_result > 100 && (oneStep_by10k - mod_result) > 100){
+                  tangl = Math.round(tangl_by10k / oneStep_by10k) * pi2/8;
+               }
+            }
 	}
 
 	public boolean wheel(Coord c, int amount) {
