@@ -44,6 +44,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
     public Collection<Overlay> ols = new LinkedList<Overlay>();
     private GobPath path = null;
+    private static List<Long> timeList = new LinkedList<Long>();
 	
     public static class Overlay implements Rendered {
 	public Indir<Resource> res;
@@ -117,7 +118,36 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 		try {
 		    ol.sdt.off = 0;
 		    ol.spr = Sprite.create(this, ol.res.get(), ol.sdt);
-		} catch(Loading e) {}
+		} catch(Loading e) {
+                    if (e.getMessage() != null && e.getMessage().contains("Too many sounds playing at once.")) {
+
+                        synchronized(timeList) {
+
+                            int counter = 0;
+                            Long now = System.currentTimeMillis();
+
+                            Iterator<Long> i_timeList = timeList.iterator();
+
+                            while(i_timeList.hasNext()){
+                               Long occurance = i_timeList.next();
+
+                               if (now - occurance > 200 ) {
+                                 i_timeList.remove();
+                              }else{
+                                 counter++;
+                              }
+                            }
+
+                            timeList.add(now);
+
+                            if (counter > 4) {
+                                i.remove();
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                   // guess just ignore...
+                }
 	    } else {
 		boolean done = ol.spr.tick(dt);
 		if((!ol.delign || (ol.spr instanceof Overlay.CDel)) && done)
