@@ -33,7 +33,10 @@ public class TimerPanel extends Window {
     }
             
     public static TimerPanel getInstance()
-    {
+    {   if (instance != null && instance.parent != null && instance.parent != UI.instance.gui) {
+            instance.destroy();
+            instance = null;
+        }
 	if(instance == null)
         {
             instance = new TimerPanel(UI.instance.gui);

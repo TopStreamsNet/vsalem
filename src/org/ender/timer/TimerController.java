@@ -14,6 +14,7 @@ public class TimerController extends Thread {
     private static TimerController instance;
     private static File config;
     public List<Timer> timers;
+    public static List<Timer> timerSList;
     final public Object lock = new Object();
 
     public static TimerController getInstance(){
@@ -65,9 +66,13 @@ public class TimerController extends Thread {
 
     private void load(){
 	try {
+            for (Timer timer : timerSList) {
+               timer.destroy();
+            }
 	    Gson gson = new GsonBuilder().create();
 	    InputStream is = new FileInputStream(config);
 	    timers = gson.fromJson(Utils.stream2str(is), new TypeToken<List<Timer>>(){}.getType());
+            timerSList.addAll(timers);
 	} catch (Exception ignored) {}
 	if(timers == null){
 	    timers = new LinkedList<Timer>();

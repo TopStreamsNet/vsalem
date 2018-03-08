@@ -30,7 +30,7 @@ class OverviewTool extends Window{
     }
 
     public static OverviewTool instance(UI ui) {
-	if(instance == null || instance.ui != ui){
+	if(instance == null || instance.ui != ui || (instance.parent != null && instance.parent != UI.instance.gui)){
 	    instance = new OverviewTool(new Coord(100, 100), ui.gui);
 	}
 	return instance;

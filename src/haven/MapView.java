@@ -347,7 +347,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	    super(mv);
 	}
         
-	private float dist = 50.0f, tdist = dist;
+	private float dist = 500.0f, tdist = dist;
 	private float elev = (float)Math.PI / 4.0f, telev = elev;
 	private float angl = 0.0f, tangl = angl;
 	private Coord dragorig = null;
