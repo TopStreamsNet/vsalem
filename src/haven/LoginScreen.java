@@ -75,7 +75,7 @@ public class LoginScreen extends Widget {
             {
                 if(Config.authserver_name.equals("Providence"))
                 {
-                    setAuthServer("Popham");
+                    setAuthServer("Concord");
                 }
                 else
                 {
@@ -107,7 +107,7 @@ public class LoginScreen extends Widget {
                 update_server_statuses();                    
             }
         };
-        pophamstate = new Button(new Coord(this.sz.x-210, 65),190,this,"Popham: unknown"){
+        pophamstate = new Button(new Coord(this.sz.x-210, 65),190,this,"Concord: unknown"){
             @Override
             public void click()
             {
@@ -124,7 +124,7 @@ public class LoginScreen extends Widget {
     private void update_server_statuses()
     {
         providencestate.change("Providence: checking ...");
-        pophamstate.change("Popham: checking ...");
+        pophamstate.change("Concord: checking ...");
 
         try{
             URL statepage = new URL("http://login.salemthegame.com/portal/state");
@@ -140,7 +140,7 @@ public class LoginScreen extends Widget {
             String prov = lines[48];
             providencestate.change("Providence: "+prov.substring(prov.indexOf('>')+1,prov.lastIndexOf('<')));
             String pop = lines[61];
-            pophamstate.change("Popham: "+pop.substring(pop.indexOf('>')+1,pop.lastIndexOf('<')));
+            pophamstate.change("Concord: "+pop.substring(pop.indexOf('>')+1,pop.lastIndexOf('<')));
         }
         catch(IOException ex)
         {
