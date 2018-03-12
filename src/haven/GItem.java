@@ -265,26 +265,29 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
             //this is a hand object
             if(Config.autobucket && this.parent == ui.gui)
             {
-            //this is an empty container
-            if(rawinfo.length == 1 && ((Object[])rawinfo[0]).length>1)
-            {
-            //this is a bucket
-            if(String.class.isInstance(((Object[])rawinfo[0])[1]))
-            {
-            String newname = (String) ((Object[])rawinfo[0])[1];
-            if(newname.equals("Bucket"))
-            {
-            //we are standing on a water tile
-            int tile = ui.sess.glob.map.gettile(ui.gui.map.player().rc.div(11.0f));
-            Resource tilesetr = ui.sess.glob.map.tilesetr(tile);
-            if(tilesetr.name.contains("water"))
-            {
-                //right-click once on our current location
-                ui.gui.map.wdgmsg("itemact", ui.gui.map.player().sc, ui.gui.map.player().rc, 0);
-            }
-            }
-            }
-            }
+                //this is an empty container
+                if(rawinfo.length == 1 && ((Object[])rawinfo[0]).length>1)
+                {
+                    //this is a bucket
+                    if(String.class.isInstance(((Object[])rawinfo[0])[1]))
+                    {
+                        String newname = (String) ((Object[])rawinfo[0])[1];
+                        if(newname.equals("Bucket"))
+                        {
+                            //we are standing on a water tile
+                            int tile = ui.sess.glob.map.gettile(ui.gui.map.player().rc.div(11.0f));
+                            try{
+                                Resource tilesetr = ui.sess.glob.map.tilesetr(tile);
+                                if(tilesetr.name.contains("water"))
+                                {
+                                    //right-click once on our current location
+                                    ui.gui.map.wdgmsg("itemact", ui.gui.map.player().sc, ui.gui.map.player().rc, 0);
+                                }
+                            }catch(Loading l) {//if the map is still loading, nothing should happen}
+                            }
+                        }
+                    }
+                }
             }
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
