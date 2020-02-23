@@ -162,7 +162,7 @@ public class FastMesh implements FRendered, Disposable {
 	    if(ind == null) {
 		ind = new GLBuffer(gl);
 		gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, ind.id);
-		indb.rewind();
+		((java.nio.Buffer)indb).rewind();
 		gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, indb.remaining() * 2, indb, GL.GL_STATIC_DRAW);
 		GOut.checkerr(gl);
 	    } else {
@@ -276,7 +276,7 @@ public class FastMesh implements FRendered, Disposable {
 
     public void cdraw(GOut g) {
 	g.apply();
-	indb.rewind();
+	((Buffer)indb).rewind();
 	for(int i = 0; i < vert.bufs.length; i++) {
 	    if(vert.bufs[i] instanceof VertexBuf.GLArray)
 		((VertexBuf.GLArray)vert.bufs[i]).bind(g, false);

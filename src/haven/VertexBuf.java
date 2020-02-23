@@ -91,7 +91,7 @@ public class VertexBuf {
 	
 	public int size() {
 	    Buffer b = data();
-	    b.rewind();
+	    ((Buffer)b).rewind();
 	    return(b.capacity() / this.n);
 	}
 
@@ -111,14 +111,14 @@ public class VertexBuf {
 		    bufobj = new GLBuffer(gl);
 		    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, bufobj.id);
 		    Buffer data = data();
-		    data.rewind();
+		    ((Buffer)data).rewind();
 		    gl.glBufferData(GL.GL_ARRAY_BUFFER, data.remaining() * elsize(), data, bufmode);
 		    GOut.checkerr(gl);
 		    update = false;
 		} else if(update) {
 		    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, bufobj.id);
 		    Buffer data = data();
-		    data.rewind();
+		    ((Buffer)data).rewind();
 		    gl.glBufferData(GL.GL_ARRAY_BUFFER, data.remaining() * elsize(), data, bufmode);
 		    update = false;
 		} else {
@@ -157,7 +157,7 @@ public class VertexBuf {
 	
 	public FloatArray(int n, FloatBuffer data) {
 	    super(n);
-	    data.rewind();
+	    ((Buffer) data).rewind();
 	    if(data.capacity() % n != 0)
 		throw(new RuntimeException(String.format("float-array length %d does not match element count %d", data.capacity(), n)));
 	    this.data = data;
@@ -177,7 +177,7 @@ public class VertexBuf {
 	
 	public IntArray(int n, IntBuffer data) {
 	    super(n);
-	    data.rewind();
+	    ((Buffer)data).rewind();
 	    if(data.capacity() % n != 0)
 		throw(new RuntimeException(String.format("int-array length %d does not match element count %d", data.capacity(), n)));
 	    this.data = data;
@@ -206,7 +206,7 @@ public class VertexBuf {
 		gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	    } else {
-		data.rewind();
+		((Buffer)data).rewind();
 		gl.glVertexPointer(3, GL.GL_FLOAT, 0, direct());
 	    }
 	    gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
@@ -236,7 +236,7 @@ public class VertexBuf {
 		gl.glNormalPointer(GL.GL_FLOAT, 0, 0);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	    } else {
-		data.rewind();
+		((Buffer)data).rewind();
 		gl.glNormalPointer(GL.GL_FLOAT, 0, direct());
 	    }
 	    gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
@@ -266,7 +266,7 @@ public class VertexBuf {
 		gl.glColorPointer(4, GL.GL_FLOAT, 0, 0);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	    } else {
-		data.rewind();
+		((Buffer)data).rewind();
 		gl.glColorPointer(4, GL.GL_FLOAT, 0, direct());
 	    }
 	    gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
@@ -293,7 +293,7 @@ public class VertexBuf {
 		gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);
 		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	    } else {
-		data.rewind();
+		((Buffer)data).rewind();
 		gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, direct());
 	    }
 	    gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
@@ -324,7 +324,7 @@ public class VertexBuf {
 			gl.glVertexAttribPointer(bound, n, GL2.GL_FLOAT, false, 0, 0);
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 		    } else {
-			data.rewind();
+			((Buffer)data).rewind();
 			gl.glVertexAttribPointer(bound, n, GL2.GL_FLOAT, false, 0, direct());
 		    }
 		    gl.glEnableVertexAttribArray(bound);
@@ -407,7 +407,7 @@ public class VertexBuf {
 		    IntBuffer ba = Utils.wibuf(num * mba);
 		    for(int i = 0; i < num * mba; i++)
 			ba.put(-1);
-		    ba.rewind();
+		    ((Buffer)ba).rewind();
 		    FloatBuffer bw = Utils.wfbuf(num * mba);
 		    int[] na = new int[num];
 		    List<String> bones = new ArrayList<String>();
