@@ -695,12 +695,6 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     
     public void tick(double dt) {
 	super.tick(dt);
-	if(!afk && (System.currentTimeMillis() - ui.lastevent > 300000)) {
-	    afk = true;
-	    wdgmsg("afk");
-	} else if(afk && (System.currentTimeMillis() - ui.lastevent < 300000)) {
-	    afk = false;
-	}
 	dwalkupd();
     }
     
@@ -1138,8 +1132,10 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    for (Widget w: tohide){
 		w.visible = Config.mainmenu_full;
 	    }
-	    cash.presize();
-	    manual.presize();
+            if(cash != null)
+                cash.presize();
+            if(manual != null)
+                manual.presize();
 	}
 
     }
@@ -1244,6 +1240,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
             manual.presize();
             mainmenu.manual = manual;
 	}
+        //System.out.println("azaza "+Config.storeurl+" "+WebBrowser.self);
 	if((Config.storeurl != null) && (WebBrowser.self != null)) {
 	    IButton cash = new IButton(Coord.z, this, Resource.loadimg("gfx/hud/cashu"), Resource.loadimg("gfx/hud/cashd"), Resource.loadimg("gfx/hud/cashh")) {
 		{
@@ -1294,7 +1291,6 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    cash.presize();
 	    mainmenu.cash = cash;
 	}
-	
         if(mainmenu.manual != null || mainmenu.cash != null)
             mainmenu.apply_visibility();
     }
@@ -1617,8 +1613,9 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     {
 	cmdmap.put("afk", new Console.Command() {
 		public void run(Console cons, String[] args) {
-		    afk = true;
-		    wdgmsg("afk");
+		    afk = !afk;
+                    if (afk)
+                        wdgmsg("afk");
 		}
 	    });
 	cmdmap.put("act", new Console.Command() {
