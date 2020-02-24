@@ -61,7 +61,7 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 public class MainFrame extends Frame implements Runnable, Console.Directory {
-    private static final String TITLE = String.format("Salem (modified by Latikai v%s)", Config.version);
+    private static final String TITLE = String.format("vSalem v%s (((based on Ender) modified by Latikai) inspired by Taipion)", Config.version);
     public static MainFrame instance;
     HavenPanel p;
     private final ThreadGroup g;

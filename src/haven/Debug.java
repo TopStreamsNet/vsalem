@@ -37,11 +37,23 @@ public class Debug {
 	pk1 = kf1; pk2 = kf2; pk3 = kf3; pk4 = kf4;
     }
 
+    public static void dumpimage(BufferedImage img, File path) {
+        try {
+	    javax.imageio.ImageIO.write(img, "PNG", path);
+        } catch (IOException e) {
+            throw (new RuntimeException(e));
+        }
+    }
+    
     public static void dumpimage(BufferedImage img, String fn) {
-	try {
-	    javax.imageio.ImageIO.write(img, "PNG", new File(fn));
-	} catch(IOException e) {
-	    throw(new RuntimeException(e));
-	}
+	dumpimage(img, new File(fn));
+    }
+
+    public static void dumpimage(BufferedImage img) {
+        dumpimage(img, "/tmp/test.png");
+    }
+
+    public static File somedir(String basename) {
+	    return(new File(basename));
     }
 }

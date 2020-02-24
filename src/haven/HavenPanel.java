@@ -64,7 +64,6 @@ public class HavenPanel extends GLCanvas implements Runnable, Console.Directory 
 	cap.setBlueBits(8);
 	cap.setSampleBuffers(true);
 	cap.setNumSamples(4);
-	cap.setDepthBits(24);
 	return(cap);
     }
 
