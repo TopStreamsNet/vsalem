@@ -408,7 +408,7 @@ public class Wiki {
 	String content;
 	String data = null;
 	try {
-	    URI uri = new URI("https", null, "www.salemwiki.info", -1, "/api.php", null, null);
+	    URI uri = new URI("https", null, "salemthegame.wiki", -1, "/api.php", null, null);
 
 	    URL link = uri.toURL();
 	    HttpURLConnection conn = (HttpURLConnection) link.openConnection();
