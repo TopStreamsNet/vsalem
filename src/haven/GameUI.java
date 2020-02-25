@@ -1306,7 +1306,11 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	} else if((ukey == 'W') || (ukey == 'A') || (ukey == 'S') || (ukey == 'D')) {
 	    dwalkdown(ukey, ev);
 	    return(true);
-	}
+	} else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_G && ev.getID() == KeyEvent.KEY_TYPED) {
+            if (map != null)
+                map.togglegrid();
+            return(true);
+        }
 	return(super.globtype(key, ev));
     }
     

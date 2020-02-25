@@ -26,11 +26,9 @@
 
 package haven;
 
-import haven.Fightview.Relation;
 import static haven.MCache.tilesz;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
@@ -55,6 +53,9 @@ public class MapView extends PView implements DTarget, Console.Directory {
     private int[] visol = new int[32];
     private Grabber grab;
     public static final Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
+    private boolean showgrid = false;
+    private TileOutline gridol;
+    private Coord lasttc = Coord.z;
 
     {
 	camtypes.put("follow", FollowCam.class);
@@ -554,6 +555,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	glob = ui.sess.glob;
 	this.cc = cc;
 	this.plgob = plgob;
+        this.gridol = new TileOutline(glob.map);
 	setcanfocus(true);
 
 	r2dwdg = new R2DWdg(this);
@@ -732,6 +734,8 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	if(rl.cfg.pref.outline.val)
 	    rl.add(outlines, null);
 	rl.add(map, null);
+        if (showgrid)
+            rl.add(gridol, null);
 	rl.add(mapol, null);
 	rl.add(gobs, null);
 	if(placing != null)
@@ -785,25 +789,30 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	else
 	    return(new Coord3f(cc.x, cc.y, glob.map.getcz(cc)));
     }
-
+    
+    public static class ClickContext extends RenderContext {
+    }
+    
     private TexGL clickbuf = null;
     private GLFrameBuffer clickfb = null;
-    private final RenderContext clickctx = new RenderContext();
+    private final RenderContext clickctx = new ClickContext();
+
     private GLState.Buffer clickbasic(GOut g) {
-	GLState.Buffer ret = basic(g);
-	clickctx.prep(ret);
-        if((clickbuf == null) || !clickbuf.sz().equals(sz)){
-            if (clickbuf != null){
+        GLState.Buffer ret = basic(g);
+        clickctx.prep(ret);
+        if ((clickbuf == null) || !clickbuf.sz().equals(sz)) {
+            if (clickbuf != null) {
                 clickfb.dispose();
                 clickfb = null;
                 clickbuf.dispose();
                 clickbuf = null;
             }
-            clickbuf = new TexE(sz, GL.GL_RGB, GL.GL_RGB, GL.GL_UNSIGNED_BYTE);
+            clickbuf = new TexE(sz, GL.GL_RGBA, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE);
             clickfb = new GLFrameBuffer(clickbuf, null);
         }
         clickfb.prep(ret);
-	return(ret);
+        new States.Blending(GL.GL_ONE, GL.GL_ZERO).prep(ret);
+        return (ret);
     }
 
     private abstract static class Clicklist<T> extends RenderList {
@@ -1080,6 +1089,16 @@ public class MapView extends PView implements DTarget, Console.Directory {
             
 	    glob.map.reqarea(cc.div(tilesz).sub(MCache.cutsz.mul(view + 1)),
 			     cc.div(tilesz).add(MCache.cutsz.mul(view + 1)));
+            
+            if (showgrid) {
+                double tx = Math.ceil(cc.x / tilesz.x / MCache.cutsz.x);
+                double ty = Math.ceil(cc.y / tilesz.y / MCache.cutsz.y);
+                Coord tc = new Coord((int)(tx - view - 1) * MCache.cutsz.x, (int)(ty - view - 1) * MCache.cutsz.y);
+                if (!tc.equals(lasttc)) {
+                    lasttc = tc;
+                    gridol.update(tc);
+                }
+            }
 	} catch(Loading e) {
 	    lastload = e;
 	    String text = "Loading...";
@@ -1589,5 +1608,15 @@ public class MapView extends PView implements DTarget, Console.Directory {
 }
     public Map<String, Console.Command> findcmds() {
 	return(cmdmap);
+    }
+    
+    public void togglegrid() {
+        showgrid = !showgrid;
+        if (showgrid) {
+            Coord tc = new Coord((int) (cc.x / tilesz.x / MCache.cutsz.x - view - 1) * MCache.cutsz.x,
+                    (int) (cc.y / tilesz.y / MCache.cutsz.y - view - 1) * MCache.cutsz.y);
+            lasttc = tc;
+            gridol.update(tc);
+        }
     }
 }
