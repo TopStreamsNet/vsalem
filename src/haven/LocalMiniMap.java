@@ -52,6 +52,8 @@ public class LocalMiniMap extends Window implements Console.Directory{
     private static final String OPT_SZ = "_sz";
     static Tex bg = Resource.loadtex("gfx/hud/bgtex");
     public static final Resource plx = Resource.load("gfx/hud/mmap/x");
+    private static final Tex gridblue = Resource.loadtex("gfx/hud/mmap/gridblue");
+    private static final Tex gridred = Resource.loadtex("gfx/hud/mmap/gridred");
     public final MapView mv;
     private Coord cc = null;
     public Coord cgrid = null;
@@ -78,6 +80,9 @@ public class LocalMiniMap extends Window implements Console.Directory{
     private static final BufferedImage ilockoh = Resource.loadimg("gfx/hud/lockoh");
     private IButton lockbtn;
     boolean locked;
+    
+    private IButton gridbtn;
+    private static final BufferedImage igrid = Resource.loadimg("gfx/hud/wndmap/btns/grid");
     
     private final Map<Coord, Future<MapTile>> cache = new LinkedHashMap<Coord, Defer.Future<MapTile>>(9, 0.75f, true) {
 	private static final long serialVersionUID = 1L;
@@ -287,6 +292,14 @@ public class LocalMiniMap extends Window implements Console.Directory{
 	    }
 	};
 	lockbtn.recthit = true;
+        
+        gridbtn = new IButton(new Coord(11, -43), this, igrid, igrid, igrid){
+            public void click() {
+                Config.mapshowgrid = !Config.mapshowgrid;
+                Utils.setprefb("mapshowgrid", Config.mapshowgrid);
+            }
+            
+        };
     }
     
     public Coord p2c(Coord pc) {
@@ -434,6 +447,8 @@ public class LocalMiniMap extends Window implements Console.Directory{
 		    }
 		    Tex img = mt.img;
 		    g.image(img, ul.add(tc.inv()).add(hsz.div(2)));
+                    if (Config.mapshowgrid)
+                        g.image(gridred, ul.add(tc.inv()).add(hsz.div(2)));
 		}
 	    }
 	}
@@ -471,6 +486,7 @@ public class LocalMiniMap extends Window implements Console.Directory{
         
         //draw the lock icon
         lockbtn.draw(og.reclipl(xlate(lockbtn.c, true), lockbtn.sz));
+        gridbtn.draw(og.reclipl(xlate(gridbtn.c, true), gridbtn.sz));
     }
 
     private String mapfolder(){

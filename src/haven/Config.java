@@ -182,6 +182,10 @@ public class Config {
     public static boolean gobble_meters = Utils.getprefb("gobble_meters", true);
     public static final Map<String, String> accounts = new HashMap<String, String>();
     public static boolean singleItemCTRLChoose = Utils.getprefb("singleItemCTRLChoose", true);
+    
+    /* vSalem */
+    public static boolean mapshowgrid = Utils.getprefb("mapshowgrid", false);
+
 
     static {
 	String p;
