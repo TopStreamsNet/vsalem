@@ -342,8 +342,14 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	}
 
         Drawable d = getattr(Drawable.class);
-	if(d != null)
+	if(d != null){
+            if (Config.showboundingboxes) {
+                GobHitbox.BBox bbox = GobHitbox.getBBox(this);
+                if (bbox != null)
+                    rl.add(new Overlay(new GobHitbox(this, bbox.a, bbox.b, false)), null);
+            }
 	    d.setup(rl);
+        }
 	Speaking sp = getattr(Speaking.class);
 	if(sp != null)
 	    rl.add(sp.fx, null);
@@ -355,6 +361,13 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 
     public Random mkrandoom() {
 	return(new Random(id));
+    }
+    
+    public Resource getres() {
+        Drawable d = getattr(Drawable.class);
+        if (d != null)
+            return (d.getres());
+        return (null);
     }
     
     public Resource.Neg getneg() {

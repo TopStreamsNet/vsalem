@@ -42,6 +42,10 @@ public class SprDrawable extends Drawable {
 	spr.tick(dt);
     }
     
+    public Resource getres() {
+	return(null);
+    }
+    
     public Resource.Neg getneg() {
 	return(null);
     }

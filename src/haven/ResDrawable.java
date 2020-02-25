@@ -93,6 +93,10 @@ public class ResDrawable extends Drawable {
 	    spr.dispose();
     }
     
+    public Resource getres() {
+        return (res.get());
+    }
+    
     public Resource.Neg getneg() {
 	return(res.get().layer(Resource.negc));
     }

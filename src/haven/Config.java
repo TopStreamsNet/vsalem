@@ -185,6 +185,8 @@ public class Config {
     
     /* vSalem */
     public static boolean mapshowgrid = Utils.getprefb("mapshowgrid", false);
+    public static boolean showboundingboxes = Utils.getprefb("showboundingboxes", false);
+
 
 
     static {

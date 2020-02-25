@@ -1240,7 +1240,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
             manual.presize();
             mainmenu.manual = manual;
 	}
-        //System.out.println("azaza "+Config.storeurl+" "+WebBrowser.self);
+        
 	if((Config.storeurl != null) && (WebBrowser.self != null)) {
 	    IButton cash = new IButton(Coord.z, this, Resource.loadimg("gfx/hud/cashu"), Resource.loadimg("gfx/hud/cashd"), Resource.loadimg("gfx/hud/cashh")) {
 		{
@@ -1309,6 +1309,10 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	} else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_G && ev.getID() == KeyEvent.KEY_TYPED) {
             if (map != null)
                 map.togglegrid();
+            return(true);
+        } else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED) {
+            Config.showboundingboxes = !Config.showboundingboxes;
+            Utils.setprefb("showboundingboxes", Config.showboundingboxes);
             return(true);
         }
 	return(super.globtype(key, ev));
