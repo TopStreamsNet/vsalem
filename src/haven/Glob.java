@@ -469,6 +469,7 @@ public class Glob {
 		buff.ntext = null;
 		buff.cmeter = cmeter;
 		buff.cticks = cticks;
+                buff.ctext = null;
 		buff.major = major;
 		buff.gettime = System.currentTimeMillis();
 		buffs.put(id, buff);

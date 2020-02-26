@@ -52,7 +52,6 @@ public class Bufflist extends Widget {
     public void draw(GOut g) {
 	int i = 0;
 	int w = frame.sz().x + margin;
-	long now = System.currentTimeMillis();
 	synchronized(ui.sess.glob.buffs) {
 	    for(Buff b : ui.sess.glob.buffs.values()) {
 		if(!b.major)
@@ -72,16 +71,11 @@ public class Bufflist extends Widget {
 			g.image(ntext, bc.add(imgoff).add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
 		    }
 		    if(b.cmeter >= 0) {
-			double m = b.cmeter / 100.0;
-			if(b.cticks >= 0) {
-			    double ot = b.cticks * 0.06;
-			    double pt = ((double)(now - b.gettime)) / 1000.0;
-			    m *= (ot - pt) / ot;
-			}
-			m = Utils.clip(m, 0.0, 1.0);
 			g.chcolor(255, 255, 255, 128);
-			g.prect(bc.add(imgoff).add(cmeteroff), cmeterul, cmeterbr, Math.PI * 2 * m);
+			g.prect(bc.add(imgoff).add(cmeteroff), cmeterul, cmeterbr, Math.PI * 2 * b.getCstate());
 			g.chcolor();
+                        Tex ctext = b.cmeter();
+                        g.image(ctext, bc.add(imgoff).add(img.sz()).add(ctext.sz().inv()).add(-1, -1));
 		    }
 		} catch(Loading e) {}
 		if(++i >= num)

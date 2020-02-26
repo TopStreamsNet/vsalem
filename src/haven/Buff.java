@@ -39,6 +39,7 @@ public class Buff {
     int cticks = -1;
     long gettime;
     Tex ntext = null;
+    Tex ctext = null;
     boolean major = false;
     
     public Buff(int id, Indir<Resource> res) {
@@ -52,9 +53,28 @@ public class Buff {
 	return(ntext);
     }
     
+    Tex cmeter() {
+	if(ctext == null)
+	    ctext = new TexI(Utils.outline2(nfnd.render(Integer.toString((int)(getCstate()*100))+"%", Color.WHITE).img, Color.BLACK));
+	return(ctext);
+    }
+    
     public String tooltip() {
 	if(tt != null)
 	    return(tt);
 	return(res.get().layer(Resource.tooltip).t);
     }
+    
+    public double getCstate(){
+        long now = System.currentTimeMillis();
+        double m = cmeter / 100.0;
+			if(cticks >= 0) {
+			    double ot = cticks * 0.06;
+			    double pt = ((double)(now - gettime)) / 1000.0;
+			    m *= (ot - pt) / ot;
+			}
+        m = Utils.clip(m, 0.0, 1.0);
+        return(m);
+    }
+
 }
