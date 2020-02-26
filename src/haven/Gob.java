@@ -365,7 +365,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     
     public Resource getres() {
         Drawable d = getattr(Drawable.class);
-        if (d != null)
+        if (d != null && !d.toString().startsWith("haven.res.lib.globfx.GlobEffector"))
             return (d.getres());
         return (null);
     }

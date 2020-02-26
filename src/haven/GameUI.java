@@ -40,7 +40,6 @@ import java.util.List;
 import static haven.Inventory.invsq;
 import static haven.Inventory.isqsz;
 import static haven.Widget.gettype;
-import java.util.Map.Entry;
 
 public class GameUI extends ConsoleHost implements Console.Directory {
     public final String chrid;
@@ -1306,13 +1305,17 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	} else if((ukey == 'W') || (ukey == 'A') || (ukey == 'S') || (ukey == 'D')) {
 	    dwalkdown(ukey, ev);
 	    return(true);
-	} else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_G && ev.getID() == KeyEvent.KEY_TYPED) {
+	} else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED) {
+            Config.showboundingboxes = !Config.showboundingboxes;
+            Utils.setprefb("showboundingboxes", Config.showboundingboxes);
+            return(true);
+        } else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_G && ev.getID() == KeyEvent.KEY_TYPED) {
             if (map != null)
                 map.togglegrid();
             return(true);
-        } else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED) {
-            Config.showboundingboxes = !Config.showboundingboxes;
-            Utils.setprefb("showboundingboxes", Config.showboundingboxes);
+        } else if (!ev.isShiftDown() && ev.getKeyCode() == KeyEvent.VK_Q && ev.getID() == KeyEvent.KEY_TYPED)  {
+            Thread t = new Thread(new PickForageable(this), "PickForageable");
+            t.start();
             return(true);
         }
 	return(super.globtype(key, ev));
