@@ -85,6 +85,11 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 //    Belt beltwdg;
     public String polowner;
     
+    // vSalem
+    public boolean drinkingTea, lastDrinkingSucessful;
+    public Thread DrinkThread;
+    private long  DrinkTimer = 0;
+    
     private List<Class<? extends Widget> > filterout = new ArrayList<Class<? extends Widget> >();
     public int weight;
 
@@ -694,6 +699,13 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     
     public void tick(double dt) {
 	super.tick(dt);
+        String need = null;
+        if(!drinkingTea && Config.autodrink && (DrinkThread == null || !DrinkThread.isAlive()) && ((need = needToDrinkTea())!=null) ) {
+            if(System.currentTimeMillis() - DrinkTimer >= Config.autodrinktime * 1000) {
+                DrinkTimer = System.currentTimeMillis();
+                new Thread(new DrinkTea(this, need)).start();
+            }
+        }
 	dwalkupd();
     }
     
@@ -1317,6 +1329,11 @@ public class GameUI extends ConsoleHost implements Console.Directory {
             Thread t = new Thread(new PickForageable(this), "PickForageable");
             t.start();
             return(true);
+        } else if (!ev.isShiftDown() && ev.getKeyCode() == KeyEvent.VK_U && ev.getID() == KeyEvent.KEY_TYPED)  {
+            Config.autodrink = !Config.autodrink;
+            Utils.setprefb("autodrink", Config.autodrink);
+            UI.instance.gui.syslog.append("Autodrink: "+Config.autodrink,Color.CYAN);
+            return(true);
         }
 	return(super.globtype(key, ev));
     }
@@ -1683,5 +1700,20 @@ public class GameUI extends ConsoleHost implements Console.Directory {
                 ui.wdgmsg(map, "click", map.player().sc, htfx.c, 1,0);
             }
         }
+    }
+    
+    private String needToDrinkTea(){
+        synchronized(ui.sess.glob.buffs) {
+            try{
+                for(Buff b : ui.sess.glob.buffs.values()) {
+                    if((b.res.get().name.endsWith("/phlegmplus") || 
+                            b.res.get().name.endsWith("/bloodplus" ) ||
+                            b.res.get().name.endsWith("/ybileplus")  ||
+                            b.res.get().name.endsWith("/bbileplus")) && b.getCstate() < 0.1)
+                        return(b.res.get().name);
+                }
+            } catch(Loading e) {}
+        }
+        return(null);
     }
 }

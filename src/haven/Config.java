@@ -186,6 +186,9 @@ public class Config {
     /* vSalem */
     public static boolean mapshowgrid = Utils.getprefb("mapshowgrid", false);
     public static boolean showboundingboxes = Utils.getprefb("showboundingboxes", false);
+    public static int autodrinktime = Utils.getprefi("autodrinktime", 5);
+    public static boolean autodrink = Utils.getprefb("autodrink", false);
+    public static int autodrinkthreshold = Utils.getprefi("autodrinkthreshold", 80);
 
 
 
