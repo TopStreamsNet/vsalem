@@ -89,6 +89,8 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     public boolean drinkingTea, lastDrinkingSucessful;
     public Thread DrinkThread;
     private long  DrinkTimer = 0;
+    public Thread lispThread = null;
+
     
     private List<Class<? extends Widget> > filterout = new ArrayList<Class<? extends Widget> >();
     public int weight;

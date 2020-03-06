@@ -388,7 +388,34 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	    return(0);
 	return(m.getv());
     }
-    
+
+	public boolean isplayer() {
+		return UI.instance.gui.plid == id;
+	}
+
+	public boolean isMoving() {
+		if (getattr(LinMove.class) != null)
+			return true;
+
+		Following follow = getattr(Following.class);
+		if (follow != null && follow.tgt().getattr(LinMove.class) != null)
+			return true;
+
+		return false;
+	}
+
+	public LinMove getLinMove() {
+		LinMove lm = getattr(LinMove.class);
+		if (lm != null)
+			return lm;
+
+		Following follow = getattr(Following.class);
+		if (follow != null)
+			return follow.tgt().getattr(LinMove.class);
+
+		return null;
+	}
+
     public final GLState olmod = new GLState() {
 	    public void apply(GOut g) {}
 	    public void unapply(GOut g) {}

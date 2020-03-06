@@ -30,6 +30,7 @@ public class LinMove extends Moving {
     public Coord s, t;
     public int c;
     public double a;
+	public long lastupd = System.currentTimeMillis();
     
     public LinMove(Gob gob, Coord s, Coord t, int c) {
 	super(gob);
