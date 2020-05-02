@@ -47,7 +47,7 @@ public class RootWidget extends ConsoleHost {
 	int code = ev.getKeyCode();
 	boolean ctrl = ev.isControlDown();
 	boolean shift = ev.isShiftDown();
-        boolean isgui = ui!=null&&ui.gui!=null;
+	boolean isgui = ui!=null&&ui.gui!=null;
 	boolean alt = ev.isAltDown();
 	if(!super.globtype(key, ev)) {
 	    if(key == 0){return false;}
@@ -60,8 +60,11 @@ public class RootWidget extends ConsoleHost {
 	    } else if(key == ':') {
 		entercmd();
 	    }else if(isgui && (code == KeyEvent.VK_L || code == KeyEvent.VK_F) && ctrl && !shift){
-		FlatnessTool ft = FlatnessTool.instance(ui);
+		    FlatnessTool ft = FlatnessTool.instance(ui);
                 if(ft!=null) ft.toggle();
+        }else if((code == KeyEvent.VK_Q) && shift){
+            LocatorTool lt = LocatorTool.instance(ui);
+            if(lt!=null) lt.toggle();
 	    }else if(isgui && (code == KeyEvent.VK_A) && ctrl && !shift){
 		OverviewTool ot = OverviewTool.instance(ui);
                 if(ot!=null) ot.toggle();

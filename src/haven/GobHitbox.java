@@ -139,6 +139,6 @@ public class GobHitbox extends Sprite {
         /*
         if (name.endsWith("/oresmelter"))
             System.out.println("oresmelter" +neg.ac+":"+neg.bc);*/
-        return neg == null ? null : new BBox(neg.ac, neg.bc);
+        return neg == null ? null : new BBox(neg.bc, neg.bs);
     }
 }

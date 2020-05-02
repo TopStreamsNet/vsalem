@@ -19,7 +19,7 @@ public class DrinkTea implements Runnable {
 	}
 
 	private void drink() {
-                gui.syslog.append("Drinking Tea - "+need, Color.CYAN);
+        gui.syslog.append("Drinking Tea - "+need, Color.CYAN);
                 
 		// Don't attempt to drink if flower menu is already open or we are already drinking
 		if(gui.ui.root.findchild(FlowerMenu.class) != null || gui.drinkingTea)
@@ -29,7 +29,7 @@ public class DrinkTea implements Runnable {
                 if(e == null)
                     return;
                 WItem flask = e.slots[6];
-                if(flask == null) return;
+                if(flask == null) return; // FIXME not flask
                 String liquid = "";
                 if(need.endsWith("/phlegmplus")){
                     liquid = "White Tea";

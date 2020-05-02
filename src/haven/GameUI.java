@@ -505,8 +505,9 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	TimerPanel.close();
 	DarknessWnd.close();
 	FlatnessTool.close();
-        OverviewTool.close();
-        HotkeyListWindow.close();
+	LocatorTool.close();
+    OverviewTool.close();
+    HotkeyListWindow.close();
 	WikiBrowser.close();
         if (menu!= null) menu.destroy();
         if (tm!= null) tm.destroy();
@@ -895,37 +896,37 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	}
     }
 
-    private int dwalkkey(char key) {
-	if(key == 'W')
+    private int dwalkkey(int key) {
+	if(key == KeyEvent.VK_W)
 	    return(0);
-	else if(key == 'D')
+	else if(key == KeyEvent.VK_D)
 	    return(1);
-	else if(key == 'S')
+	else if(key == KeyEvent.VK_S)
 	    return(2);
-	else if(key == 'A')
+	else if(key == KeyEvent.VK_A)
 	    return(3);
 	throw(new Error());
     }
 
-    private void dwalkdown(char key, KeyEvent ev) {
-	if(!dwalking) {
-	    dwalking = true;
-	    dwalkbase = -map.camera.angle();
-	    ui.grabkeys(this);
-	}
-	int k = dwalkkey(key);
-	dkeys[k] = true;
-	dwalkhys = ev.getWhen();
+    private void dwalkdown(KeyEvent ev) {
+		if(!dwalking) {
+			dwalking = true;
+			dwalkbase = -map.camera.angle();
+			ui.grabkeys(this);
+		}
+		int k = dwalkkey(ev.getKeyCode());
+		dkeys[k] = true;
+		dwalkhys = ev.getWhen();
     }
     
-    private void dwalkup(char key, KeyEvent ev) {
-	int k = dwalkkey(key);
-	dkeys[k] = false;
-	dwalkhys = ev.getWhen() + 100;
-	if(!dkeys[0] && !dkeys[1] && !dkeys[2] && !dkeys[3]) {
-	    dwalking = false;
-	    ui.grabkeys(null);
-	}
+    private void dwalkup(KeyEvent ev) {
+		int k = dwalkkey(ev.getKeyCode());
+		dkeys[k] = false;
+		dwalkhys = ev.getWhen() + 100;
+		if(!dkeys[0] && !dkeys[1] && !dkeys[2] && !dkeys[3]) {
+			dwalking = false;
+			ui.grabkeys(null);
+		}
     }
 
     private static final Tex menubg = Resource.loadtex("gfx/hud/menubg");
@@ -1309,29 +1310,29 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     }
     
     public boolean globtype(char key, KeyEvent ev) {
-	char ukey = Character.toUpperCase(key);
+	int keyCode = ev.getKeyCode();
 	if(key == ':') {
 	    entercmd();
 	    return(true);
-	} else if((Config.screenurl != null) && (ukey == 'S') && ((ev.getModifiersEx() & (KeyEvent.META_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) != 0)) {
+	} else if((Config.screenurl != null) && (keyCode == KeyEvent.VK_S) && ((ev.getModifiersEx() & (KeyEvent.META_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) != 0)) {
 	    Screenshooter.take(this, Config.screenurl);
 	    return(true);
-	} else if((ukey == 'W') || (ukey == 'A') || (ukey == 'S') || (ukey == 'D')) {
-	    dwalkdown(ukey, ev);
+	} else if((keyCode == KeyEvent.VK_W) || (keyCode == KeyEvent.VK_A) || (keyCode == KeyEvent.VK_S) || (keyCode == KeyEvent.VK_D)) {
+	    dwalkdown(ev);
 	    return(true);
-	} else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED) {
+	} else if (ev.isControlDown() && keyCode == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED) {
             Config.showboundingboxes = !Config.showboundingboxes;
             Utils.setprefb("showboundingboxes", Config.showboundingboxes);
             return(true);
-        } else if (ev.isControlDown() && ev.getKeyCode() == KeyEvent.VK_G && ev.getID() == KeyEvent.KEY_TYPED) {
+        } else if (ev.isControlDown() && keyCode == KeyEvent.VK_G && ev.getID() == KeyEvent.KEY_TYPED) {
             if (map != null)
                 map.togglegrid();
             return(true);
-        } else if (!ev.isShiftDown() && ev.getKeyCode() == KeyEvent.VK_Q && ev.getID() == KeyEvent.KEY_TYPED)  {
+        } else if (!ev.isShiftDown() && keyCode == KeyEvent.VK_Q && ev.getID() == KeyEvent.KEY_TYPED)  {
             Thread t = new Thread(new PickForageable(this), "PickForageable");
             t.start();
             return(true);
-        } else if (!ev.isShiftDown() && ev.getKeyCode() == KeyEvent.VK_U && ev.getID() == KeyEvent.KEY_TYPED)  {
+        } else if (!ev.isShiftDown() && keyCode == KeyEvent.VK_U && ev.getID() == KeyEvent.KEY_TYPED)  {
             Config.autodrink = !Config.autodrink;
             Utils.setprefb("autodrink", Config.autodrink);
             UI.instance.gui.syslog.append("Autodrink: "+Config.autodrink,Color.CYAN);
@@ -1341,18 +1342,18 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     }
     
     public boolean keydown(KeyEvent ev) {
-	char ukey = Character.toUpperCase(ev.getKeyChar());
-	if(dwalking && ((ukey == 'W') || (ukey == 'A') || (ukey == 'S') || (ukey == 'D'))) {
-	    dwalkdown(ukey, ev);
+	int key = ev.getKeyCode();
+	if(dwalking && ((key == KeyEvent.VK_W) || (key == KeyEvent.VK_A) || (key == KeyEvent.VK_S) || (key == KeyEvent.VK_D))) {
+	    dwalkdown(ev);
 	    return(true);
 	}
 	return(super.keydown(ev));
     }
     
     public boolean keyup(KeyEvent ev) {
-	char ukey = Character.toUpperCase(ev.getKeyChar());
-	if(dwalking && ((ukey == 'W') || (ukey == 'A') || (ukey == 'S') || (ukey == 'D'))) {
-	    dwalkup(ukey, ev);
+	int key = ev.getKeyCode();
+	if(dwalking && ((key == KeyEvent.VK_W) || (key == KeyEvent.VK_A) || (key == KeyEvent.VK_S) || (key == KeyEvent.VK_D))) {
+	    dwalkup(ev);
 	    return(true);
 	}
 	return(super.keyup(ev));

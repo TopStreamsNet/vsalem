@@ -723,16 +723,18 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     @LayerName("neg")
     public class Neg extends Layer {
 	public Coord cc;
-        public Coord ac;
-        public Coord bc;
+    public Coord bc;
+    public Coord bs;
+    public Coord sz;
 	public Coord[][] ep;
 		
 	public Neg(byte[] buf) {
 	    int off;
 			
 	    cc = cdec(buf, 0);
-            ac = cdec(buf, 4);
-            bc = cdec(buf, 8);
+	    bc = cdec(buf, 4);
+        bs = cdec(buf, 8);
+        sz = cdec(buf, 12);
 	    ep = new Coord[8][0];
 	    int en = buf[16];
 	    off = 17;

@@ -41,7 +41,7 @@ public class FlowerMenu extends Widget {
     static Color ptc = new Color(248, 240, 193);
     static Text.Foundry ptf = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12));
     static int ph = pbgm.sz().y, ppl = 8;
-    FlowerMenu.Petal[] opts;
+    public FlowerMenu.Petal[] opts;
     private double fast_menu1, fast_menu2;
     private Petal autochoose = null;
 

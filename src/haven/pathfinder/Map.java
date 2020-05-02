@@ -71,10 +71,11 @@ public class Map {
 
                 String name = res.name;
                 Tiler tl = mcache.tiler(t);
-                //System.out.println("geo "+name+" "+(tl instanceof RidgeTile));
+                //System.out.println("geo "+name);
                 if (!name.equals("gfx/tiles/deep") &&
                         !name.equals("gfx/tiles/cave") &&
                         !name.equals("gfx/tiles/nil") &&
+                        !name.equals("gfx/tiles/mine-nil-soft") &&
                         !name.startsWith("gfx/tiles/rocks/") &&
                         !((tl instanceof RidgeTile) && ((RidgeTile)tl).ridgep(mcache, pltc.sub(x, y))))
                     continue;
