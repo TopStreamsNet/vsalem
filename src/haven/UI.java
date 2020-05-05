@@ -86,6 +86,15 @@ public class UI {
 			sess.close();
 		    }
 		});
+		setcmd("where", new Command() {
+			public void run(Console cons, String[] args) {
+				Coord plc = UI.instance.gui.map.player().rc;
+				Coord pltc = plc.div(11.0f);
+				MCache.Grid plgrid = UI.instance.sess.glob.map.getgridt(pltc);
+
+				UI.instance.gui.syslog.append("Coordinate: "+plc+ "Grid ID: "+plgrid.id+" Tile:"+pltc.sub(plgrid.ul),Color.CYAN);
+			}
+		});
 	}
 	
 	private void findcmds(Map<String, Command> map, Widget wdg) {

@@ -1317,7 +1317,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	} else if((Config.screenurl != null) && (keyCode == KeyEvent.VK_S) && ((ev.getModifiersEx() & (KeyEvent.META_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) != 0)) {
 	    Screenshooter.take(this, Config.screenurl);
 	    return(true);
-	} else if((keyCode == KeyEvent.VK_W) || (keyCode == KeyEvent.VK_A) || (keyCode == KeyEvent.VK_S) || (keyCode == KeyEvent.VK_D)) {
+	} else if(!ev.isControlDown() && ((keyCode == KeyEvent.VK_W) || (keyCode == KeyEvent.VK_A) || (keyCode == KeyEvent.VK_S) || (keyCode == KeyEvent.VK_D))) {
 	    dwalkdown(ev);
 	    return(true);
 	} else if (ev.isControlDown() && keyCode == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED) {
@@ -1343,7 +1343,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     
     public boolean keydown(KeyEvent ev) {
 	int key = ev.getKeyCode();
-	if(dwalking && ((key == KeyEvent.VK_W) || (key == KeyEvent.VK_A) || (key == KeyEvent.VK_S) || (key == KeyEvent.VK_D))) {
+	if(dwalking && (!ev.isControlDown() && ((key == KeyEvent.VK_W) || (key == KeyEvent.VK_A) || (key == KeyEvent.VK_S) || (key == KeyEvent.VK_D)))) {
 	    dwalkdown(ev);
 	    return(true);
 	}
@@ -1352,7 +1352,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     
     public boolean keyup(KeyEvent ev) {
 	int key = ev.getKeyCode();
-	if(dwalking && ((key == KeyEvent.VK_W) || (key == KeyEvent.VK_A) || (key == KeyEvent.VK_S) || (key == KeyEvent.VK_D))) {
+	if(dwalking && (!ev.isControlDown() && ((key == KeyEvent.VK_W) || (key == KeyEvent.VK_A) || (key == KeyEvent.VK_S) || (key == KeyEvent.VK_D)))) {
 	    dwalkup(ev);
 	    return(true);
 	}
