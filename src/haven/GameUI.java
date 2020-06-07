@@ -29,6 +29,7 @@ package haven;
 import haven.Gob.Overlay;
 import haven.res.lib.HomeTrackerFX;
 import org.ender.timer.TimerController;
+import haven.integrations.map.RemoteNavigation;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -39,7 +40,6 @@ import java.util.List;
 
 import static haven.Inventory.invsq;
 import static haven.Inventory.isqsz;
-import static haven.Widget.gettype;
 
 public class GameUI extends ConsoleHost implements Console.Directory {
     public final String chrid;
@@ -72,7 +72,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     public HelpWnd help;
     public OptWnd opts;
     public Collection<GItem> hand = new LinkedList<GItem>();
-    private WItem vhand;
+    public WItem vhand;
     public ChatUI chat;
     public FilterWnd filter = new FilterWnd(this);
     public ChatUI.Channel syslog;
@@ -89,7 +89,6 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     public boolean drinkingTea, lastDrinkingSucessful;
     public Thread DrinkThread;
     private long  DrinkTimer = 0;
-    public Thread lispThread = null;
 
     
     private List<Class<? extends Widget> > filterout = new ArrayList<Class<? extends Widget> >();
@@ -387,6 +386,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
             this.updateRenderFilter();
             
 	    mmap = new LocalMiniMap(new Coord(GameUI.this.sz.x-250, 15), new Coord(146,146), this, map);
+
 	    return(map);
 	} else if(place == "fight") {
 	    fv = (Fightview)gettype(type).create(new Coord(sz.x - Fightview.width, 0), this, cargs);
@@ -1443,6 +1443,53 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	}
 	wdgmsg("act", al);
     }
+
+    public void listWindows(){
+		UI.instance.gui.syslog.append("Windows: ", Color.RED);
+		for (Widget w = lchild; w != null; w = w.prev) {
+			if (w instanceof Window) {
+				Window wnd = (Window) w;
+				if (wnd.cap != null)
+					UI.instance.gui.syslog.append(wnd.cap.text, Color.ORANGE);
+			}
+		}
+	}
+
+	public void listWidgets(){
+		UI.instance.gui.syslog.append("Widgets: ", Color.RED);
+		for (Map.Entry<Integer, Widget> entry: UI.instance.widgets.entrySet()) {
+			UI.instance.gui.syslog.append("" + entry.getValue(), Color.ORANGE);
+		}
+
+	}
+
+	public Window getwnd(String cap) {
+		for (Widget w = lchild; w != null; w = w.prev) {
+			if (w instanceof Window) {
+				Window wnd = (Window) w;
+				if (wnd.cap != null && cap.equals(wnd.cap.text))
+					return wnd;
+			}
+		}
+		return null;
+	}
+
+	private static final int WND_WAIT_SLEEP = 8;
+	public Window waitfForWnd(String cap, int timeout) {
+		int t  = 0;
+		while (t < timeout) {
+			Window wnd = getwnd(cap);
+			if (wnd != null)
+				return wnd;
+			t += WND_WAIT_SLEEP;
+			try {
+				Thread.sleep(WND_WAIT_SLEEP);
+			} catch (InterruptedException e) {
+				return null;
+			}
+		}
+		return null;
+	}
 
     public class FKeyBelt extends Belt implements DTarget, DropTarget {
 	public final int beltkeys[] = {KeyEvent.VK_F1, KeyEvent.VK_F2, KeyEvent.VK_F3, KeyEvent.VK_F4,

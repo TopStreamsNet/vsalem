@@ -26,13 +26,12 @@
 
 package haven;
 
-import haven.Charlist.Char;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import haven.integrations.map.Navigation;
+
 
 public class Charlist extends Widget {
     public static final Tex bg = Resource.loadtex("gfx/hud/avakort");
@@ -255,8 +254,9 @@ public class Charlist extends Widget {
 	    synchronized(chars) {
 		for(Char c : chars) {
 		    if(sender == c.plb){
-			Config.setCharName(c.name);
-			wdgmsg("play", c.name);
+			    Config.setCharName(c.name);
+			    wdgmsg("play", c.name);
+                Navigation.setCharacterName(c.name);
 		    }
 		}
 	    }

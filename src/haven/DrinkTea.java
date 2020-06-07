@@ -54,12 +54,14 @@ public class DrinkTea implements Runnable {
                         menu = gui.ui.root.findchild(FlowerMenu.class);
                     }
                     for (FlowerMenu.Petal opt : menu.opts) {
-                        if (opt.name.equals("Sip")) {
+                        if (opt != null && opt.name != null && opt.name.equals("Sip")) {
                             menu.choose(opt);
                             menu.destroy();
-                        }
+							gui.lastDrinkingSucessful = true;
+                        } else {
+							gui.lastDrinkingSucessful = false;
+						}
                     }
-                    gui.lastDrinkingSucessful = true;
                 }else{
                     gui.syslog.append("Wrong liquid "+flask.contentName.get()+" for "+need, Color.RED);
                     gui.lastDrinkingSucessful = false;

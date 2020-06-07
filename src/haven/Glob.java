@@ -26,15 +26,9 @@
 
 package haven;
 
-import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Observable;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.WeakHashMap;
+import java.awt.*;
+import java.lang.ref.WeakReference;
+import java.util.*;
 
 import org.ender.timer.Timer;
 
@@ -67,11 +61,17 @@ public class Glob {
     public double skyblend = 0.0;
     public java.awt.Color origamb = null;
     public  long cattr_lastupdate = 0;
-    
+
+	private static WeakReference<Glob> reference = new WeakReference<>(null);
+	public static Glob getByReference() {
+		return reference.get();
+	}
+
     public Glob(Session sess) {
-	this.sess = sess;
-	map = new MCache(sess);
-	party = new Party(this);
+		this.sess = sess;
+		map = new MCache(sess);
+		party = new Party(this);
+		reference = new WeakReference<>(this);
     }
     
     public void purge(){

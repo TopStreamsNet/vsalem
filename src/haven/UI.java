@@ -26,6 +26,9 @@
 
 package haven;
 
+import haven.lisp.LispThread;
+import haven.lisp.LispUtil;
+
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -55,6 +58,9 @@ public class UI {
     private Collection<AfterDraw> afterttdraws = new LinkedList<AfterDraw>();
     public MenuGrid mnu;
     public final ActAudio audio = new ActAudio();
+
+    // vSalem
+	public Thread lispThread = null;
     
     private long lastactivity = 0;
     
@@ -93,6 +99,36 @@ public class UI {
 				MCache.Grid plgrid = UI.instance.sess.glob.map.getgridt(pltc);
 
 				UI.instance.gui.syslog.append("Coordinate: "+plc+ "Grid ID: "+plgrid.id+" Tile:"+pltc.sub(plgrid.ul),Color.CYAN);
+			}
+		});
+		setcmd("windows", new Command() {
+			public void run(Console cons, String[] args) {
+				UI.instance.gui.listWindows();
+			}
+		});
+		setcmd("widgets", new Command() {
+			public void run(Console cons, String[] args) {
+				UI.instance.gui.listWidgets();
+			}
+		});
+		setcmd("ai", new Console.Command() {
+			public void run(Console cons, String[] args) {
+				Thread lispThread = UI.instance.lispThread;
+				if(lispThread != null){
+					lispThread.interrupt();
+				}
+				lispThread = new LispThread("lispthread");
+				lispThread.start();
+			}
+		});
+		setcmd("trees", new Command() {
+			public void run(Console cons, String[] args) {
+				LispUtil.findFruitTrees();
+			}
+		});
+		setcmd("tiles", new Command() {
+			public void run(Console cons, String[] args) {
+				UI.instance.sess.glob.map.printTiles();
 			}
 		});
 	}
@@ -242,6 +278,8 @@ public class UI {
 	
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	int id;
+	//int i=0;
+	//try { for(Object obj:args) {if(!sender.toString().contains("Camera")) System.out.println("Sender : " + sender + " msg = " + msg + " arg "+i+" : " + obj);i++;} }catch(ArrayIndexOutOfBoundsException q){}
 	synchronized(this) {
 	    if(!rwidgets.containsKey(sender))
             {

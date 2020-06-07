@@ -129,10 +129,10 @@
 		<java jar="build/vsalem.jar" 
 				dir="build" 
 				fork="true" 
-				maxmemory="1024m"
+				maxmemory="4096m"
 				classpath="java">
 			<arg line="-U http://game.salemthegame.com/res/ game.salemthegame.com"/>
-                        <jvmarg line="-XX:-UseGCOverheadLimit" />
+                        <jvmarg line="-Djogl.disable.opengles=true -XX:-UseGCOverheadLimit" />
 		</java>
 	</target>
 

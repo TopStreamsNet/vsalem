@@ -35,7 +35,7 @@ public class MarkerFactory {
         if (mt != null) {
             Marker m = new Marker(resname, gob, mt);
             try {
-                if (gob.id == UI.instance.gui.map.plgob) {
+                if (gob.isplayer()) {
                     m.setOrder(-100);
                 }
             } catch (NullPointerException npe) {

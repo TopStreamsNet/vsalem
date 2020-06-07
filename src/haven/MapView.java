@@ -30,6 +30,7 @@ import haven.lisp.LispThread;
 import haven.pathfinder.*;
 
 import static haven.MCache.tilesz;
+import haven.integrations.map.Navigation;
 
 import java.awt.Color;
 import java.lang.reflect.Constructor;
@@ -44,7 +45,7 @@ import javax.media.opengl.GL;
 public class MapView extends PView implements DTarget, Console.Directory, PFListener {
 	public static final String DEFCAM = "sortho";
 	private final R2DWdg r2dwdg;
-	public long plgob = -1;
+	public static long plgob = -1;
 	public Coord cc;
 	public final Glob glob;
 	private int view = 2;
@@ -560,7 +561,10 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 		setcam(Utils.getpref("defcam", DEFCAM));
 		glob = ui.sess.glob;
 		this.cc = cc;
-		this.plgob = plgob;
+		MapView.plgob = plgob;
+		try {
+			Navigation.setCharacterId(plgob, glob.oc.getgob(plgob).rc);
+		}catch (Exception ignore) {}
 		this.gridol = new TileOutline(glob.map);
 		setcanfocus(true);
 
@@ -1614,16 +1618,6 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 				if(l == null)
 					throw(new Exception("Not loading"));
 				l.printStackTrace(cons.out);
-			}
-		});
-		cmdmap.put("ai", new Console.Command() {
-			public void run(Console cons, String[] args) {
-				Thread lispThread = UI.instance.gui.lispThread;
-				if(lispThread != null){
-					lispThread.interrupt();
-				}
-				lispThread = new LispThread("lispthread");
-				lispThread.start();
 			}
 		});
 	}

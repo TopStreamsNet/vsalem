@@ -90,9 +90,23 @@ public class Inventory extends Widget implements DTarget {
         }
     };
 
-    Coord isz,isz_client;
+    public Coord isz;
+    Coord isz_client;
     Map<GItem, WItem> wmap = new HashMap<GItem, WItem>();
     public int newseq = 0;
+
+    public List<WItem> getInventoryContents() {
+        List<WItem> items = new ArrayList<>();
+        for(Widget witm = this.child; witm != null; witm = witm.next) {
+            synchronized(witm) {
+                if(witm instanceof WItem) {
+                    WItem witem = (WItem) witm;
+                    items.add(witem);
+                }
+            }
+        }
+        return items;
+    }
 
     @RName("inv")
     public static class $_ implements Factory {

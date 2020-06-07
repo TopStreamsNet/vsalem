@@ -79,6 +79,7 @@ public class GobHitbox extends Sprite {
     
     private static final BBox bboxSmelter = new BBox(new Coord(-34, -13), new Coord(13, 24));
     private static final BBox bboxForge = new BBox(new Coord(-5, -50), new Coord(5, 40));
+    private static final BBox bboxAlchemyTable = new BBox(new Coord(-5, -6), new Coord(4, 7));
 
     public static BBox getBBox(Gob gob) {
         Resource res = null;
@@ -136,9 +137,9 @@ public class GobHitbox extends Sprite {
             return bboxHwall;
 
         Resource.Neg neg = gob.getneg();
-        /*
-        if (name.endsWith("/oresmelter"))
-            System.out.println("oresmelter" +neg.ac+":"+neg.bc);*/
+
+        /*if (name.endsWith("/alchemytable"))
+            System.out.println("alchemytable" +neg.bc+":"+neg.bs);*/
         return neg == null ? null : new BBox(neg.bc, neg.bs);
     }
 }

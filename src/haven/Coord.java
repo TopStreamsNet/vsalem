@@ -154,7 +154,20 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
     public boolean isect(Coord c, Coord s) {
 	return((x >= c.x) && (y >= c.y) && (x < c.x + s.x) && (y < c.y + s.y));
     }
-	
+
+	public Coord toGridUnit() {
+		return new Coord(((int)x / 1100) * 1100, ((int)y / 1100) * 1100);
+	}
+
+	public Coord toGridCoordinate() {
+		return new Coord(((int)x / 1100), ((int)y / 1100));
+	}
+
+	public Coord gridOffset() {
+		Coord gridUnit = toGridUnit();
+		return new Coord(x - gridUnit.x, y - gridUnit.y);
+	}
+
     public String toString() {
 	return("(" + x + ", " + y + ")");
     }

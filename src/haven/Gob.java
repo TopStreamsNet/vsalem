@@ -28,6 +28,7 @@ package haven;
 
 import haven.minimap.Radar.GobBlink;
 import haven.res.lib.tree.TreeSprite;
+import haven.integrations.map.Navigation;
 
 import java.awt.Color;
 import java.util.*;
@@ -37,7 +38,6 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     public Coord3f sczu;
     public double a;
     public boolean virtual = false;
-    int clprio = 0;
     public long id;
     public int frame, initdelay = (int)(Math.random() * 3000) + 3000;
     public final Glob glob;
@@ -182,6 +182,9 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	if(m != null)
 	    m.move(c);
 	this.rc = c;
+	if(isplayer()){
+		Navigation.setPlayerCoordinates(c);
+	}
 	this.a = a;
     }
 	
@@ -390,7 +393,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     }
 
 	public boolean isplayer() {
-		return UI.instance.gui.plid == id;
+		return MapView.plgob == id;
 	}
 
 	public boolean isMoving() {

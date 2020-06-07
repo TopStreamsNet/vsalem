@@ -42,7 +42,9 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
     private Object[] rawinfo;
     private List<ItemInfo> info = Collections.emptyList();
     public boolean marked = false;
-    
+
+
+
     @Override
     public int compareTo(GItem that) {
         Alchemy thisalch = ItemInfo.find(Alchemy.class, this.info());
@@ -55,13 +57,13 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
             return -1;
         if(thatalch==null)
             return 1;
-        
+
         if(thisalch.a[0] == thatalch.a[0])
             return 0;
         else
             return (thisalch.a[0]-thatalch.a[0]<0)?-1:1;
     }
-    
+
     public boolean sendttupdate = false;
     public boolean matched = false;
     private long filtered = 0;
@@ -69,59 +71,59 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
     private double dropTimer = 0;
 
     public static void setFilter(ItemFilter filter) {
-	GItem.filter = filter;
-	lastFilter = System.currentTimeMillis();
+        GItem.filter = filter;
+        lastFilter = System.currentTimeMillis();
     }
 
-    
+
     @RName("item")
     public static class $_ implements Factory {
-	public Widget create(Coord c, Widget parent, Object[] args) {
-	    int res = (Integer)args[0];
-	    return(new GItem(c, parent, parent.ui.sess.getres(res)));
-	}
+        public Widget create(Coord c, Widget parent, Object[] args) {
+            int res = (Integer)args[0];
+            return(new GItem(c, parent, parent.ui.sess.getres(res)));
+        }
     }
-    
+
     public interface ColorInfo {
-	public Color olcol();
+        public Color olcol();
     }
-    
+
     public interface NumberInfo {
-	public int itemnum();
+        public int itemnum();
     }
 
     public class Amount extends ItemInfo implements NumberInfo {
-	private final int num;
-	
-	public Amount(int num) {
-	    super(GItem.this);
-	    this.num = num;
-	}
-	
-	public int itemnum() {
-	    return(num);
-	}
+        private final int num;
+
+        public Amount(int num) {
+            super(GItem.this);
+            this.num = num;
+        }
+
+        public int itemnum() {
+            return(num);
+        }
     }
 
     public GItem(Widget parent, Indir<Resource> res) {
-	this(Coord.z, parent, res);
+        this(Coord.z, parent, res);
     }
 
     public GItem(Coord c, Widget parent, Indir<Resource> res) {
-	super(parent);
-	this.c = c;
-	this.res = res;
+        super(parent);
+        this.c = c;
+        this.res = res;
     }
 
     public Glob glob() {
-	return(ui.sess.glob);
+        return(ui.sess.glob);
     }
-    
+
     public List<ItemInfo> info() {
-   if(info == null)
+        if(info == null)
         {
-       info = ItemInfo.buildinfo(this, rawinfo);
-            
+            info = ItemInfo.buildinfo(this, rawinfo);
+
             ItemInfo.Name nm = ItemInfo.find(ItemInfo.Name.class, info);
             if(nm!=null)
             {
@@ -132,56 +134,56 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
                     int nameidx=info.indexOf(nm);
                     info.set(nameidx, newnm);
                 }
-            }     
+            }
         }
-        
-   return(info);
+
+        return(info);
     }
-    
+
     public Resource resource() {
-	return(res.get());
+        return(res.get());
     }
-    
+
     public String resname(){
-	Resource res = null;
+        Resource res = null;
         try{
-           res = resource();
+            res = resource();
         }
         catch(Loading l)
         {
-            
+
         }
-	if(res != null){
-	    return res.name;
-	}
-	return "";
+        if(res != null){
+            return res.name;
+        }
+        return "";
     }
-    
+
     public String name() {
-	if(info != null) {
-	    Name name = ItemInfo.find(Name.class, info);
-	    return name != null ? name.str.text : null;
-	}
-	return null;
+        if(info != null) {
+            Name name = ItemInfo.find(Name.class, info);
+            return name != null ? name.str.text : null;
+        }
+        return null;
     }
 
     public void testMatch() {
-	if(filtered < lastFilter){
-	    matched = filter != null && filter.matches(info());
-	    filtered = lastFilter;
-	}
+        if(filtered < lastFilter){
+            matched = filter != null && filter.matches(info());
+            filtered = lastFilter;
+        }
     }
-    
+
     public boolean isSame(GItem that)
     {
         boolean same = true;
-        
+
         if(!this.resname().equals(that.resname()))
             return false;
-        
+
         List<ItemInfo> thisinfo = this.info();
         List<ItemInfo> thatinfo = that.info();
-        
+
         for(ItemInfo this_ii : thisinfo)
         {
             //each adhoc on this object must also be found in the other
@@ -205,7 +207,7 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
                     return false;
             }
         }
-        
+
         for(ItemInfo that_ii : thatinfo)
         {
             //each adhoc on this object must also be found in the other
@@ -229,34 +231,34 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
                     return false;
             }
         }
-        
+
         return true;
     }
 
     @Override
     public void tick(double dt) {
-	super.tick(dt);
-	if(drop) {
-	    dropTimer += dt;
-	    if (dropTimer > 0.1) {
-		dropTimer = 0;
-		wdgmsg("take", Coord.z);
-		ui.message("Dropping bat!", GameUI.MsgType.BAD);
-	    }
-	}
+        super.tick(dt);
+        if(drop) {
+            dropTimer += dt;
+            if (dropTimer > 0.1) {
+                dropTimer = 0;
+                wdgmsg("take", Coord.z);
+                ui.message("Dropping bat!", GameUI.MsgType.BAD);
+            }
+        }
     }
 
     public void uimsg(String name, Object... args) {
-	if(name == "num") {
+        if(name == "num") {
             int oldnum = num;
-	    num = (Integer)args[0];
-	} else if(name == "chres") {
-	    res = ui.sess.getres((Integer)args[0]);
-	} else if(name == "tt") {
-	    info = null;
-	    rawinfo = args;
-	    filtered = 0;
-	    if(sendttupdate){wdgmsg("ttupdate");}
+            num = (Integer)args[0];
+        } else if(name == "chres") {
+            res = ui.sess.getres((Integer)args[0]);
+        } else if(name == "tt") {
+            info = null;
+            rawinfo = args;
+            filtered = 0;
+            if(sendttupdate){wdgmsg("ttupdate");}
             if(this.parent == ui.gui.maininv)
             {
                 ui.gui.maininv.resort();
@@ -289,8 +291,20 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
                     }
                 }
             }
-	} else if(name == "meter") {
-	    meter = (Integer)args[0];
-	}
+        } else if(name == "meter") {
+            meter = (Integer)args[0];
+        }
+    }
+    public Coord size() {
+        Indir<Resource> res = resource().indir();
+        if (res.get() != null && res.get().layer(Resource.imgc) != null) {
+            Tex tex = res.get().layer(Resource.imgc).tex();
+            if(tex == null)
+                return new Coord(1, 1);
+            else
+                return tex.sz().div(30);
+        } else {
+            return new Coord(1, 1);
+        }
     }
 }

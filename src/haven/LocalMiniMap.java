@@ -372,12 +372,18 @@ public class LocalMiniMap extends Window implements Console.Directory{
 
 
 	public void tick(double dt) {
-		Gob pl = ui.sess.glob.oc.getgob(mv.plgob);
-		if(pl == null) {
-			this.cc = null;
-			return;
+		Gob pl = ui.sess.glob.oc.getgob(MapView.plgob);
+		if(pl == null)
+			this.cc = mv.cc.div(tilesz);
+		else
+			this.cc = pl.rc.div(tilesz);
+		if(MapGridSave.gul != null){
+			try {
+				// instead of synchronizing MapGridSave.gul we just handle NPE
+				//   plcrel = pl.rc.sub((MapGridSave.gul.x + 50) * tilesz.x, (MapGridSave.gul.y + 50) * tilesz.y);
+			} catch (NullPointerException ignored) {
+			}
 		}
-		this.cc = pl.rc.div(tilesz);
 	}
 
 	public void draw(GOut og) {

@@ -13,13 +13,13 @@ public class LispThread extends HackThread {
     }
 
     public void run(){
-        UI.instance.gui.syslog.append("Running LISP", Color.BLUE);
+        if(UI.instance.gui != null)UI.instance.gui.syslog.append("Running LISP", Color.BLUE);
         Interpreter interpreter = Interpreter.getInstance();
         if (interpreter == null){
-            String args[] = {"--noinform"};
+            String args[] = {"--noinform --batch"};
             interpreter = Interpreter.createDefaultInstance(args);
         }
         interpreter.eval("(load \"salem.lisp\")");
-        UI.instance.gui.syslog.append("Done with LISP", Color.BLUE);
+        if(UI.instance.gui != null)UI.instance.gui.syslog.append("Done with LISP", Color.BLUE);
     }
 }
