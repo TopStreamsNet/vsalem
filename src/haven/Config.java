@@ -191,6 +191,8 @@ public class Config {
     public static int autodrinktime = Utils.getprefi("autodrinktime", 5);
     public static boolean autodrink = Utils.getprefb("autodrink", false);
     public static int autodrinkthreshold = Utils.getprefi("autodrinkthreshold", 80);
+    public static boolean showgrid = Utils.getprefb("showgrid", false);
+    public static boolean showflavour = Utils.getprefb("showflavour", true);
 
 
 

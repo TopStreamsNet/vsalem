@@ -2,6 +2,7 @@ package haven;
 
 import static haven.MCache.tilesz;
 import javax.media.opengl.GL2;
+import java.nio.Buffer;
 import java.nio.BufferOverflowException;
 import java.nio.FloatBuffer;
 
@@ -32,7 +33,7 @@ public class TileOutline implements Rendered {
         g.apply();
         GL2 gl = g.gl.getGL2();
         FloatBuffer vbuf = getCurrentBuffer();
-        vbuf.rewind();
+        ((Buffer)vbuf).rewind();
         gl.glLineWidth(1.0F);
         gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
         gl.glVertexPointer(3, GL2.GL_FLOAT, 0, vbuf);

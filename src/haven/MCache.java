@@ -158,6 +158,7 @@ public class MCache {
 		}
 
 		private void makeflavor() {
+			if(Config.showflavour)return;
 			@SuppressWarnings("unchecked")
 			Collection<Gob>[] fo = (Collection<Gob>[])new Collection[cutn.x * cutn.y];
 			for(int i = 0; i < fo.length; i++)
@@ -185,6 +186,7 @@ public class MCache {
 		}
 
 		public Collection<Gob> getfo(Coord cc) {
+			if(Config.showflavour)return null;
 			if(fo == null)
 				makeflavor();
 			return(fo[cc.x + (cc.y * cutn.x)]);
@@ -255,6 +257,7 @@ public class MCache {
 		}
 
 		public void tick(int dt) {
+			if(Config.showflavour)return;
 			if(fo != null) {
 				for(Collection<Gob> fol : fo) {
 					for(Gob fo : fol)

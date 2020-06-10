@@ -57,7 +57,6 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 	private int[] visol = new int[32];
 	private Grabber grab;
 	public static final Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
-	private boolean showgrid = false;
 	private TileOutline gridol;
 	private Coord lasttc = Coord.z;
 
@@ -602,8 +601,9 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 					} catch(Loading e) {
 						fol = Collections.emptyList();
 					}
-					for(Gob fo : fol)
-						addgob(rl, fo);
+					if(fol != null)
+						for(Gob fo : fol)
+							addgob(rl, fo);
 				}
 			}
 			return(false);
@@ -744,7 +744,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 		if(rl.cfg.pref.outline.val)
 			rl.add(outlines, null);
 		rl.add(map, null);
-		if (showgrid)
+		if (Config.showgrid)
 			rl.add(gridol, null);
 		rl.add(mapol, null);
 		rl.add(gobs, null);
@@ -1100,7 +1100,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 			glob.map.reqarea(cc.div(tilesz).sub(MCache.cutsz.mul(view + 1)),
 					cc.div(tilesz).add(MCache.cutsz.mul(view + 1)));
 
-			if (showgrid) {
+			if (Config.showgrid) {
 				double tx = Math.ceil(cc.x / tilesz.x / MCache.cutsz.x);
 				double ty = Math.ceil(cc.y / tilesz.y / MCache.cutsz.y);
 				Coord tc = new Coord((int)(tx - view - 1) * MCache.cutsz.x, (int)(ty - view - 1) * MCache.cutsz.y);
@@ -1626,8 +1626,9 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 	}
 
 	public void togglegrid() {
-		showgrid = !showgrid;
-		if (showgrid) {
+		Config.showgrid = !Config.showgrid;
+		Utils.setprefb("showgrid", Config.showgrid);
+		if (Config.showgrid) {
 			Coord tc = new Coord((int) (cc.x / tilesz.x / MCache.cutsz.x - view - 1) * MCache.cutsz.x,
 					(int) (cc.y / tilesz.y / MCache.cutsz.y - view - 1) * MCache.cutsz.y);
 			lasttc = tc;

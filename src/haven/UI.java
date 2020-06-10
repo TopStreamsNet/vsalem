@@ -131,6 +131,11 @@ public class UI {
 				UI.instance.sess.glob.map.printTiles();
 			}
 		});
+		setcmd("secret", new Command() {
+			public void run(Console cons, String[] args) {
+				SecretWindow.instance(UI.instance).toggle();
+			}
+		});
 	}
 	
 	private void findcmds(Map<String, Command> map, Widget wdg) {
