@@ -26,17 +26,18 @@
 
 package haven;
 
-import haven.lisp.LispUtil;
-import haven.pathfinder.*;
-
-import static haven.MCache.tilesz;
 import haven.integrations.map.Navigation;
-
-import java.awt.Color;
-import java.lang.reflect.Constructor;
-import java.util.*;
+import haven.lisp.LispUtil;
+import haven.pathfinder.PFListener;
+import haven.pathfinder.Pathfinder;
 
 import javax.media.opengl.GL;
+import java.awt.*;
+import java.lang.reflect.Constructor;
+import java.util.List;
+import java.util.*;
+
+import static haven.MCache.tilesz;
 public class MapView extends PView implements DTarget, Console.Directory, PFListener {
 	public static final String DEFCAM = "sortho";
 	private final R2DWdg r2dwdg;
@@ -1518,17 +1519,19 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 						}
 						wdgmsg("itemact", pc, mc, modflags, (int) inf.gob.id, inf.gob.rc, getid(inf.r));
 						if ((ui.modflags() & 1) == 1) {
-							List<WItem> items = ui.gui.maininv.getSameName(witem.item.resname(), false);
-							if (items != null) {
-								Defer.later(new Defer.Callable<Object>() {
-									public java.lang.Object call() {
-										WItem nxtitem = items.remove(0);
-										LispUtil.waitForEmptyHand();
-										nxtitem.item.wdgmsg("take", Coord.z);
-										return true;
-									}
-								});
+							if (witem != null){
+								List<WItem> items = ui.gui.maininv.getSameName(witem.item.resname(), ui.modmeta);
+								if (items != null) {
+									Defer.later(new Defer.Callable<Object>() {
+										public java.lang.Object call() {
+											WItem nxtitem = items.remove(0);
+											LispUtil.waitForEmptyHand();
+											nxtitem.item.wdgmsg("take", Coord.z);
+											return true;
+										}
+									});
 
+								}
 							}
 						}
 					}else{

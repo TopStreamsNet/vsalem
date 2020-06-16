@@ -79,7 +79,7 @@ public class SecretWindow extends Window{
                 Config.clientshift = val;
                 Utils.setprefb("clientshift", Config.clientshift);
             }
-        }).a = Config.debug;
+        }).a = Config.clientshift;
     }
 
     public static SecretWindow instance(UI ui) {
