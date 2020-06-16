@@ -26,7 +26,7 @@
 
 package haven;
 
-import haven.lisp.LispThread;
+import haven.lisp.LispUtil;
 import haven.pathfinder.*;
 
 import static haven.MCache.tilesz;
@@ -34,12 +34,7 @@ import haven.integrations.map.Navigation;
 
 import java.awt.Color;
 import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 import javax.media.opengl.GL;
 public class MapView extends PView implements DTarget, Console.Directory, PFListener {
@@ -56,7 +51,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 	private Plob placing = null;
 	private int[] visol = new int[32];
 	private Grabber grab;
-	public static final Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
+	public static final java.util.Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
 	private TileOutline gridol;
 	private Coord lasttc = Coord.z;
 
@@ -826,7 +821,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 	}
 
 	private abstract static class Clicklist<T> extends RenderList {
-		private Map<Color, T> rmap = new HashMap<Color, T>();
+		private java.util.Map<Color, T> rmap = new HashMap<Color, T>();
 		private int i = 1;
 		private GLState.Buffer plain, bk;
 
@@ -1514,8 +1509,32 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 			public void hit(Coord pc, Coord mc, ClickInfo inf) {
 				if(inf == null)
 					wdgmsg("itemact", pc, mc, ui.modflags());
-				else
-					wdgmsg("itemact", pc, mc, ui.modflags(), (int)inf.gob.id, inf.gob.rc, getid(inf.r));
+				else {
+					if(Config.clientshift) {
+						int modflags = ui.modflags();
+						WItem witem = ui.gui.vhand;
+						if ((modflags & 1) == 1) {
+							modflags ^= 1;
+						}
+						wdgmsg("itemact", pc, mc, modflags, (int) inf.gob.id, inf.gob.rc, getid(inf.r));
+						if ((ui.modflags() & 1) == 1) {
+							List<WItem> items = ui.gui.maininv.getSameName(witem.item.resname(), false);
+							if (items != null) {
+								Defer.later(new Defer.Callable<Object>() {
+									public java.lang.Object call() {
+										WItem nxtitem = items.remove(0);
+										LispUtil.waitForEmptyHand();
+										nxtitem.item.wdgmsg("take", Coord.z);
+										return true;
+									}
+								});
+
+							}
+						}
+					}else{
+						wdgmsg("itemact", pc, mc, ui.modflags(), (int) inf.gob.id, inf.gob.rc, getid(inf.r));
+					}
+				}
 			}
 		});
 		return(true);
@@ -1600,7 +1619,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 		}
 	}
 
-	private Map<String, Console.Command> cmdmap = new TreeMap<String, Console.Command>();
+	private java.util.Map<String, Console.Command> cmdmap = new TreeMap<String, Console.Command>();
 	{
 		cmdmap.put("cam", new Console.Command() {
 			public void run(Console cons, String[] args) throws Exception {
@@ -1621,7 +1640,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 			}
 		});
 	}
-	public Map<String, Console.Command> findcmds() {
+	public java.util.Map<String, Console.Command> findcmds() {
 		return(cmdmap);
 	}
 

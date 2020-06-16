@@ -417,7 +417,7 @@ public class LispUtil {
                         Message sdt = (Message) privateMessageField.get(rd);
                         System.out.println("QQ"+sdt.toString());
                     }
-                }catch (NoSuchFieldException|IllegalAccessException ex){
+                }catch (NoSuchFieldException|IllegalAccessException ignore){
 
                 }
             }
@@ -425,5 +425,13 @@ public class LispUtil {
         return null;
     }
 
+    public static LispObject getcoord(long gobid) {
+        Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
+        return JavaObject.getInstance(gob.loc.c);
+    }
+
+    public static LispObject mycoord(){
+        return getcoord(UI.instance.gui.plid);
+    }
 
 }

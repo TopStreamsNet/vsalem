@@ -38,7 +38,10 @@ public class TextEntry extends Widget {
     public String text;
     private Text.Line tcache = null;
 
-    @RName("text")
+	protected void changed(String val){
+	}
+
+	@RName("text")
     public static class $_ implements Factory {
 	public Widget create(Coord c, Widget parent, Object[] args) {
 	    if(args[0] instanceof Coord)

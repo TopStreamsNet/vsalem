@@ -59,6 +59,27 @@ public class SecretWindow extends Window{
                 Utils.setprefb("showflavour", Config.showflavour);
             }
         }).a = Config.showflavour;
+        new TextEntry(new Coord(x1, y+=step),120, this,"salem.lisp"){
+            @Override
+            protected void changed(){
+                Config.aiscript = this.text;
+            }
+
+        };
+        (new CheckBox(new Coord(x1,y+=step), this, "Debug messages") {
+            @Override
+            public void changed(boolean val) {
+                Config.debug = val;
+                Utils.setprefb("debug", Config.debug);
+            }
+        }).a = Config.debug;
+        (new CheckBox(new Coord(x1,y+=step), this, "Client-side selector") {
+            @Override
+            public void changed(boolean val) {
+                Config.clientshift = val;
+                Utils.setprefb("clientshift", Config.clientshift);
+            }
+        }).a = Config.debug;
     }
 
     public static SecretWindow instance(UI ui) {

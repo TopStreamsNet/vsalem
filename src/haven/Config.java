@@ -193,6 +193,9 @@ public class Config {
     public static int autodrinkthreshold = Utils.getprefi("autodrinkthreshold", 80);
     public static boolean showgrid = Utils.getprefb("showgrid", false);
     public static boolean showflavour = Utils.getprefb("showflavour", true);
+	public static String aiscript = "salem.lisp";
+	public static boolean debug = Utils.getprefb("debug", false);
+	public static boolean clientshift = Utils.getprefb("clientshift", true);
 
 
 

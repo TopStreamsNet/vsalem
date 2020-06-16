@@ -283,8 +283,17 @@ public class UI {
 	
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	int id;
-	//int i=0;
-	//try { for(Object obj:args) {if(!sender.toString().contains("Camera")) System.out.println("Sender : " + sender + " msg = " + msg + " arg "+i+" : " + obj);i++;} }catch(ArrayIndexOutOfBoundsException q){}
+	if(Config.debug) {
+		int i = 0;
+		try {
+			for (Object obj : args) {
+				if (!sender.toString().contains("Camera"))
+					System.out.println("Sender : " + sender + " msg = " + msg + " arg " + i + " : " + obj);
+				i++;
+			}
+		} catch (ArrayIndexOutOfBoundsException ignored) {
+		}
+	}
 	synchronized(this) {
 	    if(!rwidgets.containsKey(sender))
             {

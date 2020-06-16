@@ -46,45 +46,121 @@ public class Inventory extends Widget implements DTarget {
     public static final Tex refl = Resource.loadtex("gfx/hud/invref");
 
     private Comparator<WItem> sorter = null;
-    
+
+    private static final String AMBERGRIS = "Ambergris";
+    private static final String WEIGHT = "Weight";
     private static final Comparator<WItem> cmp_asc = new WItemComparator();
     private static final Comparator<WItem> cmp_desc = new Comparator<WItem>() {
-	@Override
-	public int compare(WItem o1, WItem o2) {
-	    return cmp_asc.compare(o2, o1);
-	}
+        @Override
+        public int compare(WItem o1, WItem o2) {
+            return cmp_asc.compare(o2, o1);
+        }
     };
     private static final Comparator<WItem> cmp_name = new Comparator<WItem>() {
-	@Override
-	public int compare(WItem o1, WItem o2) {
+        @Override
+        public int compare(WItem o1, WItem o2) {
             try{
-        	int result = o1.item.resname().compareTo(o2.item.resname());
-        	if(result == 0)
-        	{
-        	    result = cmp_desc.compare(o1, o2);
-        	}
-        	return result;
-            }catch(Loading l){return 0;}
+                int result = o1.item.resname().compareTo(o2.item.resname());
+                if(result == 0)
+                {
+                    result = cmp_desc.compare(o1, o2);
+                }
+                return result;
+            }catch(Loading l){
+                return 0;
+            }
+        }
+    };
+    private static final Comparator<WItem> cmp_inspi = new Comparator<WItem>(){
+
+        @Override
+        public int compare(WItem o1, WItem o2) {
+            try {
+                Inspiration i1 = ItemInfo.find(Inspiration.class, o1.item.info());
+                Inspiration i2 = ItemInfo.find(Inspiration.class, o2.item.info());
+                if (i1 == null && i2 == null) {
+                    return 0;
+                } else if (i2 == null || i1.base > i2.base) {
+                    return -1;
+                } else if (i1 == null || i1.base < i2.base);{
+                    return 1;
+                }
+            }
+            catch (Loading l) {
+                return 0;
+            }
         }
     };
     private static final Comparator<WItem> cmp_gobble = new Comparator<WItem>() {
-	@Override
-	public int compare(WItem o1, WItem o2) {
-            try{
-        	GobbleInfo g1 = ItemInfo.find(GobbleInfo.class, o1.item.info());
-        	GobbleInfo g2 = ItemInfo.find(GobbleInfo.class, o2.item.info());
-        	if (g1 == null && g2 == null)
-        	    return cmp_name.compare(o1, o2);
-        	else if (g1 == null)
-        	    return 1;
-        	else if (g2 == null)
-        	    return -1;
-        	int v1 = g1.mainTemper();
-        	int v2 = g2.mainTemper();
-        	if (v1 == v2)
-        	    return cmp_name.compare(o1, o2);
-        	return v2-v1;
-            }catch(Loading l){
+        @Override
+        public int compare(WItem o1, WItem o2) {
+            try {
+                int v2;
+                int c2;
+                GobbleInfo g1 = ItemInfo.find(GobbleInfo.class, o1.item.info());
+                GobbleInfo g2 = ItemInfo.find(GobbleInfo.class, o2.item.info());
+                if (g1 == null && g2 == null) {
+                    if (Inventory.AMBERGRIS.equals(o1.item.name()) && Inventory.AMBERGRIS.equals(o2.item.name())) {
+                        return cmp_inspi.compare(o1, o2);
+                    }
+                    ItemInfo.AdHoc a1 = ItemInfo.find(ItemInfo.AdHoc.class, o1.item.info());
+                    ItemInfo.AdHoc a2 = ItemInfo.find(ItemInfo.AdHoc.class, o2.item.info());
+                    if (a1 != null && a2 != null) {
+                        try {
+                            if (a1.str.text.contains(Inventory.WEIGHT) && a2.str.text.contains(Inventory.WEIGHT)) {
+                                double d2;
+                                double d1 = Double.parseDouble(a1.str.text.split(" ")[1]);
+                                if (d1 > (d2 = Double.parseDouble(a2.str.text.split(" ")[1]))) {
+                                    return -1;
+                                }
+                                if (d1 < d2) {
+                                    return 1;
+                                }
+                            }
+                        }
+                        catch (Exception d1) {
+                            // empty catch block
+                        }
+                    }
+                    String c1 = ItemInfo.getContent(o1.item.info());
+                    String c22 = ItemInfo.getContent(o2.item.info());
+                    if (c1 != null && c22 != null) {
+                        try {
+                            double d1 = Double.parseDouble(c1.split(" ")[0]);
+                            double d2 = Double.parseDouble(c22.split(" ")[0]);
+                            Iterator<ItemInfo> it = o1.item.info().iterator();
+                            if (d1 > d2) {
+                                return -1;
+                            } else if (d1 < d2) {
+                                return 1;
+                            }
+                        }
+                        catch (Exception d1) {
+                            // empty catch block
+                        }
+                    }
+                    return cmp_name.compare(o1, o2);
+                }
+                if (g1 == null) {
+                    return 1;
+                }else if (g2 == null) {
+                    return -1;
+                }
+                int c1 = g1.mainColour();
+                if (c1 > (c2 = g2.mainColour())) {
+                    return 1;
+                } else if (c1 < c2) {
+                    return -1;
+                }
+                int v1 = g1.mainTemper();
+                if (v1 == (v2 = g2.mainTemper())) {
+                    return cmp_name.compare(o1, o2);
+                } else if (v2 > v1) {
+                    return 1;
+                }
+                return -1;
+            }
+            catch (Loading l) {
                 return 0;
             }
         }
@@ -110,41 +186,41 @@ public class Inventory extends Widget implements DTarget {
 
     @RName("inv")
     public static class $_ implements Factory {
-	public Widget create(Coord c, Widget parent, Object[] args) {
-	    return(new Inventory(c, (Coord)args[0], parent));
-	}
+        public Widget create(Coord c, Widget parent, Object[] args) {
+            return(new Inventory(c, (Coord)args[0], parent));
+        }
     }
 
     public void draw(GOut g) {
-	invsq(g, Coord.z, isz_client);
-	for(Coord cc = new Coord(0, 0); cc.y < isz_client.y; cc.y++) {
-	    for(cc.x = 0; cc.x < isz_client.x; cc.x++) {
-		invrefl(g, sqoff(cc), isqsz);
-	    }
-	}
-	super.draw(g);
+        invsq(g, Coord.z, isz_client);
+        for(Coord cc = new Coord(0, 0); cc.y < isz_client.y; cc.y++) {
+            for(cc.x = 0; cc.x < isz_client.x; cc.x++) {
+                invrefl(g, sqoff(cc), isqsz);
+            }
+        }
+        super.draw(g);
     }
 
     BiMap<Coord,Coord> dictionaryClientServer;
     boolean isTranslated = false;
     public Inventory(Coord c, Coord sz, Widget parent) {
-	super(c, invsz(sz), parent);
-	isz = sz;
+        super(c, invsz(sz), parent);
+        isz = sz;
         isz_client = sz;
-        
+
         Widget window_parent = parent;
         while(!Window.class.isInstance(window_parent) && !RootWidget.class.isInstance(window_parent))
         {
             window_parent = window_parent.parent;
         }
-        
+
         if(sz.equals(new Coord(1,1)) || !(Window.class.isInstance(window_parent)))
         {
             return;
         }
         dictionaryClientServer = HashBiMap.create();
-        
-        
+
+
         IButton sbtn = new IButton(Coord.z, window_parent, Window.obtni[0], Window.obtni[1], Window.obtni[2]){
             {tooltip = Text.render("Sort the items in this inventory by name.");}
 
@@ -224,7 +300,7 @@ public class Inventory extends Widget implements DTarget {
         //assign the new locations to each of the items and add new translations
         int index = 0;
         BiMap<Coord,Coord> newdictionary = HashBiMap.create();
-        
+
         try{
             for(WItem w : array)
             {
@@ -247,11 +323,11 @@ public class Inventory extends Widget implements DTarget {
             //duplicate server coordinates, probably because we are swapping
             //no problem, we'll resort upon cdestroy of the old WItem
         }
-        
+
         //resize the inventory to the new set-up
         this.updateClientSideSize();
     }
-    
+
     public Coord translateCoordinatesClientServer(Coord client)
     {
         if(!isTranslated)
@@ -277,7 +353,7 @@ public class Inventory extends Widget implements DTarget {
         }
         return server;
     }
-    
+
     Coord getEmptyLocalSpot(BiMap<Coord,Coord> dictionary, int width)
     {
         int index = 0;
@@ -288,7 +364,7 @@ public class Inventory extends Widget implements DTarget {
         }while(dictionary.containsKey(newloc));
         return newloc;
     }
-    
+
     public Coord translateCoordinatesServerClient(Coord server)
     {
         if(!isTranslated)
@@ -320,7 +396,7 @@ public class Inventory extends Widget implements DTarget {
         }
         return client;
     }
-    
+
     public void removeDictionary()
     {
         isTranslated = false;
@@ -331,7 +407,7 @@ public class Inventory extends Widget implements DTarget {
         }
         this.updateClientSideSize();
     }
-    
+
     public Coord updateClientSideSize()
     {
         if(this.equals(ui.gui.maininv))
@@ -353,51 +429,51 @@ public class Inventory extends Widget implements DTarget {
             return isz_client = isz;
         }
     }
-    
+
     public static Coord sqoff(Coord c) {
-	return(c.mul(sqsz).add(ctl.sz()));
+        return(c.mul(sqsz).add(ctl.sz()));
     }
 
     public static Coord sqroff(Coord c) {
-	return(c.sub(ctl.sz()).div(sqsz));
+        return(c.sub(ctl.sz()).div(sqsz));
     }
 
     public static Coord invsz(Coord sz) {
-	return(sz.mul(sqsz).add(ctl.sz()).add(cbr.sz()).sub(4, 4));
+        return(sz.mul(sqsz).add(ctl.sz()).add(cbr.sz()).sub(4, 4));
     }
 
     public static void invrefl(GOut g, Coord c, Coord sz) {
-	Coord ul = g.ul.sub(g.ul.div(2)).mod(refl.sz()).inv();
-	Coord rc = new Coord();
-	for(rc.y = ul.y; rc.y < c.y + sz.y; rc.y += refl.sz().y) {
-	    for(rc.x = ul.x; rc.x < c.x + sz.x; rc.x += refl.sz().x) {
-		g.image(refl, rc, c, sz);
-	    }
-	}
+        Coord ul = g.ul.sub(g.ul.div(2)).mod(refl.sz()).inv();
+        Coord rc = new Coord();
+        for(rc.y = ul.y; rc.y < c.y + sz.y; rc.y += refl.sz().y) {
+            for(rc.x = ul.x; rc.x < c.x + sz.x; rc.x += refl.sz().x) {
+                g.image(refl, rc, c, sz);
+            }
+        }
     }
 
     public static void invsq(GOut g, Coord c, Coord sz) {
-	for(Coord cc = new Coord(0, 0); cc.y < sz.y; cc.y++) {
-	    for(cc.x = 0; cc.x < sz.x; cc.x++) {
-		g.image(bsq, c.add(cc.mul(sqsz)).add(ctl.sz()));
-	    }
-	}
-	for(int x = 0; x < sz.x; x++) {
-	    g.image(obt, c.add(ctl.sz().x + sqsz.x * x, 0));
-	    g.image(obb, c.add(ctl.sz().x + sqsz.x * x, obt.sz().y + (sqsz.y * sz.y) - 4));
-	}
-	for(int y = 0; y < sz.y; y++) {
-	    g.image(obl, c.add(0, ctl.sz().y + sqsz.y * y));
-	    g.image(obr, c.add(obl.sz().x + (sqsz.x * sz.x) - 4, ctl.sz().y + sqsz.y * y));
-	}
-	g.image(ctl, c);
-	g.image(ctr, c.add(ctl.sz().x + (sqsz.x * sz.x) - 4, 0));
-	g.image(cbl, c.add(0, ctl.sz().y + (sqsz.y * sz.y) - 4));
-	g.image(cbr, c.add(cbl.sz().x + (sqsz.x * sz.x) - 4, ctr.sz().y + (sqsz.y * sz.y) - 4));
+        for(Coord cc = new Coord(0, 0); cc.y < sz.y; cc.y++) {
+            for(cc.x = 0; cc.x < sz.x; cc.x++) {
+                g.image(bsq, c.add(cc.mul(sqsz)).add(ctl.sz()));
+            }
+        }
+        for(int x = 0; x < sz.x; x++) {
+            g.image(obt, c.add(ctl.sz().x + sqsz.x * x, 0));
+            g.image(obb, c.add(ctl.sz().x + sqsz.x * x, obt.sz().y + (sqsz.y * sz.y) - 4));
+        }
+        for(int y = 0; y < sz.y; y++) {
+            g.image(obl, c.add(0, ctl.sz().y + sqsz.y * y));
+            g.image(obr, c.add(obl.sz().x + (sqsz.x * sz.x) - 4, ctl.sz().y + sqsz.y * y));
+        }
+        g.image(ctl, c);
+        g.image(ctr, c.add(ctl.sz().x + (sqsz.x * sz.x) - 4, 0));
+        g.image(cbl, c.add(0, ctl.sz().y + (sqsz.y * sz.y) - 4));
+        g.image(cbr, c.add(cbl.sz().x + (sqsz.x * sz.x) - 4, ctr.sz().y + (sqsz.y * sz.y) - 4));
     }
 
     public static void invsq(GOut g, Coord c) {
-	g.image(sqlite, c);
+        g.image(sqlite, c);
     }
 
     public boolean mousewheel(Coord c, int amount) {
@@ -406,7 +482,7 @@ public class Inventory extends Widget implements DTarget {
         }
         return(true);
     }
-    
+
     public void resort() {
         if(sorter == null) return;
         if(Config.alwayssort)
@@ -418,35 +494,35 @@ public class Inventory extends Widget implements DTarget {
             updateClientSideSize();
         }
     }
-    
+
     public Widget makechild(String type, Object[] pargs, Object[] cargs) {
-    	Coord server_c = (Coord)pargs[0];
+        Coord server_c = (Coord)pargs[0];
         Coord c = translateCoordinatesServerClient(server_c);
-	Widget ret = gettype(type).create(c, this, cargs);
-	if(ret instanceof GItem) {
-	    GItem i = (GItem)ret;
-	    wmap.put(i, new WItem(sqoff(c), this, i, server_c));
-	    newseq++;
-            
+        Widget ret = gettype(type).create(c, this, cargs);
+        if(ret instanceof GItem) {
+            GItem i = (GItem)ret;
+            wmap.put(i, new WItem(sqoff(c), this, i, server_c));
+            newseq++;
+
             if(isTranslated)
             {
                 resort();
             }
-            
+
             if(this == ui.gui.maininv)
                 OverviewTool.instance(ui).force_update();
-	}
-	return(ret);
+        }
+        return(ret);
     }
 
     public void cdestroy(Widget w) {
-	super.cdestroy(w);
-	if(w instanceof GItem) {
-	    GItem i = (GItem)w;
+        super.cdestroy(w);
+        if(w instanceof GItem) {
+            GItem i = (GItem)w;
             WItem wi = wmap.remove(i);
-            
+
             Coord wc = sqroff(wi.c.add(isqsz.div(2)));
-            
+
             if(isTranslated)
             {
                 dictionaryClientServer.remove(sqroff(wi.c.add(isqsz.div(2))));
@@ -454,24 +530,24 @@ public class Inventory extends Widget implements DTarget {
             }
             if(this == ui.gui.maininv)
                 OverviewTool.instance(ui).force_update();
-	    ui.destroy(wi);
-	}
+            ui.destroy(wi);
+        }
     }
 
     public boolean drop(Coord cc, Coord ul) {
         Coord clientcoords = sqroff(ul.add(isqsz.div(2)));
         Coord servercoords = translateCoordinatesClientServer(clientcoords);
-	wdgmsg("drop", servercoords);
-	return(true);
+        wdgmsg("drop", servercoords);
+        return(true);
     }
 
     public boolean iteminteract(Coord cc, Coord ul) {
-	return(false);
+        return(false);
     }
 
     public void uimsg(String msg, Object... args) {
-	if(msg.equals("sz")) {
-	    isz = (Coord)args[0];
+        if(msg.equals("sz")) {
+            isz = (Coord)args[0];
             if(isTranslated)
             {
                 updateClientSideSize();
@@ -481,57 +557,57 @@ public class Inventory extends Widget implements DTarget {
                 isz_client = isz;
                 resize(invsz(isz));
             }
-	}
+        }
     }
-    
+
     public void wdgmsg(Widget sender, String msg, Object... args) {
-	if(msg.equals("transfer-same")){
+        if(msg.equals("transfer-same")){
             if(Config.limit_transfer_amount) {
                 process(getSame((GItem) args[0],(Boolean)args[1]), "transfer", 72);
             }
             else {
                 process(getSame((GItem) args[0],(Boolean)args[1]), "transfer");
             }
-	} else if(msg.equals("drop-same")){
-	    process(getSame((GItem) args[0], (Boolean) args[1]), "drop");
-	} else {
-	    super.wdgmsg(sender, msg, args);
-	}
+        } else if(msg.equals("drop-same")){
+            process(getSame((GItem) args[0], (Boolean) args[1]), "drop");
+        } else {
+            super.wdgmsg(sender, msg, args);
+        }
     }
 
     private void process(List<WItem> items, String action) {
-	for (WItem item : items){
-	    item.item.wdgmsg(action, Coord.z);
-	}
+        for (WItem item : items){
+            item.item.wdgmsg(action, Coord.z);
+        }
     }
-    
+
     private void process(List<WItem> items, String action, int limitation) {
         int count = 0;
-	for (WItem item : items){
+        for (WItem item : items){
             if(++count > limitation)
                 break;
-	    item.item.wdgmsg(action, Coord.z);
-	}
+            item.item.wdgmsg(action, Coord.z);
+        }
     }
 
 
     public List<WItem> getSameName(String name, Boolean ascending) {
-	List<WItem> items = new ArrayList<WItem>();
-	for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-	    if (wdg.visible && wdg instanceof WItem) {
-		if (((WItem) wdg).item.resname().contains(name))
-		    items.add((WItem) wdg);
-	    }
-	}
-	Collections.sort(items, ascending?cmp_asc:cmp_desc);
-	return items;
+        List<WItem> items = new ArrayList<WItem>();
+        for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+            if (wdg.visible && wdg instanceof WItem) {
+                if (((WItem) wdg).item.resname().contains(name))
+                    items.add((WItem) wdg);
+            }
+        }
+        Collections.sort(items, ascending?cmp_asc:cmp_desc);
+        return items;
     }
-                  
+
     private List<WItem> getSame(GItem item, Boolean ascending) {
         String name = item.resname();
-	List<WItem> items = new ArrayList<WItem>();
-	for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
-	    if (wdg.visible && wdg instanceof WItem) {
+        List<WItem> items = new ArrayList<WItem>();
+        for (Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
+            if (wdg.visible && wdg instanceof WItem) {
                 boolean same;
                 if(Config.pickyalt)
                 {
@@ -542,12 +618,12 @@ public class Inventory extends Widget implements DTarget {
                     String thatname = ((WItem) wdg).item.resname();
                     same = thatname.equals(name);
                 }
-		if (same)
-		    items.add((WItem) wdg);
-	    }
-	}
-	Collections.sort(items, ascending?cmp_asc:cmp_desc);
-	return items;
+                if (same)
+                    items.add((WItem) wdg);
+            }
+        }
+        Collections.sort(items, ascending?cmp_asc:cmp_desc);
+        return items;
     }
-    
+
 }
