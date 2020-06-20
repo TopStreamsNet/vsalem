@@ -1,6 +1,7 @@
 package haven.integrations.map;
 
 import haven.*;
+import org.apache.commons.text.StringEscapeUtils;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
@@ -381,19 +382,19 @@ public class RemoteNavigation {
                     dataToSend.put("type", "detected");
                 }
                 if (dataToSend.size() > 0) {
-                    dataToSend.put("name", Navigation.getCharacterName());
+                    dataToSend.put("name", StringEscapeUtils.escapeJson(Navigation.getCharacterName()));
                     dataToSend.put("id", Navigation.getCharacterId());
                     try {
                         HttpURLConnection connection =
                                 (HttpURLConnection) new URL(API_ENDPOINT + "/v2/updateCharacter").openConnection();
                         connection.setRequestMethod("POST");
-                        connection.setRequestProperty("Content-Type", "application/json");
+                        connection.setRequestProperty("Content-Type", "application/json; charset=utf-8");
                         connection.setDoOutput(true);
                         try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
                             out.writeBytes(new JSONObject(dataToSend).toString());
                         }
                         connection.getResponseCode();
-                    } catch (Exception ex) { }
+                    } catch (Exception ignored) { }
                 }
             }
         }

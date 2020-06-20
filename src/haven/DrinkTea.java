@@ -40,7 +40,7 @@ public class DrinkTea implements Runnable {
                 }else if(need.endsWith("/bbileplus")){
                     liquid = "Black Tea";
                 }
-                if (flask.contentName.get().endsWith(liquid)){
+                if (flask.contentName != null && flask.contentName.get().endsWith(liquid)){
                     gui.syslog.append("Drinking "+liquid+" for "+need, Color.GREEN);
                     flask.item.wdgmsg("iact", Coord.z, 3);
                     FlowerMenu menu = gui.ui.root.findchild(FlowerMenu.class);

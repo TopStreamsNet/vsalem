@@ -30,6 +30,9 @@
 				<pathelement path="lib/gson-2.3.jar" />
 				<pathelement path="lib/guava-18.0.jar" />
 				<pathelement path="lib/abcl.jar" />
+				<pathelement path="lib/commons-text-1.8.jar" />
+				<pathelement path="lib/commons-lang3-3.10.jar" />
+
 			</classpath>
 			<compilerarg value="-Xlint:unchecked" />
 			<!-- <compilerarg value="-Xbarda" /> -->
@@ -99,7 +102,7 @@
 			<fileset file="etc/item_data.json" />
 			<manifest>
 				<attribute name="Main-Class" value="haven.MainFrame" />
-				<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lclient-res.jar builtin-res.jar salem-res.jar gson-2.3.jar guava-18.0.jar abcl.jar" />
+				<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lclient-res.jar builtin-res.jar salem-res.jar gson-2.3.jar guava-18.0.jar abcl.jar commons-text-1.8.jar commons-lang3-3.10.jar" />
 			</manifest>
 		</jar>
 		<chmod file="build/vsalem.jar" perm="a+x" />
@@ -117,6 +120,9 @@
 				<include name="gluegen-rt.jar" />
 				<include name="salem-res.jar" />
 				<include name="builtin-res.jar" />
+				<include name="abcl.jar" />
+				<include name="commons-text-1.8.jar" />
+				<include name="commons-lang3-3.10.jar" />
 			</fileset>
                         <fileset dir="lib/jogl-natives" includes="*.jar">
                         </fileset>
@@ -129,10 +135,13 @@
 		<java jar="build/vsalem.jar" 
 				dir="build" 
 				fork="true" 
-				maxmemory="4096m"
 				classpath="java">
 			<arg line="-U http://game.salemthegame.com/res/ game.salemthegame.com"/>
-                        <jvmarg line="-Djogl.disable.opengles=true -XX:-UseGCOverheadLimit" />
+                        <jvmarg line="-Djogl.disable.opengles=true
+						-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2048m
+						-XX:NewSize=1g -XX:MaxNewSize=1g -XX:MaxTenuringThreshold=2 -XX:SurvivorRatio=8 -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768
+						-XX:+ParallelRefProcEnabled -XX:+CMSClassUnloadingEnabled  -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly
+						-XX:+AlwaysPreTouch -XX:-OmitStackTraceInFastThrow" />
 		</java>
 	</target>
 

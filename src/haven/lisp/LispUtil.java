@@ -52,6 +52,20 @@ public class LispUtil {
         UI.instance.gui.map.pfRightClick(destGob, -1, 3, 0, null);
     }
 
+    public static void pfLeftClick(Coord3f coord){
+        UI.instance.gui.map.pfLeftClick(new Coord(coord), null);
+    }
+
+    public static void pfLeftClick(Coord coord){
+        UI.instance.gui.map.pfLeftClick(coord, null);
+    }
+
+    public static void pfLeftClick(LispObject xy){
+        int x = xy.car().intValue();
+        int y = xy.cdr().car().intValue();
+        UI.instance.gui.map.pfLeftClick(new Coord(x, y), null);
+    }
+
     private static Coord coordToTile(Coord c) {
         return c.div(11);
     }
