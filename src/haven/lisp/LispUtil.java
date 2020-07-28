@@ -6,10 +6,8 @@ import org.armedbear.lisp.*;
 
 import java.awt.Color;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import java.util.Map;
-import java.util.Vector;
 
 import static java.lang.Thread.sleep;
 
@@ -38,8 +36,7 @@ public class LispUtil {
                             min = dist;
                             nearest = gob;
                         }
-                    } catch (Session.LoadingIndir ignored) {
-                    } catch (Resource.Loading ignored) {
+                    } catch (Session.LoadingIndir | Resource.Loading ignored) {
                     }
                 }
             }
@@ -71,9 +68,11 @@ public class LispUtil {
     }
 
     public static void waitForFlowerMenu() {
+        long TIMEOUT = 5000;
+        long timeStart = (new Date()).getTime();
         UI.instance.gui.syslog.append("_ waitForFlowerMenu", Color.RED);
         FlowerMenu menu = UI.instance.gui.ui.root.findchild(FlowerMenu.class);
-        while (menu == null || menu.opts == null) {
+        while ((new Date()).getTime() -timeStart < TIMEOUT && (menu == null || menu.opts == null)) {
             try {
                 sleep(15);
             } catch (InterruptedException e) {
@@ -81,27 +80,63 @@ public class LispUtil {
             }
             menu = UI.instance.gui.ui.root.findchild(FlowerMenu.class);
         }
+        if((new Date()).getTime() -timeStart >= TIMEOUT) {
+            UI.instance.gui.syslog.append("!1 waitForFlowerMenu", Color.RED);
+            return;
+        }
+        for (int i=0; i<menu.opts.length; i++){
+            FlowerMenu.Petal opt = menu.opts[i];
+            while((new Date()).getTime() -timeStart < TIMEOUT && opt == null) {
+                try {
+                    sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                opt = menu.opts[i];
+            }
+            if((new Date()).getTime() -timeStart >= TIMEOUT) {
+                UI.instance.gui.syslog.append("!2 waitForFlowerMenu", Color.RED);
+                return;
+            }
+            while((new Date()).getTime() -timeStart < TIMEOUT && opt.name == null) {
+                try {
+                    sleep(15);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if((new Date()).getTime() -timeStart >= TIMEOUT) {
+                UI.instance.gui.syslog.append("!3 waitForFlowerMenu", Color.RED);
+                return;
+            }
+        }
         UI.instance.gui.syslog.append("^ waitForFlowerMenu", Color.RED);
     }
 
     public static boolean choosePetal(String name) {
         UI.instance.gui.syslog.append("_ Choose petal", Color.RED);
         FlowerMenu menu = UI.instance.gui.ui.root.findchild(FlowerMenu.class);
-        if (menu != null) {
-            for (FlowerMenu.Petal opt : menu.opts) {
-                if (opt.name.equals(name)) {
-                    menu.choose(opt);
-                    menu.destroy();
-                    UI.instance.gui.syslog.append("^ Choose petal", Color.RED);
-                    return true;
+        if (menu != null && menu.opts != null) {
+            if (name.length() == 0){
+                menu.choose(null);
+                menu.destroy();
+                return true;
+            }else {
+                for (FlowerMenu.Petal opt : menu.opts) {
+                    if (opt != null && opt.name != null && opt.name.equals(name)) {
+                        menu.choose(opt);
+                        menu.destroy();
+                        UI.instance.gui.syslog.append("^ Choose petal", Color.RED);
+                        return true;
+                    }
                 }
             }
         }
-        UI.instance.gui.syslog.append("^ Choose petal", Color.RED);
+        UI.instance.gui.syslog.append("^ Choose petal failed", Color.RED);
         return false;
     }
 
-    public static boolean waitFlowerMenuClose() {
+    public static boolean waitForFlowerMenuClose() {
         while (UI.instance.gui.ui.root.findchild(FlowerMenu.class) != null) {
             try {
                 sleep(25);
@@ -143,8 +178,7 @@ public class LispUtil {
                             inames = inames.cdr();
                             name = inames.car();
                         }
-                    } catch (Session.LoadingIndir ignored) {
-                    } catch (Resource.Loading ignored) {
+                    } catch (Session.LoadingIndir | Resource.Loading ignored) {
                     }
                 }
             }
@@ -159,7 +193,7 @@ public class LispUtil {
     }
 
     public static void waitForWindow(LispObject name){
-        Window window = UI.instance.gui.waitfForWnd(name.car().getStringValue(), 8000);
+        Window window = UI.instance.gui.waitfForWnd(name.car().getStringValue(), 30000);
     }
 
     public static void waitForWindowClose(LispObject name){
@@ -181,7 +215,7 @@ public class LispUtil {
 
     public static LispObject getWindow(LispObject name){
         Window window = UI.instance.gui.getwnd(name.car().getStringValue());
-        return JavaObject.getInstance(window);
+        return window==null ? LispObject.getInstance(false) : JavaObject.getInstance(window);
     }
 
     public static LispObject getInventory(Window window){
@@ -190,7 +224,7 @@ public class LispUtil {
                 return JavaObject.getInstance((Inventory)wdg);
             }
         }
-        return null;
+        return LispObject.getInstance(false);
     }
 
     public static void listInventory(Inventory inv){
@@ -226,8 +260,7 @@ public class LispUtil {
                             inames = inames.cdr();
                             name = inames.car();
                         }
-                    } catch (Session.LoadingIndir ignored) {
-                    } catch (Resource.Loading ignored) {
+                    } catch (Session.LoadingIndir | Resource.Loading ignored) {
                     }
 
                 }
@@ -246,7 +279,7 @@ public class LispUtil {
 
     public static LispObject getItemAtHand(){
         if(UI.instance.gui.vhand == null){
-            return null;
+            return LispObject.getInstance(false);
         }else{
             return JavaObject.getInstance(UI.instance.gui.vhand);
         }
@@ -254,7 +287,7 @@ public class LispUtil {
 
     public static void takeItem(WItem witem) {
         witem.item.wdgmsg("take", Coord.z);
-        while(getItemAtHand() != null){
+        while(getItemAtHand() != LispObject.getInstance(false)){
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -272,6 +305,10 @@ public class LispUtil {
 
     public static void drop(Inventory inv, Coord coord){
         inv.wdgmsg("drop", coord);
+    }
+
+    public static void drop(WItem wItem){
+        wItem.item.wdgmsg("drop", Coord.z);
     }
 
     public static void transferItem(WItem witem){
@@ -304,7 +341,7 @@ public class LispUtil {
     }
 
     public static void waitForEmptyHand() {
-        while(getItemAtHand() != null){
+        while(getItemAtHand() != LispObject.getInstance(false)){
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -313,7 +350,7 @@ public class LispUtil {
         }
     }
     public static void waitForItemHand() {
-        while(getItemAtHand() == null){
+        while(getItemAtHand() == LispObject.getInstance(false)){
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -323,7 +360,7 @@ public class LispUtil {
     }
 
     public static void waitForTextEntry() {
-        while(getTextEntry() == null){
+        while(getTextEntry() == LispObject.getInstance(false)){
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -343,7 +380,7 @@ public class LispUtil {
                     return JavaObject.getInstance(t);
             }
         }
-        return null;
+        return LispObject.getInstance(false);
     }
 
     public static LispObject getFreeSlotForItem(Inventory inv, WItem item){
@@ -365,7 +402,7 @@ public class LispUtil {
             //System.out.println("");
         }
 
-        return null;
+        return LispObject.getInstance(false);
     }
 
     public static boolean slotsFree(int[][] slots, int x, int y, int sizeX, int sizeY){
@@ -446,6 +483,11 @@ public class LispUtil {
 
     public static LispObject mycoord(){
         return getcoord(UI.instance.gui.plid);
+    }
+
+    public static void itemClick(long gobid) {
+        Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
+        UI.instance.gui.map.wdgmsg("itemact", gob.sc, gob.rc, 0, (int) gob.id, gob.rc, -1);
     }
 
 }

@@ -911,6 +911,9 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 
 	private void dwalkdown(KeyEvent ev) {
 		if(!dwalking) {
+			if (MapView.ffThread > 0) {
+				MapView.signalToStop = true;
+			}
 			dwalking = true;
 			dwalkbase = -map.camera.angle();
 			ui.grabkeys(this);

@@ -390,6 +390,9 @@ public class HavenPanel extends GLCanvas implements Runnable, Console.Directory 
 		if(e instanceof MouseEvent) {
 		    MouseEvent me = (MouseEvent)e;
 		    if(me.getID() == MouseEvent.MOUSE_PRESSED) {
+				if (MapView.ffThread > 0) {
+					MapView.signalToStop = true;
+				}
 			ui.mousedown(me, new Coord(me.getX(), me.getY()), me.getButton());
 		    } else if(me.getID() == MouseEvent.MOUSE_RELEASED) {
 			ui.mouseup(me, new Coord(me.getX(), me.getY()), me.getButton());

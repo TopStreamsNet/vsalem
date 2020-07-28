@@ -79,7 +79,7 @@ public class GobHitbox extends Sprite {
     
     private static final BBox bboxSmelter = new BBox(new Coord(-34, -13), new Coord(13, 24));
     private static final BBox bboxForge = new BBox(new Coord(-5, -50), new Coord(5, 40));
-    private static final BBox bboxAlchemyTable = new BBox(new Coord(-5, -6), new Coord(4, 7));
+    private static final BBox bboxCons = new BBox(new Coord(-5, 5), new Coord(5, -5));
 
     public static BBox getBBox(Gob gob) {
         Resource res = null;
@@ -105,6 +105,8 @@ public class GobHitbox extends Sprite {
             return bboxGoat;
         else if (name.startsWith("gfx/kritter/pig/"))
             return bboxPig;
+        else if (name.startsWith("gfx/terobjs/consobj"))
+            return bboxCons;
 
         // dual state gobs
         if (name.endsWith("gate") && name.startsWith("gfx/terobjs/")) {

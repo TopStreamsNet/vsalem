@@ -136,6 +136,11 @@ public class UI {
 				SecretWindow.instance(UI.instance).toggle();
 			}
 		});
+		setcmd("inv", new Command() {
+			public void run(Console cons, String[] args) {
+				LispUtil.listInventory(UI.instance.gui.maininv);
+			}
+		});
 	}
 	
 	private void findcmds(Map<String, Command> map, Widget wdg) {

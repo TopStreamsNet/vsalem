@@ -23,7 +23,7 @@ public class Map {
     private final static int origintile = 44;
     public final static int origin = origintile * 11;
     public final static int sz = origin * 2;
-    public static int plbbox = 3;
+    public static int plbbox = 4;
     private final static int way = plbbox + 2;
     private final static int clr = way + 1;
     private final static int concaveclr = 2;
