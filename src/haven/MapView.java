@@ -27,6 +27,7 @@
 package haven;
 
 import haven.integrations.map.Navigation;
+import haven.integrations.map.RemoteNavigation;
 import haven.lisp.LispUtil;
 import haven.pathfinder.PFListener;
 import haven.pathfinder.Pathfinder;
@@ -60,7 +61,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 	private TileOutline gridol;
 	private Coord lasttc = Coord.z;
 
-	private Pathfinder pf;
+	public Pathfinder pf;
 	public Thread pfthread;
 
 	{
@@ -1458,6 +1459,19 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 					if (channel != null && channel instanceof ChatUI.EntryChannel) {
 						((ChatUI.EntryChannel) channel).send(String.format("$hl[%d]", inf.gob.id));
 					}
+					if(ui.modshift){
+						Coord gobc = inf.gob.rc;
+						Coord gobtc = gobc.div(11.0f);
+						MCache.Grid gobgrid = UI.instance.sess.glob.map.getgridt(gobtc);
+						Coord gridOffset = gobtc.sub(gobgrid.ul);
+						RemoteNavigation.MarkerData markerData = new RemoteNavigation.MarkerData();
+						ResDrawable d = inf.gob.getattr(ResDrawable.class);
+						markerData.setName(d.res.get().basename());
+						markerData.setGridId(gobgrid.id);
+						markerData.setGridOffset(gridOffset);
+						markerData.setImage(d.res.get().name);
+						RemoteNavigation.getInstance().uploadMarkerData(markerData);
+					}
 				}
 				if (inf.ol == null) {
 					wdgmsg("click", pc, mc, clickb, modflags, 0, (int) inf.gob.id, inf.gob.rc, 0, getid(inf.r));
@@ -1560,6 +1574,35 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 		return (true);
 	}
 
+	private void itemact(Coord pc, Coord mc, ClickInfo inf){
+		if (Config.clientshift) {
+			int modflags = ui.modflags();
+			WItem witem = ui.gui.vhand;
+			if ((modflags & 1) == 1) {
+				modflags ^= 1;
+			}
+			wdgmsg("itemact", pc, mc, modflags, (int) inf.gob.id, inf.gob.rc, getid(inf.r));
+			if ((ui.modflags() & 1) == 1) {
+				if (witem != null) {
+					List<WItem> items = ui.gui.maininv.getSameName(witem.item.resname(), ui.modmeta);
+					if (items != null) {
+						Defer.later(new Defer.Callable<Object>() {
+							public java.lang.Object call() {
+								WItem nxtitem = items.remove(0);
+								LispUtil.waitForEmptyHand();
+								nxtitem.item.wdgmsg("take", Coord.z);
+								return true;
+							}
+						});
+
+					}
+				}
+			}
+		} else {
+			wdgmsg("itemact", pc, mc, ui.modflags(), (int) inf.gob.id, inf.gob.rc, getid(inf.r));
+		}
+	}
+
 	public boolean iteminteract(Coord cc, Coord ul) {
 		delay(new Hittest(cc) {
 			public void hit(Coord pc, Coord mc, ClickInfo inf) {
@@ -1576,7 +1619,9 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 						}
 					}
 					ffTarget = inf.gob;
-					MapView.this.wdgmsg("itemact", pc, mc, 1, (int) inf.gob.id, inf.gob.rc, MapView.getid(inf.r));
+					UI.instance.modshift = true;
+					itemact(pc, mc, inf);
+					UI.instance.modshift = false;
 					try {
 						new Thread(new Runnable() {
 
@@ -1620,32 +1665,7 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 						--ffThread;
 					}
 				} else {
-					if (Config.clientshift) {
-						int modflags = ui.modflags();
-						WItem witem = ui.gui.vhand;
-						if ((modflags & 1) == 1) {
-							modflags ^= 1;
-						}
-						wdgmsg("itemact", pc, mc, modflags, (int) inf.gob.id, inf.gob.rc, getid(inf.r));
-						if ((ui.modflags() & 1) == 1) {
-							if (witem != null) {
-								List<WItem> items = ui.gui.maininv.getSameName(witem.item.resname(), ui.modmeta);
-								if (items != null) {
-									Defer.later(new Defer.Callable<Object>() {
-										public java.lang.Object call() {
-											WItem nxtitem = items.remove(0);
-											LispUtil.waitForEmptyHand();
-											nxtitem.item.wdgmsg("take", Coord.z);
-											return true;
-										}
-									});
-
-								}
-							}
-						}
-					} else {
-						wdgmsg("itemact", pc, mc, ui.modflags(), (int) inf.gob.id, inf.gob.rc, getid(inf.r));
-					}
+					itemact(pc, mc, inf);
 				}
 			}
 		});
@@ -1777,7 +1797,6 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 				if (player.getattr(Moving.class) != null)
 					wdgmsg("gk", 27);
 			}
-
 			Coord src = player.rc.floor();
 			int gcx = haven.pathfinder.Map.origin - (src.x - mc.x);
 			int gcy = haven.pathfinder.Map.origin - (src.y - mc.y);
@@ -1792,7 +1811,6 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 	}
 
 	public void pfRightClick(Gob gob, int meshid, int clickb, int modflags, String action) {
-		//   System.out.println("pf right click");
 		Gob player = player();
 		if (player == null)
 			return;
@@ -1879,12 +1897,14 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 					oldID = handID;
 				}
 				if (!signalToStop) {
-					this.wdgmsg("itemact", pc, mc, 1, (int) inf.gob.id, inf.gob.rc, MapView.getid(inf.r));
+					UI.instance.modshift=true;
+					this.itemact(pc, mc, inf);
+					UI.instance.modshift=false;
 					MapView.sleep(150);
 				}
 				if (!this.ui.gui.hand.isEmpty()) continue;
 				for (int i = 0; i < 15; ++i) {
-					MapView.sleep(10);
+					MapView.sleep(100);
 					if (!this.ui.gui.hand.isEmpty()) break;
 				}
 				if (!this.ui.gui.hand.isEmpty()) continue;
@@ -1894,4 +1914,6 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 		--ffThread;
 		signalToStop = false;
 	}
+
+
 }

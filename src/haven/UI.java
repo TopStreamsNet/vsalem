@@ -60,7 +60,7 @@ public class UI {
     public final ActAudio audio = new ActAudio();
 
     // vSalem
-	public Thread lispThread = null;
+	public LispThread lispThread = null;
     
     private long lastactivity = 0;
     
@@ -113,12 +113,11 @@ public class UI {
 		});
 		setcmd("ai", new Console.Command() {
 			public void run(Console cons, String[] args) {
-				Thread lispThread = UI.instance.lispThread;
-				if(lispThread != null){
-					lispThread.interrupt();
+				if(UI.instance.lispThread != null){
+					UI.instance.lispThread.interrupt();
 				}
-				lispThread = new LispThread("lispthread");
-				lispThread.start();
+				UI.instance.lispThread = new LispThread("lispthread");
+				UI.instance.lispThread.start();
 			}
 		});
 		setcmd("trees", new Command() {

@@ -75,6 +75,7 @@ public class Map {
                 if (!name.equals("gfx/tiles/deep") &&
                         !name.equals("gfx/tiles/cave") &&
                         !name.equals("gfx/tiles/nil") &&
+                        !name.equals("gfx/tiles/mine-nil") &&
                         !name.equals("gfx/tiles/mine-nil-soft") &&
                         !name.startsWith("gfx/tiles/rocks/") &&
                         !((tl instanceof RidgeTile) && ((RidgeTile)tl).ridgep(mcache, pltc.sub(x, y))))

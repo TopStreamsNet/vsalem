@@ -1,6 +1,8 @@
 package haven.integrations.map;
 
 import haven.Coord;
+import haven.Gob;
+import haven.UI;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -216,5 +218,10 @@ public class Navigation {
 
     public static Coord getDetectedAbsoluteCoordinates() {
         return detectedAbsoluteCoordinates;
+    }
+
+    public static Coord getAbsoluteCoordinates(Gob gob){
+        Coord offset = UI.instance.gui.map.player().rc.sub(gob.rc);
+        return getAbsoluteCoordinates().add(offset);
     }
 }

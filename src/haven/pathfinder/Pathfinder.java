@@ -89,7 +89,6 @@ public class Pathfinder implements Runnable {
                 m.addGob(gob);
             }
         }
-
         // if player is located at a position occupied by a gob (can happen when starting too close to gobs)
         // move it slightly away from it
         if (m.isOriginBlocked()) {
@@ -116,7 +115,6 @@ public class Pathfinder implements Runnable {
             m.dbgdump();
             return;
         }
-
         // exclude any bounding boxes overlapping the destination gob
         if (this.gob != null)
             m.excludeGob(this.gob);
@@ -194,7 +192,6 @@ public class Pathfinder implements Runnable {
                 return;
             }
         }
-
         terminate = true;
     }
 

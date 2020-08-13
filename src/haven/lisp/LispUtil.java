@@ -16,8 +16,8 @@ public class LispUtil {
         Coord plc = UI.instance.gui.map.player().rc;
         double min = Double.MAX_VALUE;
         Gob nearest = null;
-        synchronized (UI.instance.sess.glob.oc) {
-            for (Gob gob : UI.instance.sess.glob.oc) {
+        synchronized (UI.instance.sess.glob().oc) {
+            for (Gob gob : UI.instance.sess.glob().oc.getGobs()) {
                 double dist = gob.rc.dist(plc);
                 if (dist < min && dist > 0) {
                     boolean match = false;
@@ -49,12 +49,26 @@ public class LispUtil {
         UI.instance.gui.map.pfRightClick(destGob, -1, 3, 0, null);
     }
 
+    public static String getGobName(long gobid){
+        Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
+        return gob.getres().name;
+    }
+
     public static void pfLeftClick(Coord3f coord){
         UI.instance.gui.map.pfLeftClick(new Coord(coord), null);
     }
 
     public static void pfLeftClick(Coord coord){
+        UI.instance.lispThread.navigating=true;
         UI.instance.gui.map.pfLeftClick(coord, null);
+        UI.instance.gui.map.pf.addListener(UI.instance.lispThread);
+        while (UI.instance.lispThread.navigating == true){
+            try {
+                sleep(15);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public static void pfLeftClick(LispObject xy){
@@ -478,7 +492,7 @@ public class LispUtil {
 
     public static LispObject getcoord(long gobid) {
         Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
-        return JavaObject.getInstance(gob.loc.c);
+        return JavaObject.getInstance(gob.rc.floor());
     }
 
     public static LispObject mycoord(){
@@ -488,6 +502,16 @@ public class LispUtil {
     public static void itemClick(long gobid) {
         Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
         UI.instance.gui.map.wdgmsg("itemact", gob.sc, gob.rc, 0, (int) gob.id, gob.rc, -1);
+    }
+
+    public static void clickMap(Coord coord){
+        UI.instance.gui.map.wdgmsg("click",Coord.z,coord, 1,0);
+    }
+
+    public static void rightClickGob(long gobid){
+        Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
+        if(gob != null)
+            UI.instance.gui.map.wdgmsg("click", gob.sc, UI.instance.sess.glob.oc.getgob(UI.instance.gui.plid).rc, 3, 0, 0, (int) gob.id, gob.rc.floor(), 0, -1);
     }
 
 }

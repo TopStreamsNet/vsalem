@@ -2,6 +2,7 @@ package haven.integrations.map;
 
 import haven.*;
 import org.apache.commons.text.StringEscapeUtils;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.imageio.ImageIO;
@@ -69,14 +70,10 @@ public class RemoteNavigation {
         scheduler.scheduleAtFixedRate(new UpdateCharacterPosition(), 2L, 2L, TimeUnit.SECONDS);
     }
 
-    private boolean firstTimeUpload = true;
-
-    /*public void uploadMarkerData(MapFile mapFile) {
-        if (firstTimeUpload) {
-            scheduler.schedule(new UploadMarkersTask(mapFile), 5, TimeUnit.SECONDS);
-            firstTimeUpload = false;
-        }
-    }*/
+    public void uploadMarkerData(MarkerData markerData) {
+            //scheduler.schedule(new UploadMarkerTask(markerData), 5, TimeUnit.SECONDS);
+            scheduler.execute(new UploadMarkerTask(markerData));
+    }
 
     /**
      * Find absolute coordinates for the specific gridId
@@ -400,19 +397,31 @@ public class RemoteNavigation {
         }
     }
 
-    /*private static class MarkerData {
+    public static class MarkerData {
         String name;
         Coord gridOffset;
         String image = null;
-        Long objectId;
-        Indir<MapFile.Grid> indirGrid;
         long gridId;
-        long gridTime;
-        Color color;
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setGridOffset(Coord gridOffset) {
+            this.gridOffset = gridOffset;
+        }
+
+        public void setImage(String image) {
+            this.image = image;
+        }
+
+        public void setGridId(long gridId) {
+            this.gridId = gridId;
+        }
 
         @Override
         public String toString() {
-            return String.format("%s - %s (%d)", name, image, objectId);
+            return String.format("%s - %s (%d) [%d:%d]", name, image, gridId, gridOffset.x, gridOffset.y);
         }
 
         public HashMap<String, Object> dataToSend() {
@@ -426,59 +435,19 @@ public class RemoteNavigation {
         }
     }
 
-    private static class UploadMarkersTask implements Runnable {
-        private MapFile mapFile;
 
-        public UploadMarkersTask(MapFile mapFile) {
-            this.mapFile = mapFile;
+    private static class UploadMarkerTask implements Runnable {
+        private MarkerData markerData;
+
+        public UploadMarkerTask(MarkerData markerData) {
+            this.markerData = markerData;
+            System.out.println("Upload!");
         }
 
         @Override
         public void run() {
-            if (mapFile.lock.readLock().tryLock()) {
-                List<MarkerData> markers = mapFile.markers.stream()
-                        .map(marker -> {
-                            Coord markerGridOffset = new Coord((int) Math.floor(marker.tc.x / 100.0),
-                                    (int) Math.floor(marker.tc.y / 100.0));
-                            MapFile.Segment segment = mapFile.segments.get(marker.seg);
-                            MarkerData markerData = new MarkerData();
-                            markerData.name = marker.nm;
-                            markerData.gridOffset = marker.tc.sub(markerGridOffset.mul(100));
-                            markerData.indirGrid = segment.grid(markerGridOffset);
-                            if (marker instanceof MapFile.SMarker) {
-                                markerData.image = ((MapFile.SMarker) marker).res.name;
-                                markerData.objectId = ((MapFile.SMarker) marker).oid;
-                            } else if (marker instanceof MapFile.PMarker) {
-                                markerData.color = ((MapFile.PMarker) marker).color;
-                            }
-                            return markerData;
-                        }).collect(Collectors.toList());
-                mapFile.lock.readLock().unlock();
                 ArrayList<MarkerData> loadedMarkers = new ArrayList<>();
-                while (!markers.isEmpty()) {
-                    Iterator<MarkerData> iterator = markers.iterator();
-                    while (iterator.hasNext()) {
-                        MarkerData markerData = iterator.next();
-                        try {
-                            MapFile.Grid grid = markerData.indirGrid.get();
-                            markerData.gridId = grid.id;
-                            markerData.gridTime = grid.mtime;
-                            if (grid.mtime > 1549065600000L) {
-                                if (markerData.color != null) {
-                                    if (Config.sendCustomMarkers && markerData.color.equals(Color.GREEN)) {
-                                        loadedMarkers.add(markerData);
-                                    }
-                                } else {
-                                    loadedMarkers.add(markerData);
-                                }
-                            }
-                            iterator.remove();
-                        } catch (Loading ex) { }
-                    }
-                    try {
-                        Thread.sleep(50);
-                    } catch (InterruptedException ex) { }
-                }
+                loadedMarkers.add(this.markerData);
                 System.out.println("Loaded " + loadedMarkers.size() + " markers");
                 if (!loadedMarkers.isEmpty()) {
                     try {
@@ -499,11 +468,9 @@ public class RemoteNavigation {
                         System.out.println("Cannot upload markers: " + ex.getMessage());
                     }
                 }
-            } else {
-                System.out.println("Mapfile lock is busy");
-            }
+
         }
-    }*/
+    }
 
     private static String getUrlResponse(String url) {
         try {

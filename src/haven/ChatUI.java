@@ -27,11 +27,6 @@
 
 package haven;
 
-import haven.ChatUI.MultiChat.NamedMessage;
-import haven.minimap.Radar;
-
-import static haven.Window.cbtni;
-
 import static haven.Window.cbtni;
 
 import java.util.*;
