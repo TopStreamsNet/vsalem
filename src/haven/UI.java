@@ -140,6 +140,11 @@ public class UI {
 				LispUtil.listInventory(UI.instance.gui.maininv);
 			}
 		});
+		setcmd("fields", new Command() {
+			public void run(Console cons, String[] args) {
+				LispUtil.fields();
+			}
+		});
 	}
 	
 	private void findcmds(Map<String, Command> map, Widget wdg) {

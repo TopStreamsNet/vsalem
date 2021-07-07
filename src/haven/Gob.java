@@ -41,7 +41,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     public long id;
     public int frame, initdelay = (int)(Math.random() * 3000) + 3000;
     public final Glob glob;
-    Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
+    public Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
     public Collection<Overlay> ols = new LinkedList<Overlay>();
     private GobPath path = null;
     private static List<Long> timeList = new LinkedList<Long>();

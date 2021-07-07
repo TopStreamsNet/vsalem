@@ -1418,12 +1418,19 @@ public class ChatUI extends Widget {
 						if (gob != null) {
 							gob.setattr(new GobHighlight(gob));
 							ResDrawable d = gob.getattr(ResDrawable.class);
-							if (d != null) {
+							String name = "unknown";
+							if (d != null && d.getres() != null) {
 								try {
-									UI.instance.gui.message("Highlighted object: " + d.res.get().name + " " + gob.id, GameUI.MsgType.INFO);
+									name = d.getres().name;
+								} catch (Exception e) {
+								}
+							} else if (gob.getres() != null){
+								try {
+									name = gob.getres().name;
 								} catch (Exception e) {
 								}
 							}
+							UI.instance.gui.message("Highlighted object: " + name + " " + gob.id, GameUI.MsgType.INFO);
 						}
 					} catch (NumberFormatException ignored) {
 					}

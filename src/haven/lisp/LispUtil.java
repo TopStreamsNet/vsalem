@@ -7,6 +7,7 @@ import org.armedbear.lisp.*;
 import java.awt.Color;
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
 import static java.lang.Thread.sleep;
@@ -49,29 +50,20 @@ public class LispUtil {
         UI.instance.gui.map.pfRightClick(destGob, -1, 3, 0, null);
     }
 
-    public static String getGobName(long gobid){
+    public static String getGobName(long gobid) {
         Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
         return gob.getres().name;
     }
 
-    public static void pfLeftClick(Coord3f coord){
+    public static void pfLeftClick(Coord3f coord) {
         UI.instance.gui.map.pfLeftClick(new Coord(coord), null);
     }
 
-    public static void pfLeftClick(Coord coord){
-        UI.instance.lispThread.navigating=true;
+    public static void pfLeftClick(Coord coord) {
         UI.instance.gui.map.pfLeftClick(coord, null);
-        UI.instance.gui.map.pf.addListener(UI.instance.lispThread);
-        while (UI.instance.lispThread.navigating == true){
-            try {
-                sleep(15);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    public static void pfLeftClick(LispObject xy){
+    public static void pfLeftClick(LispObject xy) {
         int x = xy.car().intValue();
         int y = xy.cdr().car().intValue();
         UI.instance.gui.map.pfLeftClick(new Coord(x, y), null);
@@ -86,7 +78,7 @@ public class LispUtil {
         long timeStart = (new Date()).getTime();
         UI.instance.gui.syslog.append("_ waitForFlowerMenu", Color.RED);
         FlowerMenu menu = UI.instance.gui.ui.root.findchild(FlowerMenu.class);
-        while ((new Date()).getTime() -timeStart < TIMEOUT && (menu == null || menu.opts == null)) {
+        while ((new Date()).getTime() - timeStart < TIMEOUT && (menu == null || menu.opts == null)) {
             try {
                 sleep(15);
             } catch (InterruptedException e) {
@@ -94,13 +86,13 @@ public class LispUtil {
             }
             menu = UI.instance.gui.ui.root.findchild(FlowerMenu.class);
         }
-        if((new Date()).getTime() -timeStart >= TIMEOUT) {
+        if ((new Date()).getTime() - timeStart >= TIMEOUT) {
             UI.instance.gui.syslog.append("!1 waitForFlowerMenu", Color.RED);
             return;
         }
-        for (int i=0; i<menu.opts.length; i++){
+        for (int i = 0; i < menu.opts.length; i++) {
             FlowerMenu.Petal opt = menu.opts[i];
-            while((new Date()).getTime() -timeStart < TIMEOUT && opt == null) {
+            while ((new Date()).getTime() - timeStart < TIMEOUT && opt == null) {
                 try {
                     sleep(15);
                 } catch (InterruptedException e) {
@@ -108,18 +100,18 @@ public class LispUtil {
                 }
                 opt = menu.opts[i];
             }
-            if((new Date()).getTime() -timeStart >= TIMEOUT) {
+            if ((new Date()).getTime() - timeStart >= TIMEOUT) {
                 UI.instance.gui.syslog.append("!2 waitForFlowerMenu", Color.RED);
                 return;
             }
-            while((new Date()).getTime() -timeStart < TIMEOUT && opt.name == null) {
+            while ((new Date()).getTime() - timeStart < TIMEOUT && opt.name == null) {
                 try {
                     sleep(15);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            if((new Date()).getTime() -timeStart >= TIMEOUT) {
+            if ((new Date()).getTime() - timeStart >= TIMEOUT) {
                 UI.instance.gui.syslog.append("!3 waitForFlowerMenu", Color.RED);
                 return;
             }
@@ -131,11 +123,11 @@ public class LispUtil {
         UI.instance.gui.syslog.append("_ Choose petal", Color.RED);
         FlowerMenu menu = UI.instance.gui.ui.root.findchild(FlowerMenu.class);
         if (menu != null && menu.opts != null) {
-            if (name.length() == 0){
+            if (name.length() == 0) {
                 menu.choose(null);
                 menu.destroy();
                 return true;
-            }else {
+            } else {
                 for (FlowerMenu.Petal opt : menu.opts) {
                     if (opt != null && opt.name != null && opt.name.equals(name)) {
                         menu.choose(opt);
@@ -184,7 +176,7 @@ public class LispUtil {
                             if (gob.getres() != null && gob.getres().name.endsWith(name.getStringValue())) {
                                 if (objs == null) {
                                     objs = new Cons(LispInteger.getInstance(gob.id));
-                                }else{
+                                } else {
                                     objs = new Cons(LispInteger.getInstance(gob.id), objs);
                                 }
                                 break;
@@ -201,17 +193,17 @@ public class LispUtil {
         return objs;
     }
 
-    public static boolean pfRightClick(LispObject xxx){
+    public static boolean pfRightClick(LispObject xxx) {
         System.out.println(xxx);
         return true;
     }
 
-    public static void waitForWindow(LispObject name){
+    public static void waitForWindow(LispObject name) {
         Window window = UI.instance.gui.waitfForWnd(name.car().getStringValue(), 30000);
     }
 
-    public static void waitForWindowClose(LispObject name){
-        while(UI.instance.gui.getwnd(name.car().getStringValue()) != null){
+    public static void waitForWindowClose(LispObject name) {
+        while (UI.instance.gui.getwnd(name.car().getStringValue()) != null) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -220,44 +212,44 @@ public class LispUtil {
         }
     }
 
-    public static void closeWindow(LispObject name){
+    public static void closeWindow(LispObject name) {
         Window window = UI.instance.gui.getwnd(name.car().getStringValue());
-        if (window != null){
+        if (window != null) {
             window.reqdestroy();
         }
     }
 
-    public static LispObject getWindow(LispObject name){
+    public static LispObject getWindow(LispObject name) {
         Window window = UI.instance.gui.getwnd(name.car().getStringValue());
-        return window==null ? LispObject.getInstance(false) : JavaObject.getInstance(window);
+        return window == null ? LispObject.getInstance(false) : JavaObject.getInstance(window);
     }
 
-    public static LispObject getInventory(Window window){
-        for(Widget wdg = window.lchild; wdg!=null; wdg = wdg.prev) {
-            if (wdg instanceof Inventory){
-                return JavaObject.getInstance((Inventory)wdg);
+    public static LispObject getInventory(Window window) {
+        for (Widget wdg = window.lchild; wdg != null; wdg = wdg.prev) {
+            if (wdg instanceof Inventory) {
+                return JavaObject.getInstance((Inventory) wdg);
             }
         }
         return LispObject.getInstance(false);
     }
 
-    public static void listInventory(Inventory inv){
-        for(Widget witm = inv.child; witm != null; witm = witm.next) {
-            synchronized(witm) {
-                if(witm instanceof WItem) {
+    public static void listInventory(Inventory inv) {
+        for (Widget witm = inv.child; witm != null; witm = witm.next) {
+            synchronized (witm) {
+                if (witm instanceof WItem) {
                     WItem witem = (WItem) witm;
-                    System.out.println(witem.item.resname()+" "+ witem.c.div(Inventory.sqsz));
+                    System.out.println(witem.item.resname() + " " + witem.c.div(Inventory.sqsz));
 
                 }
             }
         }
     }
 
-    public static Cons getInventoryItemsByNames(Inventory inv, LispObject names){
+    public static Cons getInventoryItemsByNames(Inventory inv, LispObject names) {
         Cons objs = null;
-        for(Widget witm = inv.child; witm != null; witm = witm.next) {
-            synchronized(witm) {
-                if(witm instanceof WItem) {
+        for (Widget witm = inv.child; witm != null; witm = witm.next) {
+            synchronized (witm) {
+                if (witm instanceof WItem) {
                     WItem witem = (WItem) witm;
                     LispObject inames = names;
                     LispObject name = inames.car();
@@ -266,7 +258,7 @@ public class LispUtil {
                             if (witem.item.resname() != null && witem.item.resname().endsWith(name.getStringValue())) {
                                 if (objs == null) {
                                     objs = new Cons(JavaObject.getInstance(witem));
-                                }else{
+                                } else {
                                     objs = new Cons(JavaObject.getInstance(witem), objs);
                                 }
                                 break;
@@ -283,25 +275,25 @@ public class LispUtil {
         return objs;
     }
 
-    public static void activateItemMod(WItem witem, int mod){
+    public static void activateItemMod(WItem witem, int mod) {
         witem.item.wdgmsg("iact", Coord.z, mod);
     }
 
-    public static void activateItem(WItem witem){
+    public static void activateItem(WItem witem) {
         witem.item.wdgmsg("iact", Coord.z);
     }
 
-    public static LispObject getItemAtHand(){
-        if(UI.instance.gui.vhand == null){
+    public static LispObject getItemAtHand() {
+        if (UI.instance.gui.vhand == null) {
             return LispObject.getInstance(false);
-        }else{
+        } else {
             return JavaObject.getInstance(UI.instance.gui.vhand);
         }
     }
 
     public static void takeItem(WItem witem) {
         witem.item.wdgmsg("take", Coord.z);
-        while(getItemAtHand() != LispObject.getInstance(false)){
+        while (getItemAtHand() != LispObject.getInstance(false)) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -309,37 +301,38 @@ public class LispUtil {
             }
         }
     }
-    public static void itemact(WItem witem, int mod){
+
+    public static void itemact(WItem witem, int mod) {
         witem.item.wdgmsg("itemact", mod);
     }
 
-    public static void drop(Inventory inv, int x, int y){
+    public static void drop(Inventory inv, int x, int y) {
         inv.wdgmsg("drop", new Coord(x, y));
     }
 
-    public static void drop(Inventory inv, Coord coord){
+    public static void drop(Inventory inv, Coord coord) {
         inv.wdgmsg("drop", coord);
     }
 
-    public static void drop(WItem wItem){
+    public static void drop(WItem wItem) {
         wItem.item.wdgmsg("drop", Coord.z);
     }
 
-    public static void transferItem(WItem witem){
+    public static void transferItem(WItem witem) {
         witem.item.wdgmsg("transfer", Coord.z);
     }
 
     public static void login(String account, String password) {
-        for (Map.Entry<Integer, Widget> entry: UI.instance.widgets.entrySet()){
-            if(entry.getValue() instanceof LoginScreen){
+        for (Map.Entry<Integer, Widget> entry : UI.instance.widgets.entrySet()) {
+            if (entry.getValue() instanceof LoginScreen) {
                 entry.getValue().wdgmsg("login", account, password);
                 return;
             }
         }
     }
 
-    public static void play(String name){
-        while(true) {
+    public static void play(String name) {
+        while (true) {
             for (Map.Entry<Integer, Widget> entry : UI.instance.widgets.entrySet()) {
                 if (entry.getValue() instanceof Charlist) {
                     entry.getValue().wdgmsg("play", name);
@@ -355,7 +348,7 @@ public class LispUtil {
     }
 
     public static void waitForEmptyHand() {
-        while(getItemAtHand() != LispObject.getInstance(false)){
+        while (getItemAtHand() != LispObject.getInstance(false)) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -363,8 +356,9 @@ public class LispUtil {
             }
         }
     }
+
     public static void waitForItemHand() {
-        while(getItemAtHand() == LispObject.getInstance(false)){
+        while (getItemAtHand() == LispObject.getInstance(false)) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -374,7 +368,7 @@ public class LispUtil {
     }
 
     public static void waitForTextEntry() {
-        while(getTextEntry() == LispObject.getInstance(false)){
+        while (getTextEntry() == LispObject.getInstance(false)) {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
@@ -387,29 +381,29 @@ public class LispUtil {
         t.wdgmsg("activate", arg);
     }
 
-    public static LispObject getTextEntry(){
-        for (Map.Entry<Integer, Widget> entry: UI.instance.widgets.entrySet()){
-            if(entry.getValue() instanceof TextEntry){
+    public static LispObject getTextEntry() {
+        for (Map.Entry<Integer, Widget> entry : UI.instance.widgets.entrySet()) {
+            if (entry.getValue() instanceof TextEntry) {
                 TextEntry t = (TextEntry) entry.getValue();
-                    return JavaObject.getInstance(t);
+                return JavaObject.getInstance(t);
             }
         }
         return LispObject.getInstance(false);
     }
 
-    public static LispObject getFreeSlotForItem(Inventory inv, WItem item){
+    public static LispObject getFreeSlotForItem(Inventory inv, WItem item) {
         int[][] inventoryMatrix = containerMatrix(inv);
         int[][] d = new int[inventoryMatrix.length][inventoryMatrix[0].length];
 
         int sizeX = item.item.size().x;
         int sizeY = item.item.size().y;
-        System.out.println(item.item.resname()+" size "+sizeX+"x"+sizeY);
-        System.out.println("Inventory matrix: "+inventoryMatrix[0].length+"x"+inventoryMatrix.length);
+        System.out.println(item.item.resname() + " size " + sizeX + "x" + sizeY);
+        System.out.println("Inventory matrix: " + inventoryMatrix[0].length + "x" + inventoryMatrix.length);
 
-        for (int i=0;i<inventoryMatrix.length;i++){
-            for(int j=0;j<inventoryMatrix[0].length;j++){
-                if(slotsFree(inventoryMatrix, i, j, sizeX, sizeY)){
-                    return JavaObject.getInstance(new Coord(i,j));
+        for (int i = 0; i < inventoryMatrix.length; i++) {
+            for (int j = 0; j < inventoryMatrix[0].length; j++) {
+                if (slotsFree(inventoryMatrix, i, j, sizeX, sizeY)) {
+                    return JavaObject.getInstance(new Coord(i, j));
                 }
                 //System.out.print(inventoryMatrix[i][j]);
             }
@@ -419,15 +413,15 @@ public class LispUtil {
         return LispObject.getInstance(false);
     }
 
-    public static boolean slotsFree(int[][] slots, int x, int y, int sizeX, int sizeY){
-        if(!(x+sizeX < slots.length) || !(y+sizeY < slots[0].length)){
+    public static boolean slotsFree(int[][] slots, int x, int y, int sizeX, int sizeY) {
+        if (!(x + sizeX < slots.length) || !(y + sizeY < slots[0].length)) {
             return false;
         }
-        System.out.print(x+" : "+y);
-        for(int i=x;i<x+sizeX;i++){
-            for(int j=y;j<y+sizeY;j++){
-                System.out.println(" "+i+" : "+j+"  = "+slots[i][j]);
-                if(slots[i][j] == 1){
+        System.out.print(x + " : " + y);
+        for (int i = x; i < x + sizeX; i++) {
+            for (int j = y; j < y + sizeY; j++) {
+                System.out.println(" " + i + " : " + j + "  = " + slots[i][j]);
+                if (slots[i][j] == 1) {
                     return false;
                 }
             }
@@ -438,15 +432,15 @@ public class LispUtil {
 
     public static int[][] containerMatrix(Inventory inv) {
         int[][] ret = new int[inv.isz.x][inv.isz.y];
-        for(WItem item: inv.getInventoryContents()) {
+        for (WItem item : inv.getInventoryContents()) {
             int xSize = item.item.size().x;
             int ySize = item.item.size().y;
             int xLoc = item.c.div(Inventory.sqsz.x).x;
             int yLoc = item.c.div(Inventory.sqsz.y).y;
             //System.out.println(item.item.resname()+" size "+xSize+"x"+ySize+" location "+xLoc+"x"+yLoc);
 
-            for(int i = 0; i < xSize; i++) {
-                for(int j = 0; j < ySize; j++) {
+            for (int i = 0; i < xSize; i++) {
+                for (int j = 0; j < ySize; j++) {
                     ret[i + xLoc][j + yLoc] = 1;
                 }
             }
@@ -480,9 +474,9 @@ public class LispUtil {
                         Field privateMessageField = ResDrawable.class.getDeclaredField("sdt");
                         privateMessageField.setAccessible(true);
                         Message sdt = (Message) privateMessageField.get(rd);
-                        System.out.println("QQ"+sdt.toString());
+                        System.out.println("QQ" + sdt.toString());
                     }
-                }catch (NoSuchFieldException|IllegalAccessException ignore){
+                } catch (NoSuchFieldException | IllegalAccessException ignore) {
 
                 }
             }
@@ -495,23 +489,48 @@ public class LispUtil {
         return JavaObject.getInstance(gob.rc.floor());
     }
 
-    public static LispObject mycoord(){
+    public static LispObject mycoord() {
         return getcoord(UI.instance.gui.plid);
     }
 
     public static void itemClick(long gobid) {
         Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
         UI.instance.gui.map.wdgmsg("itemact", gob.sc, gob.rc, 0, (int) gob.id, gob.rc, -1);
+
     }
 
-    public static void clickMap(Coord coord){
-        UI.instance.gui.map.wdgmsg("click",Coord.z,coord, 1,0);
+    public static void clickMap(Coord coord) {
+        UI.instance.gui.map.wdgmsg("click", Coord.z, coord, 1, 0);
     }
 
-    public static void rightClickGob(long gobid){
+    public static void rightClickGob(long gobid) {
         Gob gob = UI.instance.sess.glob.oc.getgob(gobid);
-        if(gob != null)
+        if (gob != null)
             UI.instance.gui.map.wdgmsg("click", gob.sc, UI.instance.sess.glob.oc.getgob(UI.instance.gui.plid).rc, 3, 0, 0, (int) gob.id, gob.rc.floor(), 0, -1);
     }
 
+    public static void conslog(String logline){
+        UI.instance.gui.syslog.append(logline.toString(), Color.GREEN);
+    }
+
+    public static void fields() {
+        synchronized (UI.instance.sess.glob.oc) {
+            for (Gob gob : UI.instance.sess.glob.oc) {
+                ResDrawable rd = gob.getattr(ResDrawable.class);
+
+                if (rd != null && rd.res != null && rd.res.get().name.contains("field")) {
+                    System.out.println("FIELD "+gob.id);
+                    for (Gob.Overlay ol: gob.ols) {
+                        System.out.println("FIELD OL "+ol);
+                    }
+                    Iterator it = gob.attr.entrySet().iterator();
+                    while (it.hasNext()) {
+                        Map.Entry pair = (Map.Entry)it.next();
+                        System.out.println(pair.getKey() + " = " + pair.getValue());
+                        //it.remove(); // avoids a ConcurrentModificationException
+                    }
+                }
+            }
+        }
+    }
 }

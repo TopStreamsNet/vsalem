@@ -314,11 +314,13 @@ public class MCache {
 			HashSet<Integer> waterTileIds = getTileIdsByResNames(Navigation.WATER_TILES);
 			HashSet<Integer> pavingTileIds = getTileIdsByResNames(Collections.singletonList("pave"));
 			HashSet<Integer> nilTileIds = getTileIdsByResNames(Collections.singletonList("gfx/tiles/nil"));
+			HashSet<Integer> dreamTileIds = getTileIdsByResNames(Collections.singletonList("gfx/tiles/dreamfloor"));
 
 			int caveTilesCount = 0;
 			int waterTilesCount = 0;
 			int pavingTilesCount = 0;
 			int nilTilesCount = 0;
+			int dreamTilesCount = 0;
 			for(int i = 0; i < tiles.length; i++) {
 				tiles[i] = blob.uint8();
 				if(caveTileIds.contains(tiles[i])){
@@ -329,12 +331,16 @@ public class MCache {
 					pavingTilesCount++;
 				} else if (nilTileIds.contains(tiles[i])) {
 					nilTilesCount++;
+				} else if (dreamTileIds.contains(tiles[i])){
+					dreamTilesCount++;
 				}
 			}
 
 			if(gridType == Navigation.GridType.UNKNOWN){
-				if(caveTilesCount > 0){
+				if(caveTilesCount > 0) {
 					gridType = Navigation.GridType.CAVE;
+				} else if(dreamTilesCount > 0){
+					gridType = Navigation.GridType.DREAM;
 				} else if (waterTilesCount == cmaps.x * cmaps.y) {
 					gridType = Navigation.GridType.UNKNOWN_WATER;
 				} else if (pavingTilesCount == cmaps.x * cmaps.y) {
@@ -581,7 +587,9 @@ public class MCache {
 
 	public void printTiles(){
 		for(int id =0; id<256; id++){
-			System.out.println("tileid "+id+" "+nsets[id].name);
+			if (nsets[id] != null) {
+				System.out.println("tileid " + id + " " + nsets[id].name);
+			}
 		}
 	}
 

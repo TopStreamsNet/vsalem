@@ -15,10 +15,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Navigation {
     public static final List<String> UNDERGROUND_TILES = Arrays.asList("gfx/tiles/mine");
     public static final List<String> WATER_TILES = Arrays.asList("gfx/tiles/water", "gfx/tiles/deep");
-    private static final Coord MAGIC_WISP_POSITION = new Coord(-9938, -9960);
 
     public enum GridType { UNKNOWN, CAVE, HOUSE, SURFACE, UNKNOWN_WATER, UNKNOWN_PAVING,
-        CHARACTER_GENERATION, CHARACTER_SWITCH }
+        CHARACTER_GENERATION, CHARACTER_SWITCH, DREAM }
 
     private static class PlayerPartyCoordinates {
         Coord realGridUnitCoordinates;    // Player's real grid TL coordinates in units
@@ -28,17 +27,13 @@ public class Navigation {
             this.realGridUnitCoordinates = realGridUnitCoordinates;
         }
 
-        boolean isWispPosition() {
-            return MAGIC_WISP_POSITION.equals(realGridUnitCoordinates) && MAGIC_WISP_POSITION.equals(virtualCoordinates);
-        }
-
         boolean ready() {
             return realGridUnitCoordinates != null && virtualCoordinates != null;
         }
     }
 
     public static boolean isValidGridType(GridType gridType) {
-        return gridType == GridType.SURFACE || gridType == GridType.UNKNOWN_WATER;
+        return gridType == GridType.SURFACE || gridType == GridType.UNKNOWN_WATER || gridType == GridType.DREAM;
     }
 
     /**
@@ -158,9 +153,7 @@ public class Navigation {
                 if (!sessionPartyCoordinates.isEmpty()) {
                     PlayerPartyCoordinates partyCoordinates = sessionPartyCoordinates.get(characterId);
                     if (partyCoordinates != null) {
-                        if (partyCoordinates.isWispPosition()) {
-                            setSessionType(GridType.CHARACTER_GENERATION);
-                        } else if (partyCoordinates.ready()) {
+                        if (partyCoordinates.ready()) {
                             detectedAbsoluteCoordinates = partyCoordinates.realGridUnitCoordinates.inv();
                             System.out.println("Detected AC: " + detectedAbsoluteCoordinates);
                         }

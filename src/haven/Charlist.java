@@ -252,18 +252,18 @@ public class Charlist extends Widget {
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender instanceof Button) {
 	    synchronized(chars) {
-		for(Char c : chars) {
-		    if(sender == c.plb){
-			    Config.setCharName(c.name);
-			    wdgmsg("play", c.name);
-                Navigation.setCharacterName(c.name);
+		    for(Char c : chars) {
+		        if(sender == c.plb){
+			        Config.setCharName(c.name);
+			        wdgmsg("play", c.name);
+                    Navigation.setCharacterName(c.name);
+		        }
 		    }
-		}
 	    }
 	} else if(sender instanceof Avaview) {
 	} else {
-	    super.wdgmsg(sender, msg, args);
-	}
+	        super.wdgmsg(sender, msg, args);
+	    }
     }
 
     public void uimsg(String msg, Object... args) {
