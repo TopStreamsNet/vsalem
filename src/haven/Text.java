@@ -40,7 +40,7 @@ public class Text {
     public static final Color white = Color.WHITE;
 	
     static {
-	std = new Foundry(new Font("SansSerif", Font.PLAIN, 10));
+	std = new Foundry(new Font("Arial", Font.PLAIN, 10)); // vSalem Change Font - icon text
     }
 	
     public static class Line extends Text {

@@ -29,7 +29,7 @@ package haven;
 import java.awt.Font;
 
 public class FastText {
-     public static final Text.Foundry fnd = new Text.Foundry(new Font("Serif", 1, 15)).aa(true);
+     public static final Text.Foundry fnd = new Text.Foundry(new Font("Serif", 1, 40)).aa(true); // vSalem Change Font - ???
     private static final Tex[] ct = new Tex[225];
     
     private FastText() {}

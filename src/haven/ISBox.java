@@ -34,7 +34,7 @@ public class ISBox extends Widget implements DTarget {
     private int rem = 0;
     private int av = 0;
     static {
-	lf = new Text.Foundry(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 18), java.awt.Color.WHITE);
+	lf = new Text.Foundry(new java.awt.Font("Terminus", java.awt.Font.PLAIN, 12), java.awt.Color.WHITE); // vSalem Change Font - ???
 	lf.aa = true;
     }
     

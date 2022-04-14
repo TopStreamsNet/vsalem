@@ -36,7 +36,7 @@ import static haven.Tempers.*;
 
 public class Gobble extends SIWidget {
     public static final BufferedImage bg = Resource.loadimg("gfx/hud/tempers/gbg");
-    static Text.Foundry tnf = new Text.Foundry(new java.awt.Font("serif", java.awt.Font.BOLD, 16)).aa(true);
+    static Text.Foundry tnf = new Text.Foundry(new java.awt.Font("Terminus", java.awt.Font.BOLD, 20)).aa(true); // vSalem Change Font - ???
     public int[] lev = new int[4];
     public List<TypeMod> mods = new ArrayList<TypeMod>();
     static final Color loc = new Color(0, 128, 255);
