@@ -55,6 +55,7 @@ public class HavenPanel extends GLCanvas implements Runnable, Console.Directory 
     private GLState gstate, rtstate, ostate;
     private GLState.Applier state = null;
     private GLConfig glconf = null;
+	public UIConfig uiConfig = new UIConfig();
     
     private static GLCapabilities stdcaps() {
         GLProfile prof = GLProfile.getDefault();

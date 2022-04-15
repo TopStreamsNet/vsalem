@@ -35,7 +35,7 @@ import java.awt.image.*;
 import static haven.PUtils.*;
 
 public class Tempers extends SIWidget {
-    static final Foundry tmprfnd = new RichText.Foundry(TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD, TextAttribute.FOREGROUND, new Color(32,32,64), TextAttribute.SIZE, 12);
+    static final Foundry tmprfnd = new RichText.Foundry(TextAttribute.FAMILY, "Terminus", TextAttribute.SIZE, 10, TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD, TextAttribute.FOREGROUND, new Color(32,32,64)); // vSalem Change Font -
     public static final BufferedImage[] bg = {
 	Resource.loadimg("gfx/hud/tempers/bg1"),
 	Resource.loadimg("gfx/hud/tempers/bg2"),
@@ -368,6 +368,6 @@ public class Tempers extends SIWidget {
     }
     
     public static TexI text(String str) {
-	return new TexI(Utils.outline2(tmprfnd.render(str).img, new Color(240, 240, 240), false));
+	return new TexI(Utils.outline2(tmprfnd.render(str).img, new Color(240, 240, 240), true));
     }
 }

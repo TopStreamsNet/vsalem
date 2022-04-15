@@ -111,6 +111,11 @@ public class Text {
 	    tmpl.setFont(f);
 	    m = tmpl.getFontMetrics();
 	}
+
+	public Foundry(FontConfig fc){
+		this(new Font(fc.family, fc.style, fc.size), fc.color);
+		this.aa = fc.aa;
+	}
 		
 	public Foundry(Font f) {
 	    this(f, Color.WHITE);
