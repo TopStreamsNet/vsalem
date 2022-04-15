@@ -137,10 +137,10 @@
 				fork="true" 
 				classpath="java">
 			<arg line="-U http://game.salemthegame.com/res/ game.salemthegame.com"/>
-                        <jvmarg line="-Djogl.disable.opengles=true
+                        <jvmarg line="--add-exports java.base/java.lang=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/sun.java2d=ALL-UNNAMED -Djogl.disable.opengles=true
 						-Xms2g -Xmx2g -XX:MaxDirectMemorySize=2048m
-						-XX:NewSize=1g -XX:MaxNewSize=1g -XX:MaxTenuringThreshold=2 -XX:SurvivorRatio=8 -XX:+UnlockDiagnosticVMOptions -XX:ParGCCardsPerStrideChunk=32768
-						-XX:+ParallelRefProcEnabled -XX:+CMSClassUnloadingEnabled  -XX:CMSInitiatingOccupancyFraction=80 -XX:+UseCMSInitiatingOccupancyOnly
+						-XX:NewSize=1g -XX:MaxNewSize=1g -XX:MaxTenuringThreshold=2 -XX:SurvivorRatio=8 -XX:+UnlockDiagnosticVMOptions
+						-XX:+ParallelRefProcEnabled
 						-XX:+AlwaysPreTouch -XX:-OmitStackTraceInFastThrow" />
 		</java>
 	</target>
