@@ -63,11 +63,12 @@ import java.util.logging.SimpleFormatter;
 public class MainFrame extends Frame implements Runnable, Console.Directory {
     private static final String TITLE = String.format("vSalem v%s (((based on Ender) modified by Latikai) inspired by Taipion & Amber)", Config.version);
     public static MainFrame instance;
+	public static UIConfig uiConfig;
     HavenPanel p;
     private final ThreadGroup g;
     public final Thread mt;
     DisplayMode fsmode = null, prefs = null;
-	
+
     static {
 	try {
 	    javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
@@ -406,6 +407,7 @@ public class MainFrame extends Frame implements Runnable, Console.Directory {
 
     private static void main2(String[] args) {
 	Config.cmdline(args);
+	MainFrame.uiConfig = new UIConfig();
 	try {
 	    javabughack();
 	} catch(InterruptedException e) {

@@ -39,7 +39,7 @@ public class FlowerMenu extends Widget {
 	public static final Tex pbgm = Resource.loadtex("gfx/hud/fpm");
 	public static final Tex pbgr = Resource.loadtex("gfx/hud/fpr");
 	static Color ptc = new Color(248, 240, 193);
-	static Text.Foundry ptf = new Text.Foundry(new Font("SansSerif", Font.PLAIN, 12));
+	static Text.Foundry ptf = new Text.Foundry(MainFrame.uiConfig.getFontConfig("flowerMenu"));
 	static int ph = pbgm.sz().y, ppl = 8;
 	public FlowerMenu.Petal[] opts;
 	private double fast_menu1, fast_menu2;

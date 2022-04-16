@@ -36,7 +36,7 @@ public class Button extends SIWidget {
     static final BufferedImage br = Resource.loadimg("gfx/hud/buttons/tbtn/right");
     static final BufferedImage ut = Resource.loadimg("gfx/hud/buttons/tbtn/utex");
     static final Color defcol = new Color(248, 240, 193);
-    static final Text.Foundry tf = new Text.Foundry(MainFrame.instance.p.uiConfig.getFontConfig("buttonFont")); // vSalem Change Font - Button Text
+    static final Text.Foundry tf = new Text.Foundry(MainFrame.uiConfig.getFontConfig("buttonFont")); // vSalem Change Font - Button Text
     public static final int h = ut.getHeight();
     public static final int pad = bl.getWidth() + br.getWidth();
     public Text text;

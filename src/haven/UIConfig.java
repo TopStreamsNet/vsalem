@@ -92,6 +92,90 @@ public class UIConfig {
             fc.color = new Color(248, 240, 193);
             fc.style = Font.PLAIN;
             fc.aa = true;
+        }else if(target.equals("flowerMenu")){
+            fc.family = Font.SERIF;
+            fc.size = 15;
+            fc.color = new Color(248, 240, 193);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("loginForm")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 16;
+            fc.color = new Color(0, 0, 0);
+            fc.style = Font.BOLD;
+            fc.aa = true;
+        }else if(target.equals("loginError")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 18;
+            fc.color = new Color(255, 0, 0);
+            fc.style = Font.BOLD;
+            fc.aa = true;
+        }else if(target.equals("loginSaved")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 14;
+            fc.color = new Color(0, 0, 0);
+            fc.style = Font.BOLD;
+            fc.aa = true;
+        }else if(target.equals("charList")){
+            fc.family = Font.SERIF;
+            fc.size = 20;
+            fc.color = new Color(255, 255, 255);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("clothingBonus")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 12;
+            fc.color = new Color(248, 240, 193);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("bileValues")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 10;
+            fc.color = new Color(32, 32, 64);
+            fc.style = Font.BOLD;
+            fc.aa = true;
+        }else if(target.equals("labelFont")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 10;
+            fc.color = new Color(255, 255, 255);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("gameUIerror")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 14;
+            fc.color = new Color(192, 0, 0);
+            fc.style = Font.BOLD;
+            fc.aa = true;
+        }else if(target.equals("textEntry")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 12;
+            fc.color = new Color(0, 0, 0);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("stdRichText")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 12;
+            fc.color = new Color(255, 255, 255);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("menuGrid")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 12;
+            fc.color = new Color(255, 255, 255);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("optWnd2")){
+            fc.family = Font.SANS_SERIF;
+            fc.size = 12;
+            fc.color = new Color(255, 255, 255);
+            fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else{
+            fc.family = Font.SANS_SERIF;
+            fc.size = 40;
+            fc.color = new Color(255, 0, 0);
+            fc.style = Font.BOLD;
+            fc.aa = false;
         }
         return fc;
     }

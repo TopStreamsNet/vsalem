@@ -58,7 +58,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	public MapView map;
 	public LocalMiniMap mmap;
 	public Fightview fv;
-	public static final Text.Foundry errfoundry = new Text.Foundry(new java.awt.Font("Terminus", java.awt.Font.BOLD, 40), new Color(192, 0, 0)); // vSalem Change Font - ???
+	public static final Text.Foundry errfoundry = new Text.Foundry(MainFrame.uiConfig.getFontConfig("gameUIerror")); // vSalem Change Font - ???
 	private Text lasterr;
 	private long errtime;
 	public InvWindow invwnd;

@@ -35,7 +35,7 @@ import java.awt.image.*;
 import static haven.PUtils.*;
 
 public class Tempers extends SIWidget {
-    static final Foundry tmprfnd = new RichText.Foundry(TextAttribute.FAMILY, "Terminus", TextAttribute.SIZE, 10, TextAttribute.WEIGHT, TextAttribute.WEIGHT_BOLD, TextAttribute.FOREGROUND, new Color(32,32,64)); // vSalem Change Font -
+    static final Foundry tmprfnd = new RichText.Foundry(MainFrame.uiConfig.getFontConfig("bileValues")); // vSalem Change Font - bile text
     public static final BufferedImage[] bg = {
 	Resource.loadimg("gfx/hud/tempers/bg1"),
 	Resource.loadimg("gfx/hud/tempers/bg2"),

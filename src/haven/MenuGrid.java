@@ -50,7 +50,7 @@ public class MenuGrid extends Widget {
     public final Pagina CRAFT;
     public final Pagina next = paginafor(Resource.load("gfx/hud/sc-next").loadwait());
     public final Pagina bk = paginafor(Resource.load("gfx/hud/sc-back").loadwait());
-    public final static RichText.Foundry ttfnd = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
+    public final static RichText.Foundry ttfnd = new RichText.Foundry(MainFrame.uiConfig.getFontConfig("menuGrid"));
     private static Coord gsz = new Coord(4, 4);
     public Pagina cur, pressed, dragging, layout[][] = new Pagina[gsz.x][gsz.y];
     private int curoff = 0;

@@ -38,7 +38,7 @@ import java.util.*;
 import java.util.List;
 
 public class OptWnd2 extends Window {
-    public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
+    public static final RichText.Foundry foundry = new RichText.Foundry(MainFrame.uiConfig.getFontConfig("optWnd2"));
     public static OptWnd2 instance = null;
     private final CheckBox gob_path_color;
     private Tabs body;

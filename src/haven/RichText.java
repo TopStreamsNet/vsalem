@@ -44,8 +44,10 @@ public class RichText extends Text {
 
     static {
         Map<Attribute, Object> a = new HashMap<Attribute, Object>();
-        a.put(TextAttribute.FAMILY, "Terminus"); // vSalem - Change Font - phlegm pop-up
-        a.put(TextAttribute.SIZE, 20);
+        FontConfig fc = MainFrame.uiConfig.getFontConfig("stdRichText");
+        a.put(TextAttribute.FAMILY, fc.family); // vSalem - Change Font - phlegm pop-up
+        a.put(TextAttribute.SIZE, fc.size);
+        a.put(TextAttribute.FOREGROUND, fc.color);
         std = new Parser(a);
         stdf = new Foundry(std);
     }
@@ -581,6 +583,20 @@ public class RichText extends Text {
 
         public Foundry(Object... attrs) {
             this(new Parser(attrs));
+        }
+
+        public Foundry(FontConfig fc){
+            this(TextAttribute.FAMILY, fc.family, TextAttribute.SIZE, fc.size, TextAttribute.WEIGHT, stdf.font2textStyle(fc.style), TextAttribute.FOREGROUND, fc.color);
+        }
+
+        private float font2textStyle(int fstyle){
+            float style = TextAttribute.WEIGHT_REGULAR;
+            if (fstyle==Font.BOLD){
+                style = TextAttribute.WEIGHT_BOLD;
+            } else if (fstyle==Font.ITALIC){
+                style = TextAttribute.WEIGHT_LIGHT;
+            }
+            return style;
         }
 
         private static Map<? extends Attribute, ?> xlate(Font f, Color defcol) {

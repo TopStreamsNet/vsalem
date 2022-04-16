@@ -45,7 +45,7 @@ public class AttrBonusWdg extends Widget {
 	bar = new Scrollbar(new Coord(170, bonusc.y), SZ.y-bonusc.y, this, 0, 1);
 	bar.visible = false;
 	visible = Utils.getprefb("artifice_bonuses", true);
-	new Label(new Coord(5, 0), this, "Clothing bonuses:", new Text.Foundry(new Font("Terminus", Font.PLAIN, 12))); // vSalem Change Font - Just this text
+	new Label(new Coord(5, 0), this, "Clothing bonuses:", new Text.Foundry(MainFrame.uiConfig.getFontConfig("clothingBonus"))); // vSalem Change Font - Just this text
     }
 
     @Override

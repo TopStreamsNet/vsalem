@@ -30,7 +30,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class TextEntry extends Widget {
-    public static final Text.Foundry fnd = new Text.Foundry(new Font("Terminus", Font.PLAIN, 20), Color.BLACK); // vSalem Change Font - ???
+    public static final Text.Foundry fnd = new Text.Foundry(MainFrame.uiConfig.getFontConfig("textEntry")); // vSalem Change Font - text entry
     public static final int defh = fnd.height() + 2;
     public LineEdit buf;
     public int sx;

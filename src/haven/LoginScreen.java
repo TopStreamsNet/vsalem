@@ -55,9 +55,9 @@ public class LoginScreen extends Widget {
     Button providencestate,pophamstate;
 	
     static {
-	textf = new Text.Foundry(new Font("Terminus", Font.BOLD, 18), Color.BLACK).aa(true); // vSalem Change Font - login screen
-	texte = new Text.Foundry(new Font("Terminus", Font.BOLD, 16), new Color(255, 0, 0)).aa(true); // vSalem Change Font - login screen
-	textfs = new Text.Foundry(new Font("Terminus", Font.BOLD, 14), Color.BLACK).aa(true); // vSalem Change Font - login screen
+	textf = new Text.Foundry(MainFrame.uiConfig.getFontConfig("loginForm")); // vSalem Change Font - login screen
+	texte = new Text.Foundry(MainFrame.uiConfig.getFontConfig("loginError")); // vSalem Change Font - login screen
+	textfs = new Text.Foundry(MainFrame.uiConfig.getFontConfig("loginSaved")); // vSalem Change Font - login screen
     }
 	
     public LoginScreen(Widget parent) {

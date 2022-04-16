@@ -63,7 +63,7 @@ public class Charlist extends Widget {
     
     
     public static class Char {
-	static Text.Furnace tf = new Text.Imager(new Text.Foundry(new java.awt.Font("Terminus", java.awt.Font.PLAIN, 15), java.awt.Color.WHITE).aa(true)) { // vSalem Change Font - Login Char list
+	static Text.Furnace tf = new Text.Imager(new Text.Foundry(MainFrame.uiConfig.getFontConfig("charList"))) { // vSalem Change Font - Login Char list
 		protected BufferedImage proc(Text text) {
 		    return(PUtils.rasterimg(PUtils.blurmask2(text.img.getRaster(), 1, 1, java.awt.Color.BLACK)));
 		}
