@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Haven & Hearth game client.
  *  Copyright (C) 2009 Fredrik Tolf <fredrik@dolda2000.com>, and
- *                     BjÃ¶rn Johannessen <johannessen.bjorn@gmail.com>
+ *                     Björn Johannessen <johannessen.bjorn@gmail.com>
  *
  *  Redistribution and/or modification of this file is subject to the
  *  terms of the GNU Lesser General Public License, version 3, as
@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.*;
 
 import static haven.MCache.tilesz;
+import static haven.automation.Utils.waitForEmptyHand;
 
 public class MapView extends PView implements DTarget, Console.Directory, PFListener {
 	public static final String DEFCAM = "sortho";
@@ -1589,7 +1590,11 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 						Defer.later(new Defer.Callable<Object>() {
 							public java.lang.Object call() {
 								WItem nxtitem = items.remove(0);
-								LispUtil.waitForEmptyHand();
+								try {
+									waitForEmptyHand(ui.gui, 5000, "itemact timeout waiting for empty hand");
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
 								nxtitem.item.wdgmsg("take", Coord.z);
 								return true;
 							}
