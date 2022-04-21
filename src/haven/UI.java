@@ -26,9 +26,6 @@
 
 package haven;
 
-import haven.lisp.LispThread;
-import haven.lisp.LispUtil;
-
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -60,8 +57,7 @@ public class UI {
     public final ActAudio audio = new ActAudio();
 
     // vSalem
-	public LispThread lispThread = null;
-    
+
     private long lastactivity = 0;
     
     {
@@ -111,20 +107,6 @@ public class UI {
 				UI.instance.gui.listWidgets();
 			}
 		});
-		setcmd("ai", new Console.Command() {
-			public void run(Console cons, String[] args) {
-				if(UI.instance.lispThread != null){
-					UI.instance.lispThread.interrupt();
-				}
-				UI.instance.lispThread = new LispThread("lispthread");
-				UI.instance.lispThread.start();
-			}
-		});
-		setcmd("trees", new Command() {
-			public void run(Console cons, String[] args) {
-				LispUtil.findFruitTrees();
-			}
-		});
 		setcmd("tiles", new Command() {
 			public void run(Console cons, String[] args) {
 				UI.instance.sess.glob.map.printTiles();
@@ -133,16 +115,6 @@ public class UI {
 		setcmd("secret", new Command() {
 			public void run(Console cons, String[] args) {
 				SecretWindow.instance(UI.instance).toggle();
-			}
-		});
-		setcmd("inv", new Command() {
-			public void run(Console cons, String[] args) {
-				LispUtil.listInventory(UI.instance.gui.maininv);
-			}
-		});
-		setcmd("fields", new Command() {
-			public void run(Console cons, String[] args) {
-				LispUtil.fields();
 			}
 		});
 	}

@@ -28,9 +28,7 @@ package haven;
 
 import haven.integrations.map.Navigation;
 import haven.integrations.map.RemoteNavigation;
-import haven.lisp.LispUtil;
-import haven.pathfinder.PFListener;
-import haven.pathfinder.Pathfinder;
+import haven.pathfinder.Move;
 
 import javax.media.opengl.GL;
 import java.awt.*;
@@ -41,7 +39,7 @@ import java.util.*;
 import static haven.MCache.tilesz;
 import static haven.automation.Utils.waitForEmptyHand;
 
-public class MapView extends PView implements DTarget, Console.Directory, PFListener {
+public class MapView extends PView implements DTarget, Console.Directory {
 	public static final String DEFCAM = "sortho";
 	private final R2DWdg r2dwdg;
 	public static long plgob = -1;
@@ -61,9 +59,6 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 	public static final java.util.Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
 	private TileOutline gridol;
 	private Coord lasttc = Coord.z;
-
-	public Pathfinder pf;
-	public Thread pfthread;
 
 	{
 		camtypes.put("follow", FollowCam.class);
@@ -1790,62 +1785,6 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 		}
 	}
 
-	public void pfLeftClick(Coord mc, String action) {
-		Gob player = player();
-		if (player == null)
-			return;
-		synchronized (Pathfinder.class) {
-			if (pf != null) {
-				pf.terminate = true;
-				pfthread.interrupt();
-				// cancel movement
-				if (player.getattr(Moving.class) != null)
-					wdgmsg("gk", 27);
-			}
-			Coord src = player.rc.floor();
-			int gcx = haven.pathfinder.Map.origin - (src.x - mc.x);
-			int gcy = haven.pathfinder.Map.origin - (src.y - mc.y);
-			if (gcx < 0 || gcx >= haven.pathfinder.Map.sz || gcy < 0 || gcy >= haven.pathfinder.Map.sz)
-				return;
-
-			pf = new Pathfinder(this, new Coord(gcx, gcy), action);
-			pf.addListener(this);
-			pfthread = new Thread(pf, "Pathfinder");
-			pfthread.start();
-		}
-	}
-
-	public void pfRightClick(Gob gob, int meshid, int clickb, int modflags, String action) {
-		Gob player = player();
-		if (player == null)
-			return;
-		synchronized (Pathfinder.class) {
-			if (pf != null) {
-				pf.terminate = true;
-				pfthread.interrupt();
-				// cancel movement
-				if (player.getattr(Moving.class) != null)
-					wdgmsg("gk", 27);
-			}
-
-			Coord src = player.rc.floor();
-			int gcx = haven.pathfinder.Map.origin - (src.x - gob.rc.floor().x);
-			int gcy = haven.pathfinder.Map.origin - (src.y - gob.rc.floor().y);
-			if (gcx < 0 || gcx >= haven.pathfinder.Map.sz || gcy < 0 || gcy >= haven.pathfinder.Map.sz)
-				return;
-
-			pf = new Pathfinder(this, new Coord(gcx, gcy), gob, meshid, clickb, modflags, action);
-			pf.addListener(this);
-			pfthread = new Thread(pf, "Pathfinder");
-			pfthread.start();
-		}
-	}
-
-	public void pfDone(final Pathfinder thread) {
-		if (haven.pathfinder.Map.DEBUG_TIMINGS)
-			System.out.println("-= PF DONE =-");
-	}
-
 	private static void sleep(int timeInMiliS) {
 		try {
 			Thread.sleep(timeInMiliS);
@@ -1920,5 +1859,39 @@ public class MapView extends PView implements DTarget, Console.Directory, PFList
 		signalToStop = false;
 	}
 
+	public Move[] findpath(final Coord c) {
+		final NBAPathfinder finder = new NBAPathfinder(ui);
+		final List<Move> moves = finder.path(new Coord(ui.sess.glob.oc.getgob(plgob).getc()), c.floor());
+		return moves != null ? moves.toArray(new Move[0]) : null;
+	}
+
+	public Move[] findpath(final Gob g) {
+		g.updatePathfindingBlackout(true);
+		final Move[] moves = findpath(new Coord(g.getc()));
+		g.updatePathfindingBlackout(false);
+		return moves;
+	}
+
+	public boolean pathto(final Coord c) {
+		clearmovequeue();
+		final Move[] moves = findpath(c);
+		if (moves != null) {
+			for (final Move m : moves) {
+				queuemove(m.dest());
+			}
+			return (true);
+		} else {
+			return (false);
+		}
+	}
+
+	public boolean pathto(final Gob g) {
+		g.updatePathfindingBlackout(true);
+		boolean yea = pathto(new Coord2d(g.getc()));
+		pathfindGob = g;
+		pathfindGobMouse = 1;
+		g.updatePathfindingBlackout(false);
+		return yea;
+	}
 
 }

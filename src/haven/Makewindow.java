@@ -41,7 +41,7 @@ public class Makewindow extends Widget {
     static boolean requested_restore=false;
     static Coord boff = new Coord(7, 9);
     final int xoff = 40, yoff = 60;
-    public static final Text.Foundry nmf = new Text.Foundry(new Font("Terminus", Font.PLAIN, 40)); // vSalem Change Font - ???
+    public static final Text.Foundry nmf = new Text.Foundry(new Font("Serif", Font.PLAIN, 40)); // vSalem Change Font - ???
 
     @RName("make")
     public static class $_ implements Factory {

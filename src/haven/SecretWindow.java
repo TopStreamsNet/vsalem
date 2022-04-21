@@ -1,7 +1,5 @@
 package haven;
 
-import haven.pathfinder.Map;
-
 import java.awt.event.KeyEvent;
 
 public class SecretWindow extends Window{
