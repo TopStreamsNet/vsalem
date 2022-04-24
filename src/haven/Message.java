@@ -355,7 +355,7 @@ public class Message implements java.io.Serializable {
 	return("Message(" + type + "): " + ret);
     }
     
-    public int peekrbuf(int i) {
+    public byte peekrbuf(int i) {
         if (blob.length - 1 < i)
             return -1;
         return blob[i];

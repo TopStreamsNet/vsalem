@@ -1468,6 +1468,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 						markerData.setImage(d.res.get().name);
 						RemoteNavigation.getInstance().uploadMarkerData(markerData);
 					}
+					System.out.println(inf.gob.details());
 				}
 				if (inf.ol == null) {
 					wdgmsg("click", pc, mc, clickb, modflags, 0, (int) inf.gob.id, inf.gob.rc, 0, getid(inf.r));

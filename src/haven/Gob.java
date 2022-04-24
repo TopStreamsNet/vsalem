@@ -26,6 +26,8 @@
 
 package haven;
 
+import haven.automation.HeldBy;
+import haven.automation.Holding;
 import haven.minimap.Radar.GobBlink;
 import haven.res.lib.tree.TreeSprite;
 import haven.integrations.map.Navigation;
@@ -479,5 +481,83 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	}
     }
     public final GobLocation loc = new GobLocation();
+
+	public Optional<Resource> res() {
+		Resource res = null;
+		try {
+			res = getres();
+		} catch (Loading e) {
+		}
+		if (res == null)
+			return Optional.empty();
+		return Optional.of(res);
+	}
+
+	public Optional<String> resname() {
+		return res().map((res) -> res.name);
+	}
+
+	public String details() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Res: ");
+		if (res().isPresent()) sb.append(getres());
+		sb.append(" [").append(id).append("]\n");
+		final GobIcon icon = getattr(GobIcon.class);
+		if (icon != null) {
+			sb.append("Icon: ").append(icon.res.get()).append("\n");
+		}
+		final Holding holding = getattr(Holding.class);
+		if (holding != null) {
+			sb.append("Holding: ").append(holding.held.id).append(" - ").append(holding.held.resname().orElse("Unknown")).append("\n");
+		} else {
+			final HeldBy heldby = getattr(HeldBy.class);
+			if (heldby != null) {
+				sb.append("Held By: ").append(heldby.holder.id).append(" - ").append(heldby.holder.resname().orElse("Unknown")).append("\n");
+			}
+		}
+//        sb.append(attr.entrySet()).append("\n");
+		ResDrawable dw = getattr(ResDrawable.class);
+		if (dw != null) {
+			sb.append("ResDraw: ").append(Arrays.toString(dw.sdt.blob));
+			sb.append("\n");
+			sb.append("sdt: ").append(dw.sdtnum()).append("\n");
+		} else {
+			/*Composite comp = getattr(Composite.class);
+			if (comp != null) {
+				sb.append(eq()).append("\n");
+			}*/
+		}
+		if (!ols.isEmpty()) {
+			sb.append("Overlays: ").append(ols.size()).append("\n");
+			for (Overlay ol : ols) {
+				if (ol != null) {
+					sb.append("ol: ").append("[id:").append(ol.id).append("]");
+					if (ol.res != null && ol.res.get() != null) sb.append("[r:").append(ol.res.get()).append("]");
+					if (ol.spr != null) sb.append("[s:").append(ol.spr).append("]");
+//                    if (ol.sdt != null) sb.append(", d").append(Arrays.toString(ol.sdt.rbuf));
+					sb.append("\n");
+				}
+			}
+		}
+
+		if (attr.size() > 0) {
+			sb.append("GAttribs: ").append(attr.size()).append("\n");
+			for (GAttrib ga : attr.values()) {
+				if (ga != null) {
+					sb.append("ga: ").append("[").append(ga).append("]");
+					sb.append("\n");
+				}
+			}
+		}
+
+		sb.append("Angle: ").append(Math.toDegrees(a)).append("\n");
+		sb.append("Position: ").append(String.format("(%.3f, %.3f, %.3f)", getc().x, getc().y, getc().z)).append("\n");
+		sb.append("Layers: ").append("\n");
+		for (Resource.Layer l : getres().layers()) {
+			sb.append("--").append(l).append("\n");
+		}
+
+		return sb.toString();
+	}
     
 }

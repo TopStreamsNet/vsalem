@@ -31,7 +31,7 @@ import java.util.List;
 
 public class ResDrawable extends Drawable {
     final public  Indir<Resource> res;
-    Message sdt;
+    public Message sdt;
     Sprite spr = null;
     int delay = 0;
     boolean show_radius = false;
@@ -108,4 +108,12 @@ public class ResDrawable extends Drawable {
 	}
 	return(null);
     }
+
+	public int sdtnum() {
+		if (sdt != null) {
+			Message csdt = sdt.clone();
+			return csdt.eom() ? 0xffff000 : Sprite.decnum(csdt);
+		}
+		return 0;
+	}
 }

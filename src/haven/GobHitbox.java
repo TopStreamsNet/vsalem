@@ -113,14 +113,14 @@ public class GobHitbox extends Sprite {
             GAttrib rd = gob.getattr(ResDrawable.class);
             if (rd == null)     // shouldn't happen
                 return null;
-            int state = ((ResDrawable) rd).sdt.peekrbuf(0);
+            int state = Utils.ub(((ResDrawable) rd).sdt.peekrbuf(0));
             if (state == 1)     // open gate
                 return null;
         } else if (name.endsWith("/pow")) {
             GAttrib rd = gob.getattr(ResDrawable.class);
             if (rd == null)     // shouldn't happen
                 return null;
-            int state = ((ResDrawable) rd).sdt.peekrbuf(0);
+            int state = Utils.ub(((ResDrawable) rd).sdt.peekrbuf(0));
             if (state == 17 || state == 33) // hf
                 return null;
         }

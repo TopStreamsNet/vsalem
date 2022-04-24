@@ -40,11 +40,7 @@ import java.awt.image.BufferedImage;
 
 public class Resource implements Comparable<Resource>, Prioritized, Serializable {
     private final static Map<String, Resource> cache;
-    private static Loader loader;
-    private static CacheSource prscache;
     public static ThreadGroup loadergroup = null;
-    private static Map<String, LayerFactory<?>> ltypes = new TreeMap<String, LayerFactory<?>>();
-    static Set<Resource> loadwaited = new HashSet<Resource>();
     public static Class<Image> imgc = Image.class;
     public static Class<Tile> tile = Tile.class;
     public static Class<Neg> negc = Neg.class;
@@ -54,6 +50,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public static Class<AButton> action = AButton.class;
     public static Class<Audio> audio = Audio.class;
     public static Class<Tooltip> tooltip = Tooltip.class;
+    static Set<Resource> loadwaited = new HashSet<Resource>();
+    private static Loader loader;
+    private static CacheSource prscache;
+    private static Map<String, LayerFactory<?>> ltypes = new TreeMap<String, LayerFactory<?>>();
     
     static {
 	if(Config.softres)
@@ -81,32 +81,33 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    chainloader(new Loader(new JarSource()));
     }
 	
-    private LoadException error;
-    private Collection<Layer> layers = new LinkedList<Layer>();
+    static {
+	for(Class<?> cl : dolda.jglob.Loader.get(LayerName.class).classes()) {
+	    String nm = cl.getAnnotation(LayerName.class).value();
+	    if(LayerFactory.class.isAssignableFrom(cl)) {
+		try {
+		    addltype(nm, cl.asSubclass(LayerFactory.class).newInstance());
+		} catch(InstantiationException e) {
+		    throw(new Error(e));
+		} catch(IllegalAccessException e) {
+		    throw(new Error(e));
+		}
+	    } else if(Layer.class.isAssignableFrom(cl)) {
+		addltype(nm, cl.asSubclass(Layer.class));
+	    } else {
+		throw(new Error("Illegal resource layer class: " + cl));
+	    }
+	}
+    }
+
     public final String name;
     public int ver;
     public boolean loading;
     public ResSource source;
-    private transient Indir<Resource> indir = null;
     int prio = 0;
-
-    public static class Spec implements Indir<Resource> {
-	public final String name;
-	public final int ver;
-
-	public Spec(String name, int ver) {
-	    this.name = name;
-	    this.ver = ver;
-	}
-
-	public Resource get(int prio) {
-	    return(load(name, ver));
-	}
-	
-	public Resource get() {
-	    return(get(0));
-	}
-    }
+    private LoadException error;
+    private Collection<Layer> layers = new LinkedList<Layer>();
+    private transient Indir<Resource> indir = null;
 
     private Resource(String name, int ver) {
 	this.name = name;
@@ -226,11 +227,130 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	return(load(name, -1));
     }
     
+    public static Coord cdec(byte[] buf, int off) {
+	return(new Coord(Utils.int16d(buf, off), Utils.int16d(buf, off + 2)));
+    }
+    
+    public static void addltype(String name, LayerFactory<?> cons) {
+	ltypes.put(name, cons);
+    }
+	
+    public static <T extends Layer> void addltype(String name, Class<T> cl) {
+	addltype(name, new LayerConstructor<T>(cl));
+    }
+
+    public static Resource classres(final Class<?> cl) {
+	return(java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<Resource>() {
+		    public Resource run() {
+			ClassLoader l = cl.getClassLoader();
+			if(l instanceof ResClassLoader)
+			    return(((ResClassLoader)l).getres());
+			throw(new RuntimeException("Cannot fetch resource of non-resloaded class " + cl));
+		    }
+		}));
+    }
+	
+    public static BufferedImage loadimg(String name) {
+	Resource res = load(name);
+	res.loadwait();
+	return(res.layer(imgc).img);
+    }
+    
+    public static Tex loadtex(String name) {
+	Resource res = load(name);
+	res.loadwait();
+	return(res.layer(imgc).tex());
+    }
+    
+    public static void loadlist(InputStream list, int prio) throws IOException {
+	BufferedReader in = new BufferedReader(new InputStreamReader(list, "us-ascii"));
+	String ln;
+	while((ln = in.readLine()) != null) {
+	    int pos = ln.indexOf(':');
+	    if(pos < 0)
+		continue;
+	    String nm = ln.substring(0, pos);
+	    int ver;
+	    try {
+		ver = Integer.parseInt(ln.substring(pos + 1));
+	    } catch(NumberFormatException e) {
+		continue;
+	    }
+	    try {
+		load(nm, ver, prio);
+	    } catch(RuntimeException e) {
+	    }
+	}
+	in.close();
+    }
+
+    public static void dumplist(Collection<Resource> list, Writer dest) {
+	PrintWriter out = new PrintWriter(dest);
+	List<Resource> sorted = new ArrayList<Resource>(list);
+	Collections.sort(sorted);
+	for(Resource res : sorted) {
+	    if(res.loading)
+		continue;
+	    out.println(res.name + ":" + res.ver);
+	}
+    }
+
+    public static void updateloadlist(File file) throws Exception {
+	BufferedReader r = new BufferedReader(new FileReader(file));
+	Map<String, Integer> orig = new HashMap<String, Integer>();
+	String ln;
+	while((ln = r.readLine()) != null) {
+	    int pos = ln.indexOf(':');
+	    if(pos < 0) {
+		System.err.println("Weird line: " + ln);
+		continue;
+	    }
+	    String nm = ln.substring(0, pos);
+	    int ver = Integer.parseInt(ln.substring(pos + 1));
+	    orig.put(nm, ver);
+	}
+	r.close();
+	for(String nm : orig.keySet())
+	    load(nm);
+	while(true) {
+	    int d = qdepth();
+	    if(d == 0)
+		break;
+	    System.out.print("\033[1GLoading... " + d + "\033[K");
+	    Thread.sleep(500);
+	}
+	System.out.println();
+	Collection<Resource> cur = new LinkedList<Resource>();
+	for(Map.Entry<String, Integer> e : orig.entrySet()) {
+	    String nm = e.getKey();
+	    int ver = e.getValue();
+	    Resource res = load(nm);
+	    res.loadwait();
+	    res.checkerr();
+	    if(res.ver != ver)
+		System.out.println(nm + ": " + ver + " -> " + res.ver);
+	    cur.add(res);
+	}
+	Writer w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
+	try {
+	    dumplist(cur, w);
+	} finally {
+	    w.close();
+	}
+    }
+    
+    public static void main(String[] args) throws Exception {
+	String cmd = args[0].intern();
+	if(cmd == "update") {
+	    updateloadlist(new File(args[1]));
+	}
+    }
+
     public void boostprio(int newprio) {
 	if(prio < newprio)
 	    prio = newprio;
     }
-    
+	
     public Resource loadwaitint() throws InterruptedException {
 	synchronized(this) {
 	    boostprio(10);
@@ -240,14 +360,14 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 	return(this);
     }
-	
+    
     public String basename() {
 	int p = name.lastIndexOf('/');
 	if(p < 0)
 	    return(name);
 	return(name.substring(p + 1));
     }
-
+	
     public Resource loadwait() {
 	boolean i = false;
 	synchronized(loadwaited) {
@@ -268,42 +388,289 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	return(this);
     }
 	
+    public <T> T getcode(Class<T> cl, boolean fail) {
+	CodeEntry e = layer(CodeEntry.class);
+	if(e == null) {
+	    if(fail)
+		throw(new RuntimeException("Tried to fetch non-present res-loaded class " + cl.getName() + " from " + Resource.this.name));
+	    return(null);
+	}
+	return(e.get(cl, fail));
+    }
+
+    private void readall(InputStream in, byte[] buf) throws IOException {
+	int ret, off = 0;
+	while(off < buf.length) {
+	    ret = in.read(buf, off, buf.length - off);
+	    if(ret < 0)
+		throw(new LoadException("Incomplete resource at " + name, this));
+	    off += ret;
+	}
+    }
+
+	public Collection<Layer> layers() {
+		return (layers);
+	}
+
+    public <L extends Layer> Collection<L> layers(final Class<L> cl, boolean th) {
+	if(loading && th)
+	    throw(new Loading(this));
+	checkerr();
+	return(new AbstractCollection<L>() {
+		public int size() {
+		    int s = 0;
+		    for(L l : this)
+			s++;
+		    return(s);
+		}
+
+		public Iterator<L> iterator() {
+		    return(new Iterator<L>() {
+			    Iterator<Layer> i = layers.iterator();
+			    L c = n();
+
+			    private L n() {
+				while(i.hasNext()) {
+				    Layer l = i.next();
+				    if(cl.isInstance(l))
+					return(cl.cast(l));
+				}
+				return(null);
+			    }
+
+			    public boolean hasNext() {
+				return(c != null);
+			    }
+
+			    public L next() {
+				L ret = c;
+				if(ret == null)
+				    throw(new NoSuchElementException());
+				c = n();
+				return(ret);
+			    }
+
+			    public void remove() {
+				throw(new UnsupportedOperationException());
+			    }
+			});
+		}
+	    });
+    }
+    
+    public <L extends Layer> Collection<L> layers(Class<L> cl) {
+	return(layers(cl, true));
+    }
+    
+    public <L extends Layer> L layer(Class<L> cl, boolean th) {
+	if(loading && th)
+	    throw(new Loading(this));
+	checkerr();
+	for(Layer l : layers) {
+	    if(cl.isInstance(l))
+		return(cl.cast(l));
+	}
+	return(null);
+    }
+
+    public <L extends Layer> L layer(Class<L> cl) {
+	return(layer(cl, true));
+    }
+
+    public <I, L extends IDLayer<I>> L layer(Class<L> cl, I id) {
+	if(loading)
+	    throw(new Loading(this));
+	checkerr();
+	for(Layer l : layers) {
+	    if(cl.isInstance(l)) {
+		L ll = cl.cast(l);
+		if(ll.layerid().equals(id))
+		    return(ll);
+	    }
+	}
+	return(null);
+    }
+
+    public int compareTo(Resource other) {
+	checkerr();
+	int nc = name.compareTo(other.name);
+	if(nc != 0)
+	    return(nc);
+	if(ver != other.ver)
+	    return(ver - other.ver);
+	if(other != this)
+	    throw(new RuntimeException("Resource identity crisis!"));
+	return(0);
+    }
+
+    public boolean equals(Object other) {
+	if(!(other instanceof Resource))
+	    return(false);
+	Resource o = (Resource)other;
+	return(o.name.equals(this.name) && (o.ver == this.ver));
+    }
+
+    private void load(InputStream in) throws IOException {
+	String sig = "Haven Resource 1";
+	byte buf[] = new byte[sig.length()];
+	readall(in, buf);
+	if(!sig.equals(new String(buf)))
+	    throw(new LoadException("Invalid res signature", this));
+	buf = new byte[2];
+	readall(in, buf);
+	int ver = Utils.uint16d(buf, 0);
+	List<Layer> layers = new LinkedList<Layer>();
+	if(this.ver == -1) {
+	    this.ver = ver;
+	} else {
+	    if(ver != this.ver)
+		throw(new LoadException("Wrong res version (" + ver + " != " + this.ver + ")", this));
+	}
+	outer: while(true) {
+	    StringBuilder tbuf = new StringBuilder();
+	    while(true) {
+		byte bb;
+		int ib;
+		if((ib = in.read()) == -1) {
+		    if(tbuf.length() == 0)
+			break outer;
+		    throw(new LoadException("Incomplete resource at " + name, this));
+		}
+		bb = (byte)ib;
+		if(bb == 0)
+		    break;
+		tbuf.append((char)bb);
+	    }
+	    buf = new byte[4];
+	    readall(in, buf);
+	    int len = Utils.int32d(buf, 0);
+	    buf = new byte[len];
+	    readall(in, buf);
+	    LayerFactory<?> lc = ltypes.get(tbuf.toString());
+	    if(lc == null)
+		continue;
+	    layers.add(lc.cons(this, buf));
+	}
+	this.layers = layers;
+	for(Layer l : layers)
+	    l.init();
+    }
+
+    public Indir<Resource> indir() {
+	if(indir != null)
+	    return(indir);
+	indir = new Indir<Resource>() {
+	    public Resource res = Resource.this;
+
+	    public Resource get() {
+		if(loading)
+		    throw(new Loading(Resource.this));
+		return(Resource.this);
+	    }
+
+	    public void set(Resource r) {
+		throw(new RuntimeException());
+	    }
+
+	    public int compareTo(Indir<Resource> x) {
+		return(Resource.this.compareTo(this.getClass().cast(x).res));
+	    }
+	};
+	return(indir);
+    }
+
+    public void checkerr() {
+	if(!loading && (error != null))
+	    throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + "), from " + source, error));
+    }
+
+    public int priority() {
+	return(prio);
+    }
+
+    public String toString() {
+	return(name + "(v" + ver + ")");
+    }
+
     public static interface ResSource {
 	public InputStream get(String name) throws IOException;
     }
+
+    public interface LayerFactory<T extends Layer> {
+	public T cons(Resource res, byte[] buf);
+    }
     
+    @dolda.jglob.Discoverable
+    @Target(ElementType.TYPE)
+    @Retention(RetentionPolicy.RUNTIME)
+    public @interface LayerName {
+	public String value();
+    }
+
+    public interface IDLayer<T> {
+	public T layerid();
+    }
+
+        @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface PublishedCode {
+	String name();
+	Class<? extends Instancer> instancer() default Instancer.class;
+	public interface Instancer {
+	    public Object make(Class<?> cl) throws InstantiationException, IllegalAccessException;
+	}
+    };
+
+    public static class Spec implements Indir<Resource> {
+	public final String name;
+	public final int ver;
+
+	public Spec(String name, int ver) {
+	    this.name = name;
+	    this.ver = ver;
+	}
+
+	public Resource get(int prio) {
+	    return(load(name, ver));
+	}
+
+	public Resource get() {
+	    return(get(0));
+	}
+    }
+
     public static abstract class TeeSource implements ResSource, Serializable {
 	public ResSource back;
-	
+
 	public TeeSource(ResSource back) {
 	    this.back = back;
 	}
-	
+
 	public InputStream get(String name) throws IOException {
 	    StreamTee tee = new StreamTee(back.get(name));
 	    tee.setncwe();
 	    tee.attach(fork(name));
 	    return(tee);
 	}
-	
+
 	public abstract OutputStream fork(String name) throws IOException;
-	
+
 	public String toString() {
 	    return("forking source backed by " + back);
 	}
     }
-    
+
     public static class CacheSource implements ResSource, Serializable {
 	public transient ResCache cache;
-	
+
 	public CacheSource(ResCache cache) {
 	    this.cache = cache;
 	}
-	
+
 	public InputStream get(String name) throws IOException {
 	    return(cache.fetch("res/" + name));
 	}
-	
+
 	public String toString() {
 	    return("cache source backed by " + cache);
 	}
@@ -311,11 +678,11 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 
     public static class FileSource implements ResSource, Serializable {
 	File base;
-	
+
 	public FileSource(File base) {
 	    this.base = base;
 	}
-	
+
 	public InputStream get(String name) throws FileNotFoundException {
 	    File cur = base;
 	    String[] parts = name.split("/");
@@ -324,7 +691,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    cur = new File(cur, parts[parts.length - 1] + ".res");
 	    return(new FileInputStream(cur));
 	}
-	
+
 	public String toString() {
 	    return("filesystem res source (" + base + ")");
 	}
@@ -337,16 +704,16 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		throw(new FileNotFoundException("Could not find resource locally: " + name));
 	    return(s);
 	}
-	
+
 	public String toString() {
 	    return("local res source");
 	}
     }
-    
+
     public static class HttpSource implements ResSource, Serializable {
 	private final transient SslHelper ssl;
 	public URL baseurl;
-	
+
 	{
 	    ssl = new SslHelper();
 	    try {
@@ -358,11 +725,11 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	    ssl.ignoreName();
 	}
-	
+
 	public HttpSource(URL baseurl) {
 	    this.baseurl = baseurl;
 	}
-		
+
 	private URL encodeurl(URL raw) throws IOException {
 	    /* This is "kinda" ugly. It is, actually, how the Java
 	     * documentation recommend that it be done, though... */
@@ -402,15 +769,15 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	private Loader next = null;
 	private Queue<Resource> queue = new PrioQueue<Resource>();
 	private transient Thread th = null;
-	
+
 	public Loader(ResSource src) {
 	    this.src = src;
 	}
-	
+
 	public void chain(Loader next) {
 	    this.next = next;
 	}
-	
+
 	public void load(Resource res) {
 	    synchronized(queue) {
 		queue.add(res);
@@ -424,7 +791,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		}
 	    }
 	}
-		
+
 	public void run() {
 	    try {
 		while(true) {
@@ -446,7 +813,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		}
 	    }
 	}
-		
+
 	private void handle(Resource res) {
 	    InputStream in = null;
 	    try {
@@ -486,12 +853,12 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	}
     }
-	
+
     public static class LoadException extends RuntimeException {
 	public Resource res;
 	public ResSource src;
 	public LoadException prev;
-	    
+
 	public LoadException(String msg, Resource res) {
 	    super(msg);
 	    this.res = res;
@@ -501,16 +868,16 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    super(msg, cause);
 	    this.res = res;
 	}
-	    
+
 	public LoadException(Throwable cause, Resource res) {
 	    super("Load error in resource " + res.toString() + ", from " + res.source, cause);
 	    this.res = res;
 	}
     }
-    
+
     public static class Loading extends haven.Loading {
 	public final Resource res;
-	
+
 	public Loading(Resource res) {
 	    this.res = res;
 	}
@@ -524,27 +891,11 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    res.loadwaitint();
 	}
     }
-	
-    public static Coord cdec(byte[] buf, int off) {
-	return(new Coord(Utils.int16d(buf, off), Utils.int16d(buf, off + 2)));
-    }
-	
-    public abstract class Layer implements Serializable {
-	public abstract void init();
-	
-	public Resource getres() {
-	    return(Resource.this);
-	}
-    }
-
-    public interface LayerFactory<T extends Layer> {
-	public T cons(Resource res, byte[] buf);
-    }
 
     public static class LayerConstructor<T extends Layer> implements LayerFactory<T> {
 	public final Class<T> cl;
 	private final Constructor<T> cons;
-	
+
 	public LayerConstructor(Class<T> cl) {
 	    this.cl = cl;
 	    try {
@@ -553,7 +904,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		throw(new RuntimeException("No proper constructor found for layer type " + cl.getName(), e));
 	    }
 	}
-	
+
 	public T cons(Resource res, byte[] buf) {
 	    try {
 		return(cons.newInstance(res, buf));
@@ -571,55 +922,92 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 
-    public static void addltype(String name, LayerFactory<?> cons) {
-	ltypes.put(name, cons);
-    }
-    
-    public static <T extends Layer> void addltype(String name, Class<T> cl) {
-	addltype(name, new LayerConstructor<T>(cl));
-    }
-    
-    @dolda.jglob.Discoverable
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface LayerName {
-	public String value();
-    }
-
-    static {
-	for(Class<?> cl : dolda.jglob.Loader.get(LayerName.class).classes()) {
-	    String nm = cl.getAnnotation(LayerName.class).value();
-	    if(LayerFactory.class.isAssignableFrom(cl)) {
+    /* Only for backwards compatibility */
+    @LayerName("tileset")
+    public static class OrigTileset implements LayerFactory<Tileset> {
+	public Tileset cons(Resource res, byte[] buf) {
+	    Tileset ret = res.new Tileset();
+	    int[] off = new int[1];
+	    off[0] = 0;
+	    int fl = Utils.ub(buf[off[0]++]);
+	    int flnum = Utils.uint16d(buf, off[0]);
+	    off[0] += 2;
+	    ret.flavprob = Utils.uint16d(buf, off[0]);
+	    off[0] += 2;
+	    for(int i = 0; i < flnum; i++) {
+		String fln = Utils.strd(buf, off);
+		int flv = Utils.uint16d(buf, off[0]);
+		off[0] += 2;
+		int flw = Utils.ub(buf[off[0]++]);
 		try {
-		    addltype(nm, cl.asSubclass(LayerFactory.class).newInstance());
-		} catch(InstantiationException e) {
-		    throw(new Error(e));
-		} catch(IllegalAccessException e) {
-		    throw(new Error(e));
+		    ret.flavobjs.add(load(fln, flv), flw);
+		} catch(RuntimeException e) {
+		    throw(new LoadException("Illegal resource dependency", e, res));
 		}
-	    } else if(Layer.class.isAssignableFrom(cl)) {
-		addltype(nm, cl.asSubclass(Layer.class));
+	    }
+	    return(ret);
+	}
+    }
+    
+    public static class LibClassLoader extends ClassLoader {
+	private final ClassLoader[] classpath;
+
+	public LibClassLoader(ClassLoader parent, Collection<ClassLoader> classpath) {
+	    super(parent);
+	    this.classpath = classpath.toArray(new ClassLoader[0]);
+	}
+
+	public Class<?> findClass(String name) throws ClassNotFoundException {
+	    for(ClassLoader lib : classpath) {
+		try {
+		    return(lib.loadClass(name));
+		} catch(ClassNotFoundException e) {}
+	    }
+	    throw(new ClassNotFoundException("Could not find " + name + " in any of " + Arrays.asList(classpath).toString()));
+	}
+    }
+	
+    @LayerName("audio2")
+    public static class Audio2 implements LayerFactory<Audio> {
+	public Audio cons(Resource res, byte[] buf) {
+	    int[] off = {0};
+	    int ver = buf[off[0]++];
+	    if((ver == 1) || (ver == 2)) {
+		String id = Utils.strd(buf, off);
+		double bvol = 1.0;
+		if(ver == 2) {
+		    bvol = Utils.uint16d(buf, off[0]) / 1000.0; off[0] += 2;
+		}
+		byte[] data = new byte[buf.length - off[0]];
+		System.arraycopy(buf, off[0], data, 0, buf.length - off[0]);
+		Audio ret = res.new Audio(data, id);
+		ret.bvol = bvol;
+		return(ret);
 	    } else {
-		throw(new Error("Illegal resource layer class: " + cl));
+		throw(new LoadException("Unknown audio layer version: " + ver, res));
 	    }
 	}
     }
+	
+    public abstract class Layer implements Serializable {
+	public abstract void init();
 
-    public interface IDLayer<T> {
-	public T layerid();
+	public Resource getres() {
+	    return(Resource.this);
+	}
     }
-
+    
     @LayerName("image")
     public class Image extends Layer implements Comparable<Image>, IDLayer<Integer> {
-	public transient BufferedImage img;
-	transient private Tex tex;
 	public final int z, subz;
 	public final boolean nooff;
 	public final int id;
-	private int gay = -1;
+	public transient BufferedImage img;
 	public Coord sz;
 	public Coord o;
-		
+	transient private Tex tex;
+	private int gay = -1;
+
 	public Image(byte[] buf) {
 	    z = Utils.int16d(buf, 0);
 	    subz = Utils.int16d(buf, 2);
@@ -636,7 +1024,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		throw(new LoadException("Invalid image data in " + name, Resource.this));
 	    sz = Utils.imgsz(img);
 	}
-		
+
 	public synchronized Tex tex() {
 	    if(tex != null)
 		return(tex);
@@ -647,7 +1035,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		};
 	    return(tex);
 	}
-		
+
 	private boolean detectgay() {
 	    for(int y = 0; y < sz.y; y++) {
 		for(int x = 0; x < sz.x; x++) {
@@ -657,7 +1045,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	    return(false);
 	}
-		
+
 	public boolean gayp() {
 	    if(gay == -1)
 		gay = detectgay()?1:0;
@@ -667,18 +1055,18 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public int compareTo(Image other) {
 	    return(z - other.z);
 	}
-	
+
 	public Integer layerid() {
 	    return(id);
 	}
-		
+
 	public void init() {}
     }
-
+    
     @LayerName("tooltip")
     public class Tooltip extends Layer {
 	public final String t;
-                
+
 	public Tooltip(byte[] buf) {
 	    try {
 		t = new String(buf, "UTF-8");
@@ -686,18 +1074,18 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		throw(new LoadException(e, Resource.this));
 	    }
 	}
-                
+
 	public void init() {}
     }
-
+	
     @LayerName("tile")
     public class Tile extends Layer {
-	transient BufferedImage img;
-	transient private Tex tex;
 	public final int id;
 	public final int w;
 	public final char t;
-		
+	transient BufferedImage img;
+	transient private Tex tex;
+
 	public Tile(byte[] buf) {
 	    t = (char)Utils.ub(buf[0]);
 	    id = Utils.ub(buf[1]);
@@ -716,10 +1104,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		tex = new TexI(img);
 	    return(tex);
 	}
-		
+
 	public void init() {}
     }
-
+	
     @LayerName("neg")
     public class Neg extends Layer {
 	public Coord cc;
@@ -727,10 +1115,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
     public Coord bs;
     public Coord sz;
 	public Coord[][] ep;
-		
+
 	public Neg(byte[] buf) {
 	    int off;
-			
+
 	    cc = cdec(buf, 0);
 	    bc = cdec(buf, 4);
         bs = cdec(buf, 8);
@@ -749,16 +1137,16 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		}
 	    }
 	}
-		
+
 	public void init() {}
     }
-
+	
     @LayerName("anim")
     public class Anim extends Layer {
-	private int[] ids;
 	public int id, d;
 	public Image[][] f;
-		
+	private int[] ids;
+
 	public Anim(byte[] buf) {
 	    id = Utils.int16d(buf, 0);
 	    d = Utils.uint16d(buf, 2);
@@ -768,7 +1156,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    for(int i = 0; i < ids.length; i++)
 		ids[i] = Utils.int16d(buf, 6 + (i * 2));
 	}
-		
+
 	public void init() {
 	    f = new Image[ids.length][];
 	    Image[] typeinfo = new Image[0];
@@ -782,16 +1170,16 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    }
 	}
     }
-
+	
     @LayerName("tileset2")
     public class Tileset extends Layer {
-	private String tn = "gnd";
 	public Object[] ta = new Object[0];
-	private transient Tiler.Factory tfac;
 	public WeightList<Resource> flavobjs = new WeightList<Resource>();
 	public WeightList<Tile> ground;
 	public WeightList<Tile>[] ctrans, btrans;
 	public int flavprob;
+	private String tn = "gnd";
+	private transient Tiler.Factory tfac;
 
 	private Tileset() {
 	}
@@ -939,38 +1327,11 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    packtiles(tiles, tsz);
 	}
     }
-
-    /* Only for backwards compatibility */
-    @LayerName("tileset")
-    public static class OrigTileset implements LayerFactory<Tileset> {
-	public Tileset cons(Resource res, byte[] buf) {
-	    Tileset ret = res.new Tileset();
-	    int[] off = new int[1];
-	    off[0] = 0;
-	    int fl = Utils.ub(buf[off[0]++]);
-	    int flnum = Utils.uint16d(buf, off[0]);
-	    off[0] += 2;
-	    ret.flavprob = Utils.uint16d(buf, off[0]);
-	    off[0] += 2;
-	    for(int i = 0; i < flnum; i++) {
-		String fln = Utils.strd(buf, off);
-		int flv = Utils.uint16d(buf, off[0]);
-		off[0] += 2;
-		int flw = Utils.ub(buf[off[0]++]);
-		try {
-		    ret.flavobjs.add(load(fln, flv), flw);
-		} catch(RuntimeException e) {
-		    throw(new LoadException("Illegal resource dependency", e, res));
-		}
-	    }
-	    return(ret);
-	}
-    }
-
+	
     @LayerName("pagina")
     public class Pagina extends Layer {
 	public final String text;
-		
+
 	public Pagina(byte[] buf) {
 	    try {
 		text = new String(buf, "UTF-8");
@@ -978,7 +1339,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		throw(new LoadException(e, Resource.this));
 	    }
 	}
-		
+
 	public void init() {}
     }
 
@@ -988,7 +1349,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	public final Resource parent;
 	public final char hk;
 	public final String[] ad;
-		
+
 	public AButton(byte[] buf) {
 	    int[] off = new int[1];
 	    off[0] = 0;
@@ -1013,25 +1374,15 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    for(int i = 0; i < ad.length; i++)
 		ad[i] = Utils.strd(buf, off);
 	}
-		
+
 	public void init() {}
     }
-    
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public @interface PublishedCode {
-	String name();
-	Class<? extends Instancer> instancer() default Instancer.class;
-	public interface Instancer {
-	    public Object make(Class<?> cl) throws InstantiationException, IllegalAccessException;
-	}
-    }
-
+	
     @LayerName("code")
     public class Code extends Layer {
 	public final String name;
 	transient public final byte[] data;
-		
+
 	public Code(byte[] buf) {
 	    int[] off = new int[1];
 	    off[0] = 0;
@@ -1039,63 +1390,24 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	    data = new byte[buf.length - off[0]];
 	    System.arraycopy(buf, off[0], data, 0, data.length);
 	}
-		
+
 	public void init() {}
     }
-
-    public class ResClassLoader extends ClassLoader {
+	
+public class ResClassLoader extends ClassLoader {
 	public ResClassLoader(ClassLoader parent) {
 	    super(parent);
 	}
-	
+
 	public Resource getres() {
 	    return(Resource.this);
 	}
-	
+
 	public String toString() {
 	    return("cl:" + Resource.this.toString());
 	}
-    };
-
-    public static Resource classres(final Class<?> cl) {
-	return(java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<Resource>() {
-		    public Resource run() {
-			ClassLoader l = cl.getClassLoader();
-			if(l instanceof ResClassLoader)
-			    return(((ResClassLoader)l).getres());
-			throw(new RuntimeException("Cannot fetch resource of non-resloaded class " + cl));
-		    }
-		}));
     }
-
-    public <T> T getcode(Class<T> cl, boolean fail) {
-	CodeEntry e = layer(CodeEntry.class);
-	if(e == null) {
-	    if(fail)
-		throw(new RuntimeException("Tried to fetch non-present res-loaded class " + cl.getName() + " from " + Resource.this.name));
-	    return(null);
-	}
-	return(e.get(cl, fail));
-    }
-
-    public static class LibClassLoader extends ClassLoader {
-	private final ClassLoader[] classpath;
 	
-	public LibClassLoader(ClassLoader parent, Collection<ClassLoader> classpath) {
-	    super(parent);
-	    this.classpath = classpath.toArray(new ClassLoader[0]);
-	}
-	
-	public Class<?> findClass(String name) throws ClassNotFoundException {
-	    for(ClassLoader lib : classpath) {
-		try {
-		    return(lib.loadClass(name));
-		} catch(ClassNotFoundException e) {}
-	    }
-	    throw(new ClassNotFoundException("Could not find " + name + " in any of " + Arrays.asList(classpath).toString()));
-	}
-    }
-
     @LayerName("codeentry")
     public class CodeEntry extends Layer {
 	private String clnm;
@@ -1105,7 +1417,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	transient private ClassLoader loader;
 	transient private Map<String, Class<?>> lpe = null;
 	transient private Map<Class<?>, Object> ipe = new HashMap<Class<?>, Object>();
-		
+
 	public CodeEntry(byte[] buf) {
 	    int[] off = new int[1];
 	    off[0] = 0;
@@ -1132,18 +1444,18 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		}
 	    }
 	}
-		
+
 	public void init() {
 	    for(Code c : layers(Code.class, false))
 		clmap.put(c.name, c);
 	}
-	
+
 	public ClassLoader loader(final boolean wait) {
 //            System.out.println("Getting classloader for resource "+Resource.this.name+", entries:");
 //	    for(Code c : layers(Code.class, false))
 //                System.out.println("\t"+c.name);
-            
-            
+
+
 	    synchronized(CodeEntry.this) {
 		if(this.loader == null) {
 		    this.loader = java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<ClassLoader>() {
@@ -1191,7 +1503,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		}
 	    }
 	}
-	
+
 	public <T> Class<? extends T> getcl(Class<T> cl, boolean fail) {
 	    load();
 	    PublishedCode entry = cl.getAnnotation(PublishedCode.class);
@@ -1260,8 +1572,8 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 
     @LayerName("audio")
     public class Audio extends Layer implements IDLayer<String> {
-	transient public byte[] coded;
 	public final String id;
+	transient public byte[] coded;
 	public double bvol = 1.0;
 
 	public Audio(byte[] coded, String id) {
@@ -1288,32 +1600,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
     }
 
-    @LayerName("audio2")
-    public static class Audio2 implements LayerFactory<Audio> {
-	public Audio cons(Resource res, byte[] buf) {
-	    int[] off = {0};
-	    int ver = buf[off[0]++];
-	    if((ver == 1) || (ver == 2)) {
-		String id = Utils.strd(buf, off);
-		double bvol = 1.0;
-		if(ver == 2) {
-		    bvol = Utils.uint16d(buf, off[0]) / 1000.0; off[0] += 2;
-		}
-		byte[] data = new byte[buf.length - off[0]];
-		System.arraycopy(buf, off[0], data, 0, buf.length - off[0]);
-		Audio ret = res.new Audio(data, id);
-		ret.bvol = bvol;
-		return(ret);
-	    } else {
-		throw(new LoadException("Unknown audio layer version: " + ver, res));
-	    }
-	}
-    }
-
     @LayerName("midi")
     public class Music extends Resource.Layer {
 	transient javax.sound.midi.Sequence seq;
-	
+
 	public Music(byte[] buf) {
 	    try {
 		seq = javax.sound.midi.MidiSystem.getSequence(new ByteArrayInputStream(buf));
@@ -1323,7 +1613,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		throw(new LoadException(e, Resource.this));
 	    }
 	}
-	
+
 	public void init() {}
     }
 
@@ -1351,291 +1641,5 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 
 	public void init() {}
-    }
-
-    private void readall(InputStream in, byte[] buf) throws IOException {
-	int ret, off = 0;
-	while(off < buf.length) {
-	    ret = in.read(buf, off, buf.length - off);
-	    if(ret < 0)
-		throw(new LoadException("Incomplete resource at " + name, this));
-	    off += ret;
-	}
-    }
-	
-    public <L extends Layer> Collection<L> layers(final Class<L> cl, boolean th) {
-	if(loading && th)
-	    throw(new Loading(this));
-	checkerr();
-	return(new AbstractCollection<L>() {
-		public int size() {
-		    int s = 0;
-		    for(L l : this)
-			s++;
-		    return(s);
-		}
-		
-		public Iterator<L> iterator() {
-		    return(new Iterator<L>() {
-			    Iterator<Layer> i = layers.iterator();
-			    L c = n();
-			    
-			    private L n() {
-				while(i.hasNext()) {
-				    Layer l = i.next();
-				    if(cl.isInstance(l))
-					return(cl.cast(l));
-				}
-				return(null);
-			    }
-			    
-			    public boolean hasNext() {
-				return(c != null);
-			    }
-			    
-			    public L next() {
-				L ret = c;
-				if(ret == null)
-				    throw(new NoSuchElementException());
-				c = n();
-				return(ret);
-			    }
-			    
-			    public void remove() {
-				throw(new UnsupportedOperationException());
-			    }
-			});
-		}
-	    });
-    }
-    
-    public <L extends Layer> Collection<L> layers(Class<L> cl) {
-	return(layers(cl, true));
-    }
-	
-    public <L extends Layer> L layer(Class<L> cl, boolean th) {
-	if(loading && th)
-	    throw(new Loading(this));
-	checkerr();
-	for(Layer l : layers) {
-	    if(cl.isInstance(l))
-		return(cl.cast(l));
-	}
-	return(null);
-    }
-	
-    public <L extends Layer> L layer(Class<L> cl) {
-	return(layer(cl, true));
-    }
-    
-    public <I, L extends IDLayer<I>> L layer(Class<L> cl, I id) {
-	if(loading)
-	    throw(new Loading(this));
-	checkerr();
-	for(Layer l : layers) {
-	    if(cl.isInstance(l)) {
-		L ll = cl.cast(l);
-		if(ll.layerid().equals(id))
-		    return(ll);
-	    }
-	}
-	return(null);
-    }
-    
-    public int compareTo(Resource other) {
-	checkerr();
-	int nc = name.compareTo(other.name);
-	if(nc != 0)
-	    return(nc);
-	if(ver != other.ver)
-	    return(ver - other.ver);
-	if(other != this)
-	    throw(new RuntimeException("Resource identity crisis!"));
-	return(0);
-    }
-	
-    public boolean equals(Object other) {
-	if(!(other instanceof Resource))
-	    return(false);
-	Resource o = (Resource)other;
-	return(o.name.equals(this.name) && (o.ver == this.ver));
-    }
-	
-    private void load(InputStream in) throws IOException {
-	String sig = "Haven Resource 1";
-	byte buf[] = new byte[sig.length()];
-	readall(in, buf);
-	if(!sig.equals(new String(buf)))
-	    throw(new LoadException("Invalid res signature", this));
-	buf = new byte[2];
-	readall(in, buf);
-	int ver = Utils.uint16d(buf, 0);
-	List<Layer> layers = new LinkedList<Layer>();
-	if(this.ver == -1) {
-	    this.ver = ver;
-	} else {
-	    if(ver != this.ver)
-		throw(new LoadException("Wrong res version (" + ver + " != " + this.ver + ")", this));
-	}
-	outer: while(true) {
-	    StringBuilder tbuf = new StringBuilder();
-	    while(true) {
-		byte bb;
-		int ib;
-		if((ib = in.read()) == -1) {
-		    if(tbuf.length() == 0)
-			break outer;
-		    throw(new LoadException("Incomplete resource at " + name, this));
-		}
-		bb = (byte)ib;
-		if(bb == 0)
-		    break;
-		tbuf.append((char)bb);
-	    }
-	    buf = new byte[4];
-	    readall(in, buf);
-	    int len = Utils.int32d(buf, 0);
-	    buf = new byte[len];
-	    readall(in, buf);
-	    LayerFactory<?> lc = ltypes.get(tbuf.toString());
-	    if(lc == null)
-		continue;
-	    layers.add(lc.cons(this, buf));
-	}
-	this.layers = layers;
-	for(Layer l : layers)
-	    l.init();
-    }
-	
-    public Indir<Resource> indir() {
-	if(indir != null)
-	    return(indir);
-	indir = new Indir<Resource>() {
-	    public Resource res = Resource.this;
-			
-	    public Resource get() {
-		if(loading)
-		    throw(new Loading(Resource.this));
-		return(Resource.this);
-	    }
-			
-	    public void set(Resource r) {
-		throw(new RuntimeException());
-	    }
-			
-	    public int compareTo(Indir<Resource> x) {
-		return(Resource.this.compareTo(this.getClass().cast(x).res));
-	    }
-	};
-	return(indir);
-    }
-	
-    public void checkerr() {
-	if(!loading && (error != null))
-	    throw(new RuntimeException("Delayed error in resource " + name + " (v" + ver + "), from " + source, error));
-    }
-	
-    public int priority() {
-	return(prio);
-    }
-
-    public static BufferedImage loadimg(String name) {
-	Resource res = load(name);
-	res.loadwait();
-	return(res.layer(imgc).img);
-    }
-	
-    public static Tex loadtex(String name) {
-	Resource res = load(name);
-	res.loadwait();
-	return(res.layer(imgc).tex());
-    }
-	
-    public String toString() {
-	return(name + "(v" + ver + ")");
-    }
-	
-    public static void loadlist(InputStream list, int prio) throws IOException {
-	BufferedReader in = new BufferedReader(new InputStreamReader(list, "us-ascii"));
-	String ln;
-	while((ln = in.readLine()) != null) {
-	    int pos = ln.indexOf(':');
-	    if(pos < 0)
-		continue;
-	    String nm = ln.substring(0, pos);
-	    int ver;
-	    try {
-		ver = Integer.parseInt(ln.substring(pos + 1));
-	    } catch(NumberFormatException e) {
-		continue;
-	    }
-	    try {
-		load(nm, ver, prio);
-	    } catch(RuntimeException e) {
-	    }
-	}
-	in.close();
-    }
-
-    public static void dumplist(Collection<Resource> list, Writer dest) {
-	PrintWriter out = new PrintWriter(dest);
-	List<Resource> sorted = new ArrayList<Resource>(list);
-	Collections.sort(sorted);
-	for(Resource res : sorted) {
-	    if(res.loading)
-		continue;
-	    out.println(res.name + ":" + res.ver);
-	}
-    }
-
-    public static void updateloadlist(File file) throws Exception {
-	BufferedReader r = new BufferedReader(new FileReader(file));
-	Map<String, Integer> orig = new HashMap<String, Integer>();
-	String ln;
-	while((ln = r.readLine()) != null) {
-	    int pos = ln.indexOf(':');
-	    if(pos < 0) {
-		System.err.println("Weird line: " + ln);
-		continue;
-	    }
-	    String nm = ln.substring(0, pos);
-	    int ver = Integer.parseInt(ln.substring(pos + 1));
-	    orig.put(nm, ver);
-	}
-	r.close();
-	for(String nm : orig.keySet())
-	    load(nm);
-	while(true) {
-	    int d = qdepth();
-	    if(d == 0)
-		break;
-	    System.out.print("\033[1GLoading... " + d + "\033[K");
-	    Thread.sleep(500);
-	}
-	System.out.println();
-	Collection<Resource> cur = new LinkedList<Resource>();
-	for(Map.Entry<String, Integer> e : orig.entrySet()) {
-	    String nm = e.getKey();
-	    int ver = e.getValue();
-	    Resource res = load(nm);
-	    res.loadwait();
-	    res.checkerr();
-	    if(res.ver != ver)
-		System.out.println(nm + ": " + ver + " -> " + res.ver);
-	    cur.add(res);
-	}
-	Writer w = new OutputStreamWriter(new FileOutputStream(file), "UTF-8");
-	try {
-	    dumplist(cur, w);
-	} finally {
-	    w.close();
-	}
-    }
-
-    public static void main(String[] args) throws Exception {
-	String cmd = args[0].intern();
-	if(cmd == "update") {
-	    updateloadlist(new File(args[1]));
-	}
     }
 }
