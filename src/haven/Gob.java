@@ -47,8 +47,10 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     public Collection<Overlay> ols = new LinkedList<Overlay>();
     private GobPath path = null;
     private static List<Long> timeList = new LinkedList<Long>();
-	
-    public static class Overlay implements Rendered {
+	private boolean pathfinding_blackout=false;
+	private List<Coord> hitboxcoords;
+
+	public static class Overlay implements Rendered {
 	public Indir<Resource> res;
 	public Message sdt;
 	public Sprite spr;
@@ -559,5 +561,25 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 
 		return sb.toString();
 	}
-    
+
+	public void updatePathfindingBlackout(final boolean val) {
+		this.pathfinding_blackout = val;
+		updateHitmap();
+	}
+
+	public void updateHitmap() {
+		synchronized (glob.gobhitmap) {
+			if (hitboxcoords != null) {
+				glob.gobhitmap.rem(this, hitboxcoords);
+				hitboxcoords = null;
+			}
+			//don't want objects being held to be on the hitmap
+			final UI ui = UI.instance;
+			if (getattr(HeldBy.class) == null &&
+					(getattr(Holding.class) == null || ui == null || getattr(Holding.class).held.id != MapView.plgob) &&
+					!pathfinding_blackout) {
+				hitboxcoords = glob.gobhitmap.add(this);
+			}
+		}
+	}
 }

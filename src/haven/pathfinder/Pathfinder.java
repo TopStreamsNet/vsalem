@@ -1,11 +1,8 @@
 package haven.pathfinder;
 
 
-import haven.Coord;
-
-import haven.GobHitbox;
-import haven.MCache;
-import haven.UI;
+import haven.*;
+import haven.automation.HeldBy;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -72,13 +69,12 @@ public abstract class Pathfinder {
     }
 
     private boolean areWeBoating() {
-        /*final Gob me = ui.sess.glob.oc.getgob(ui.gui.map.plgob);
+        final Gob me = ui.sess.glob.oc.getgob(ui.gui.map.plgob);
         if (me != null) {
-            return me.getattr(HeldBy.class) != null && me.getattr(HeldBy.class).holder.type == Type.WATERVEHICLE;
+            return me.getattr(HeldBy.class) != null /*&& me.getattr(HeldBy.class).holder.type == Type.WATERVEHICLE*/;
         } else {
             return false;
-        }*/
-        return false;
+        }
     }
 
     /**
@@ -90,17 +86,18 @@ public abstract class Pathfinder {
      */
     private boolean hitGob(final Coord mc) {
         Coord pc = ui.gui.map.player().rc;
-        for (Hitbox h : plhb) {
-            final Coord c = h.offset().add(mc);
-            final Coord br = h.size().add(c).add(1, 1);
-            Coord xy = Coord.z;
-            for (xy.x = c.x; xy.x < br.x; xy.x += 0.5)
-                for (xy.y = c.y; xy.y < br.y; xy.y += 0.5)
-                    if (ui.sess.glob.gobhitmap.checkHit(xy.floor()) && pc.dist(new Coord(mc)) > 3)
-                        return (true);
+        final Coord c = plhb.a.add(mc);
+        final Coord br = plhb.b.add(c);
+        Coord xy = new Coord(0,0);
+        xy.x = c.x;
+        for (xy.x = c.x; xy.x < br.x; xy.x += 1) {
+            for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
+                //System.out.println("hitGob: " + ui.sess.glob.gobhitmap.checkHit(xy.floor()) + " " + pc.dist(new Coord(mc)) + " " + xy + " => " + br);
+                if (ui.sess.glob.gobhitmap.checkHit(xy.floor()) && pc.dist(new Coord(mc)) > 3)
+                    return (true);
+            }
         }
-
-        return (false);
+        return false;
     }
 
     /**
@@ -109,17 +106,16 @@ public abstract class Pathfinder {
      * TODO: plhb is problem slightly too big for this since tiles will let you usually overlap a bit
      */
     private boolean hitOnBoat(final Coord mc) {
-        for (Hitbox h : plhb) {
-            final Coord c = h.offset().add(mc);
-            final Coord br = h.size().add(c).add(1, 1);
-            Coord xy = Coord.z;
-            for (xy.x = c.x; xy.x < br.x; xy.x += 0.5)
-                for (xy.y = c.y; xy.y < br.y; xy.y += 0.5) {
-                    final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz).floor());
-                    if (t != Tile.DEEPWATER && t != Tile.SHALLOWWATER)
-                        return (true);
-                }
-        }
+        System.out.println("HitOnBoat!!!");
+        final Coord c = plhb.a.add(mc);
+        final Coord br = plhb.b.add(c);
+        Coord xy = new Coord(0,0);
+        for (xy.x = c.x; xy.x < br.x; xy.x += 1)
+            for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
+                final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz).floor());
+                if (t != Tile.DEEPWATER && t != Tile.SHALLOWWATER)
+                    return (true);
+            }
         return (false);
     }
 
@@ -130,17 +126,17 @@ public abstract class Pathfinder {
      * Especially the case in caves, not so much with ridges...
      */
     private boolean hitOnLand(final Coord mc) {
-        for (Hitbox h : plhb) {
-            final Coord c = h.offset().add(mc);
-            final Coord br = h.size().add(c).add(1, 1);
-            Coord xy = Coord.z;
-            for (xy.x = c.x; xy.x < br.x; xy.x += 0.5)
-                for (xy.y = c.y; xy.y < br.y; xy.y += 0.5) {
-                    final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz2).floor());
-                    if (t != Tile.SHALLOWWATER && t != null)
-                        return (true);
-                }
-        }
+        System.out.println("hitonland!!!");
+        final Coord c = plhb.a.add(mc);
+        final Coord br = plhb.b.add(c);
+        Coord xy = new Coord(0,0);
+        for (xy.x = c.x; xy.x < br.x; xy.x += 1)
+            for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
+                final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz).floor());
+                if (t != Tile.SHALLOWWATER && t != null)
+                    return (true);
+            }
+
         return (false);
     }
 
@@ -285,6 +281,7 @@ public abstract class Pathfinder {
      * Our pathfinder guarantees that X -> X+1 is SAFE, but not X -> X+n where n >= 2
      */
     final ArrayList<Move> advreduce(final List<Coord> lines) {
+        System.out.println("advreduce!!!");
         if (lines != null) {
             if (true)
                 debugl(lines);

@@ -30,11 +30,7 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 
 public class UI {
     public static UI instance;
@@ -115,6 +111,16 @@ public class UI {
 		setcmd("secret", new Command() {
 			public void run(Console cons, String[] args) {
 				SecretWindow.instance(UI.instance).toggle();
+			}
+		});
+		setcmd("gogo", new Command() {
+			public void run(Console cons, String[] args) {
+				Utils.defer(new Runnable() {
+					@Override
+					public void run() {
+						System.out.println("AZAZA"+ UI.instance.gui.map.pathto(UI.instance.gui.map.player().rc.add(22, 0)));
+					}
+				});
 			}
 		});
 	}

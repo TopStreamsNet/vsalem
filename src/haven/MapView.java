@@ -29,6 +29,7 @@ package haven;
 import haven.integrations.map.Navigation;
 import haven.integrations.map.RemoteNavigation;
 import haven.pathfinder.Move;
+import haven.pathfinder.NBAPathfinder;
 
 import javax.media.opengl.GL;
 import java.awt.*;
@@ -59,6 +60,12 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	public static final java.util.Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
 	private TileOutline gridol;
 	private Coord lasttc = Coord.z;
+
+	private Gob pathfindGob;
+	private int pathfindGobMod = 0;
+	private int pathfindGobMouse = 0;
+	private Coord movingto;
+	private Queue<Coord> movequeue = new ArrayDeque<>();
 
 	{
 		camtypes.put("follow", FollowCam.class);
@@ -1825,7 +1832,6 @@ public class MapView extends PView implements DTarget, Console.Directory {
 		int counter = 0;
 		int oldID = 0;
 		int handID = 0;
-		int limit = 2;
 		if (closest_gob != null) {
 			while (!signalToStop) {
 				try {
@@ -1861,8 +1867,11 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	}
 
 	public Move[] findpath(final Coord c) {
+		System.out.println("findpath(final Coord c)");
 		final NBAPathfinder finder = new NBAPathfinder(ui);
+		System.out.println("Got NBA");
 		final List<Move> moves = finder.path(new Coord(ui.sess.glob.oc.getgob(plgob).getc()), c.floor());
+		System.out.println("Got Moves "+moves);
 		return moves != null ? moves.toArray(new Move[0]) : null;
 	}
 
@@ -1874,6 +1883,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	}
 
 	public boolean pathto(final Coord c) {
+		System.out.println("pathto(final Coord c)");
 		clearmovequeue();
 		final Move[] moves = findpath(c);
 		if (moves != null) {
@@ -1888,11 +1898,31 @@ public class MapView extends PView implements DTarget, Console.Directory {
 
 	public boolean pathto(final Gob g) {
 		g.updatePathfindingBlackout(true);
-		boolean yea = pathto(new Coord2d(g.getc()));
+		boolean yea = pathto(new Coord(g.getc()));
 		pathfindGob = g;
 		pathfindGobMouse = 1;
 		g.updatePathfindingBlackout(false);
 		return yea;
 	}
 
+	int finishTimes = 0;
+	int maxfinish = 100;
+	boolean isclickongob = false;
+
+	public void clearmovequeue() {
+		finishTimes = 0;
+		if (pathfindGob != null) {
+			pathfindGob = null; //set pathfind gob back to null incase pathfinding was interrupted in the middle of a pathfind right click.
+			pathfindGobMod = 0;
+			pathfindGobMouse = 0;
+			isclickongob = false;
+		}
+		movequeue.clear();
+		movingto = null;
+	}
+
+	public void queuemove(final Coord c) {
+		System.out.println("Queue move");
+		movequeue.add(c);
+	}
 }

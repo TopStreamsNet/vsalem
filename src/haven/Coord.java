@@ -30,13 +30,17 @@ import static java.lang.Math.PI;
 
 public class Coord implements Comparable<Coord>, java.io.Serializable {
     public int x, y;
-    public static Coord z = new Coord(0, 0);
+    public static final Coord z = new Coord(0, 0);
 	
     public Coord(int x, int y) {
 	this.x = x;
 	this.y = y;
     }
-	
+
+	public Coord(float x, float y) {
+		this((int) x, (int) y);
+	}
+
     public Coord(Coord c) {
 	this(c.x, c.y);
     }
@@ -229,4 +233,12 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
     public Coord rotate(double angle){
 	return new Coord((int)(x*Math.cos(angle) - y*Math.sin(angle)), (int)(x*Math.sin(angle) + y*Math.cos(angle)));
     }
+
+	public Coord rot(float angl) {
+		final float
+				cos = (float) Math.cos(angl),
+				sin = (float) Math.sin(angl);
+		return new Coord(x * cos - y * sin,
+				x * sin + y * cos);
+	}
 }

@@ -61,10 +61,14 @@ public class GobHitbox extends Sprite {
     public static class BBox {
         public Coord a;
         public Coord b;
+        public Coord[] points;
 
         public BBox(Coord a, Coord b) {
             this.a = a;
             this.b = b;
+            this.points = new Coord[]{
+                    new Coord(a.x, -a.y), new Coord(b.x, -a.y), new Coord(b.x, -b.y), new Coord(a.x, -b.y)
+            };
         }
     }
 

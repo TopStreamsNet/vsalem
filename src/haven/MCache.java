@@ -32,6 +32,7 @@ import haven.integrations.map.RemoteNavigation;
 import java.util.*;
 import java.lang.ref.*;
 import haven.Resource.Tileset;
+import haven.pathfinder.Tile;
 
 public class MCache {
 	public static final Coord tilesz = new Coord(11, 11);
@@ -107,6 +108,7 @@ public class MCache {
 	public class Grid {
 		public final int tiles[] = new int[cmaps.x * cmaps.y];
 		public final int z[] = new int[cmaps.x * cmaps.y];
+		public final Tile hitmap[] = new Tile[cmaps.x * cmaps.y];
 		public final int ol[] = new int[cmaps.x * cmaps.y];
 		private final Cut cuts[];
 		int olseq = -1;
@@ -143,6 +145,10 @@ public class MCache {
 			cuts = new Cut[cutn.x * cutn.y];
 			for(int i = 0; i < cuts.length; i++)
 				cuts[i] = new Cut();
+		}
+
+		public Tile gethitmap(Coord tc) {
+			return hitmap[tc.x + (tc.y * cmaps.x)];
 		}
 
 		public int gettile(Coord tc) {
@@ -425,6 +431,7 @@ public class MCache {
 	}
 
 	private Grid cached = null;
+
 	public Grid getgrid(Coord gc) {
 		synchronized(grids) {
 			if((cached == null) || !cached.gc.equals(cached)) {
@@ -438,8 +445,33 @@ public class MCache {
 		}
 	}
 
+	public Optional<Grid> getgrido(final Coord gc) {
+		synchronized (grids) {
+			if ((cached == null) || !cached.gc.equals(gc)) {
+				cached = grids.get(gc);
+				if (cached == null) {
+					request(gc);
+					return Optional.empty();
+				}
+			}
+			return Optional.of(cached);
+		}
+	}
+
 	public Grid getgridt(Coord tc) {
 		return(getgrid(tc.div(cmaps)));
+	}
+
+	public Optional<Grid> getgridto(Coord tc) {
+		return (getgrido(tc.div(cmaps)));
+	}
+	public Tile gethitmap(Coord tc) {
+		final Optional<Grid> g = getgridto(tc);
+		if (g.isPresent()) {
+			return g.get().gethitmap(tc.sub(g.get().ul));
+		} else {
+			return null;
+		}
 	}
 
 	public int gettile(Coord tc) {

@@ -30,6 +30,7 @@ import java.awt.*;
 import java.lang.ref.WeakReference;
 import java.util.*;
 
+import haven.pathfinder.GobHitmap;
 import org.ender.timer.Timer;
 
 public class Glob {
@@ -38,7 +39,8 @@ public class Glob {
     public static final int GMSG_LIGHT = 2;
     public static final int GMSG_SKY = 3;
     public static final float MAX_BRIGHT = 0.62f;
-	
+
+	public final GobHitmap gobhitmap = new GobHitmap();
     public long time, epoch = System.currentTimeMillis();
     public int season;
     public OCache oc = new OCache(this);
