@@ -78,6 +78,13 @@ public class SecretWindow extends Window{
                 Utils.setprefb("clientshift", Config.clientshift);
             }
         }).a = Config.clientshift;
+        (new CheckBox(new Coord(x1,y+=step), this, "Advanced Routing") {
+            @Override
+            public void changed(boolean val) {
+                Config.advroute = val;
+                Utils.setprefb("advroute", Config.advroute);
+            }
+        }).a = Config.advroute;
     }
 
     public static SecretWindow instance(UI ui) {

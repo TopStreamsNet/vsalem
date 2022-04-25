@@ -69,9 +69,9 @@ public abstract class Pathfinder {
     }
 
     private boolean areWeBoating() {
-        final Gob me = ui.sess.glob.oc.getgob(ui.gui.map.plgob);
-        if (me != null) {
-            return me.getattr(HeldBy.class) != null /*&& me.getattr(HeldBy.class).holder.type == Type.WATERVEHICLE*/;
+        final Gob me = ui.sess.glob.oc.getgob(MapView.plgob);
+        if (me != null && me.getattr(HeldBy.class) != null && me.getattr(HeldBy.class).holder.resname().isPresent()) {
+            return me.getattr(HeldBy.class).holder.resname().get().endsWith("boat");
         } else {
             return false;
         }
@@ -87,7 +87,7 @@ public abstract class Pathfinder {
     private boolean hitGob(final Coord mc) {
         Coord pc = ui.gui.map.player().rc;
         final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(mc);
+        final Coord br = plhb.b.add(mc).add(2,2);
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1) {
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
@@ -106,7 +106,7 @@ public abstract class Pathfinder {
      */
     private boolean hitOnBoat(final Coord mc) {
         final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(mc);
+        final Coord br = plhb.b.add(mc).add(2,2);;
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
@@ -125,7 +125,7 @@ public abstract class Pathfinder {
      */
     private boolean hitOnLand(final Coord mc) {
         final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(mc);
+        final Coord br = plhb.b.add(mc).add(2,2);
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {

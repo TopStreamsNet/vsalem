@@ -196,6 +196,7 @@ public class Config {
 	public static String aiscript = "salem.lisp";
 	public static boolean debug = Utils.getprefb("debug", false);
 	public static boolean clientshift = Utils.getprefb("clientshift", true);
+	public static boolean advroute = Utils.getprefb("advroute", false);
 
 
 
