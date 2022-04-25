@@ -70,6 +70,10 @@ public class GobHitbox extends Sprite {
                     new Coord(a.x, -a.y), new Coord(b.x, -a.y), new Coord(b.x, -b.y), new Coord(a.x, -b.y)
             };
         }
+
+        public boolean ishitable() {
+            return true;
+        }
     }
 
     private static final BBox bboxCalf = new BBox(new Coord(-9, -3), new Coord(9, 3));

@@ -63,7 +63,6 @@ public class NBAPathfinder extends Pathfinder {
      * 23: end while
      */
     private List<Coord> findpath(final Coord start, final Coord goal) {
-        System.out.println("findpath!!!");
         final PriorityQueue<Node> startpq = new PriorityQueue<>();
         final PriorityQueue<Node> goalpq = new PriorityQueue<>();
         final Map<Coord, Node> startNodes = new HashMap<>();
@@ -85,19 +84,14 @@ public class NBAPathfinder extends Pathfinder {
             endNodes.put(goal, endnode);
             fs = ft = heuristic.distance(start, goal);
         }
-        System.out.println("Pre-looping!!!");
         final boolean earlyexit = false;
 
         //10: while any v ∈ M has g(v) < ∞ do //While we have verts that have g(v) defined
         while (!startpq.isEmpty() && (!goalpq.isEmpty() || false)) {
-            System.out.println("Looping!");
+
             //Do it in lock step to simulate it being simultaneous.
-            System.out.println("Pre-expand fs!!!");
             fs = expand(startpq, goal, start, start, fs, ft, startNodes, endNodes, ignore, Side.SOURCE);
-            System.out.println("Expand fs done");
-            System.out.println("Pre-expand ft!!!");
             ft = expand(goalpq, start, goal, start, ft, fs, endNodes, startNodes, ignore, Side.GOAL);
-            System.out.println("Expand ft done");
 
             if (!earlyexit || touched == null)
                 continue;
@@ -134,34 +128,27 @@ public class NBAPathfinder extends Pathfinder {
                           final Map<Coord, Node> myNodes, final Map<Coord, Node> otherNodes,
                           final Set<Coord> rejected, final Side side) {
         if (!M.isEmpty()) {
-            System.out.println("OLOLO 1");
             //11:   u0 = arg min{g(v) + h(v) | v ∈ M}; // u0 is selected by taking the min vert with g(v) + h(v)
             final Node node = M.poll();
             //13:   if g(u0) + h(u0) − h(t) ≥ L or g(u0) + ˜f − h˜(u0) ≥ L then // - h(t) -> -0???
             //negate to only consider non-rejected nodes
             if (!(node.f >= best || (node.g + ftilda - heuristic.distance(node.c, source)) >= best)) {
-                System.out.println("OLOLO 2");
                 //16:     S = S + {u0}; // u0 is stabilized, create children
                 //17:     for all edges (u0, v) ∈ E with v ∈ M do           //for each child
                 for (final Coord dir : dirs[level]) {
-                    System.out.println("OLOLO 3");
                     final Coord nc = node.c.add(dir);
                     //with v ∈ M do
                     if (!rejected.contains(nc)) {
-                        System.out.println("OLOLO 4");
                         //12:   M = M − {u0}; //remove it from the set
                         rejected.add(nc);
                         //Ensure we didn't clip a hitbox or bad tile
                         if (!checkHit(nc)) {
-                            System.out.println("OLOLO 5");
                             //18:       g(v) = min(g(v), g(u0) + d(u0, v));
                             final Node child = new Node(node, nc, node.g + 1, heuristic.distance(nc, target));
                             if (!false) {
-                                System.out.println("OLOLO 6");
                                 M.add(child);
                                 myNodes.put(nc, child);
                             } else if (heuristic.distance(nc, start) < 440) {
-                                System.out.println("OLOLO 7");
                                 M.add(child);
                                 myNodes.put(nc, child);
                                 if (side == Side.SOURCE && child.h < estbest) {
@@ -171,11 +158,9 @@ public class NBAPathfinder extends Pathfinder {
                             }
                         }
                     } else if (otherNodes.containsKey(nc)) { //19:       L = min(L, g(v) + ˜g(v));
-                        System.out.println("OLOLO 8");
                         final Node child = new Node(node, nc, node.g + 1, heuristic.distance(nc, target));
                         myNodes.put(nc, child);
                         if (child.g + otherNodes.get(nc).g < best) {
-                            System.out.println("OLOLO 9");
                             best = child.g + otherNodes.get(nc).g;
                             touched = nc;
                         }

@@ -568,6 +568,8 @@ public class LocalMiniMap extends Window implements Console.Directory{
 		if(button == 3){
 			if (m != null) {
 				mv.wdgmsg("click", this.c.add(c), mc, button, ui.modflags(), 0, (int)m.gob.id, m.gob.rc, 0, (-1));
+				mv.pllastcc = ui.modflags() == 0 ? mc : null;
+				mv.clearmovequeue();
 				return true;
 			}
 

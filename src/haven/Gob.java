@@ -49,6 +49,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     private static List<Long> timeList = new LinkedList<Long>();
 	private boolean pathfinding_blackout=false;
 	private List<Coord> hitboxcoords;
+	private boolean discovered=false;
 
 	public static class Overlay implements Rendered {
 	public Indir<Resource> res;
@@ -56,7 +57,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	public Sprite spr;
 	public int id;
 	public boolean delign = false;
-	
+
 	public Overlay(int id, Indir<Resource> res, Message sdt) {
 	    this.id = id;
 	    this.res = res;
@@ -108,6 +109,13 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
     }
 	
     public void ctick(int dt) {
+	try{
+		if (!discovered) {
+			resname().ifPresent(this::discovered);
+		}
+	}catch(Loading e){
+
+	}
 	int dt2 = dt + initdelay;
 	initdelay = 0;
 	for(GAttrib a : attr.values()) {
@@ -580,6 +588,12 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 					!pathfinding_blackout) {
 				hitboxcoords = glob.gobhitmap.add(this);
 			}
+		}
+	}
+
+	private void discovered(final String name) {
+		if (GobHitbox.getBBox(this) != null) {
+			updateHitmap();
 		}
 	}
 }

@@ -87,14 +87,13 @@ public abstract class Pathfinder {
     private boolean hitGob(final Coord mc) {
         Coord pc = ui.gui.map.player().rc;
         final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(c);
+        final Coord br = plhb.b.add(mc);
         Coord xy = new Coord(0,0);
-        xy.x = c.x;
         for (xy.x = c.x; xy.x < br.x; xy.x += 1) {
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
-                //System.out.println("hitGob: " + ui.sess.glob.gobhitmap.checkHit(xy.floor()) + " " + pc.dist(new Coord(mc)) + " " + xy + " => " + br);
-                if (ui.sess.glob.gobhitmap.checkHit(xy.floor()) && pc.dist(new Coord(mc)) > 3)
+                if (ui.sess.glob.gobhitmap.checkHit(xy) && pc.dist(new Coord(mc)) > 3) {
                     return (true);
+                }
             }
         }
         return false;
@@ -106,9 +105,8 @@ public abstract class Pathfinder {
      * TODO: plhb is problem slightly too big for this since tiles will let you usually overlap a bit
      */
     private boolean hitOnBoat(final Coord mc) {
-        System.out.println("HitOnBoat!!!");
         final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(c);
+        final Coord br = plhb.b.add(mc);
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
@@ -126,9 +124,8 @@ public abstract class Pathfinder {
      * Especially the case in caves, not so much with ridges...
      */
     private boolean hitOnLand(final Coord mc) {
-        System.out.println("hitonland!!!");
         final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(c);
+        final Coord br = plhb.b.add(mc);
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
@@ -281,7 +278,6 @@ public abstract class Pathfinder {
      * Our pathfinder guarantees that X -> X+1 is SAFE, but not X -> X+n where n >= 2
      */
     final ArrayList<Move> advreduce(final List<Coord> lines) {
-        System.out.println("advreduce!!!");
         if (lines != null) {
             if (true)
                 debugl(lines);

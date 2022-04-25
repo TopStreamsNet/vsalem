@@ -118,7 +118,6 @@ public class GobHitmap {
     }
 
     public synchronized boolean checkHit(final Coord c) {
-        System.out.println("CheckHit!");
         return map.containsKey(c);
     }
 
