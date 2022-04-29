@@ -24,16 +24,20 @@ public class Radar {
             if (this.contains(g))
                 return;
             boolean added = false;
-            String vacant = "";
+            String suffix = "";
             try {
                 Resource r = res.get();
                 if (r != null && r.name != null && r.name.length() != 0) {
                     if (r.name.endsWith("gfx/terobjs/leanto")){
                         ResDrawable d = (ResDrawable)g.getattr(Drawable.class);
                         if (d.sdtnum() == 0)
-                            vacant="_vacant";
+                            suffix="_vacant";
+                    }else if (r.name.endsWith("gfx/terobjs/thornbush")){
+                        ResDrawable d = (ResDrawable)g.getattr(Drawable.class);
+                        if (d.sdtnum() == 1)
+                            suffix="_flowers";
                     }
-                    add(r.name+vacant, g);
+                    add(r.name+suffix, g);
                     added = true;
                 }
             } catch (Session.LoadingIndir ignored) {
