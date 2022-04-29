@@ -151,6 +151,10 @@ public class MCache {
 			return hitmap[tc.x + (tc.y * cmaps.x)];
 		}
 
+		public void sethitmap(Coord tc, Tile t) {
+			hitmap[tc.x + (tc.y * cmaps.x)] = t;
+		}
+
 		public int gettile(Coord tc) {
 			return(tiles[tc.x + (tc.y * cmaps.x)]);
 		}
@@ -321,6 +325,7 @@ public class MCache {
 			HashSet<Integer> pavingTileIds = getTileIdsByResNames(Collections.singletonList("pave"));
 			HashSet<Integer> nilTileIds = getTileIdsByResNames(Collections.singletonList("gfx/tiles/nil"));
 			HashSet<Integer> dreamTileIds = getTileIdsByResNames(Collections.singletonList("gfx/tiles/dreamfloor"));
+			HashSet<Integer> shallow_waterTileIds = getTileIdsByResNames(Navigation.SHALLOW_WATER_TILES);
 
 			int caveTilesCount = 0;
 			int waterTilesCount = 0;
@@ -331,8 +336,14 @@ public class MCache {
 				tiles[i] = blob.uint8();
 				if(caveTileIds.contains(tiles[i])){
 					caveTilesCount++;
+					hitmap[i]=Tile.CAVE;
 				} else if (waterTileIds.contains(tiles[i])) {
 					waterTilesCount++;
+					if(shallow_waterTileIds.contains(tiles[i])) {
+						hitmap[i] = Tile.SHALLOWWATER;
+					} else{
+						hitmap[i] = Tile.DEEPWATER;
+					}
 				} else if (pavingTileIds.contains(tiles[i])) {
 					pavingTilesCount++;
 				} else if (nilTileIds.contains(tiles[i])) {

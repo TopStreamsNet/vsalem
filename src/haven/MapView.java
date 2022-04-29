@@ -1481,6 +1481,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 				clearmovequeue();
 				if(Config.advroute){
 					Coord finalMc = mc;
+					UI.instance.gui.map.glob.gobhitmap.debug();
 					Utils.defer(new Runnable() {
 						@Override
 						public void run() {

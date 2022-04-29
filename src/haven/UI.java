@@ -115,12 +115,9 @@ public class UI {
 		});
 		setcmd("gogo", new Command() {
 			public void run(Console cons, String[] args) {
-				Utils.defer(new Runnable() {
-					@Override
-					public void run() {
-						System.out.println("AZAZA"+ UI.instance.gui.map.pathto(UI.instance.gui.map.player().rc.add(22, 0)));
-					}
-				});
+				Coord jump = UI.instance.gui.map.player().rc.add(22,0);
+				for(int i=0; i<100;i++)
+					UI.instance.gui.map.wdgmsg("click",Coord.z,jump,1,0);
 			}
 		});
 	}

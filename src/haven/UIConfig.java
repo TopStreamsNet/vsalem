@@ -164,11 +164,17 @@ public class UIConfig {
             fc.color = new Color(255, 255, 255);
             fc.style = Font.PLAIN;
             fc.aa = true;
-        }else if(target.equals("optWnd2")){
+        }else if(target.equals("optWnd2")) {
             fc.family = Font.SANS_SERIF;
             fc.size = 12;
             fc.color = new Color(255, 255, 255);
             fc.style = Font.PLAIN;
+            fc.aa = true;
+        }else if(target.equals("wndTitle")){
+            fc.family = Font.SERIF;
+            fc.size = 15;
+            fc.color = new Color(248, 230, 190);
+            fc.style = Font.BOLD;
             fc.aa = true;
         }else{
             fc.family = Font.SANS_SERIF;

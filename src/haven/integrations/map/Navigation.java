@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Navigation {
     public static final List<String> UNDERGROUND_TILES = Arrays.asList("gfx/tiles/mine");
     public static final List<String> WATER_TILES = Arrays.asList("gfx/tiles/water", "gfx/tiles/deep");
+    public static final List<String> SHALLOW_WATER_TILES = Arrays.asList("gfx/tiles/water");
 
     public enum GridType { UNKNOWN, CAVE, HOUSE, SURFACE, UNKNOWN_WATER, UNKNOWN_PAVING,
         CHARACTER_GENERATION, CHARACTER_SWITCH, DREAM }

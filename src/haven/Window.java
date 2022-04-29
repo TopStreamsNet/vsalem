@@ -57,7 +57,7 @@ public class Window extends Widget implements DTarget {
 	    Resource.loadimg("gfx/hud/wnd/gbtnd"),
 	    Resource.loadimg("gfx/hud/wnd/gbtnh")};
     public static final Color cc = new Color(248, 230, 190);
-    public static final Text.Furnace cf = new Text.Imager(new Text.Foundry(new Font("Terminus", Font.BOLD, 20), cc).aa(true)) { // vSalem Change Font - ???
+    public static final Text.Furnace cf = new Text.Imager(new Text.Foundry(MainFrame.uiConfig.getFontConfig("wndTitle"))) { // vSalem Change Font - ???
 	    protected BufferedImage proc(Text text) {
 		return(rasterimg(blurmask2(text.img.getRaster(), 1, 1, Color.BLACK)));
 	    }
