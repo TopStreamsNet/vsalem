@@ -36,6 +36,10 @@ public class Radar {
                         ResDrawable d = (ResDrawable)g.getattr(Drawable.class);
                         if (d.sdtnum() == 1)
                             suffix="_flowers";
+                    }else if (r.name.endsWith("gfx/terobjs/hangmantree")) {
+                        ResDrawable d = (ResDrawable) g.getattr(Drawable.class);
+                        if (d.sdtnum() == 0)
+                            suffix = "_empty";
                     }
                     add(r.name+suffix, g);
                     added = true;
