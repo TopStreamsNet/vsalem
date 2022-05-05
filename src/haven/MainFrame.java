@@ -64,6 +64,7 @@ public class MainFrame extends Frame implements Runnable, Console.Directory {
     private static final String TITLE = String.format("vSalem v%s (((based on Ender) modified by Latikai) inspired by Taipion & Amber)", Config.version);
     public static MainFrame instance;
 	public static UIConfig uiConfig;
+    public static String cName;
     HavenPanel p;
     private final ThreadGroup g;
     public final Thread mt;
@@ -249,6 +250,7 @@ public class MainFrame extends Frame implements Runnable, Console.Directory {
 	String str = TITLE;
 	if(charname != null){
 	    str = charname+" - "+str;
+		MainFrame.cName = charname;
 	}
 	super.setTitle(str);
     }
