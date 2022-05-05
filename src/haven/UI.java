@@ -113,6 +113,11 @@ public class UI {
 				SecretWindow.instance(UI.instance).toggle();
 			}
 		});
+		setcmd("ghit", new Command() {
+			public void run(Console cons, String[] args) {
+				UI.instance.gui.map.glob.gobhitmap.debug();
+			}
+		});
 		setcmd("gogo", new Command() {
 			public void run(Console cons, String[] args) {
 				Coord jump = UI.instance.gui.map.player().rc.add(22,0);
@@ -272,7 +277,7 @@ public class UI {
 		try {
 			for (Object obj : args) {
 				if (!sender.toString().contains("Camera"))
-					System.out.println("Sender : " + sender + " msg = " + msg + " arg " + i + " : " + obj);
+					System.out.println("WDG Sender : " + sender + " msg = " + msg + " arg " + i + " : " + obj);
 				i++;
 			}
 		} catch (ArrayIndexOutOfBoundsException ignored) {
@@ -293,6 +298,17 @@ public class UI {
     public void uimsg(int id, String msg, Object... args) {
 	synchronized(this) {
 	    Widget wdg = widgets.get(id);
+		if(Config.debug) {
+			int i = 0;
+			try {
+				for (Object obj : args) {
+					//if (!sender.toString().contains("Camera"))
+						System.out.println("UI Receiver : " + wdg + " msg = " + msg + " arg " + i + " : " + obj);
+					i++;
+				}
+			} catch (ArrayIndexOutOfBoundsException ignored) {
+			}
+		}
 	    if(wdg != null)
 		wdg.uimsg(msg.intern(), args);
 	    else

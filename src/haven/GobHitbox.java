@@ -88,6 +88,7 @@ public class GobHitbox extends Sprite {
     private static final BBox bboxSmelter = new BBox(new Coord(-34, -13), new Coord(13, 24));
     private static final BBox bboxForge = new BBox(new Coord(-5, -50), new Coord(5, 40));
     private static final BBox bboxCons = new BBox(new Coord(-5, 5), new Coord(5, -5));
+    private static final BBox bboxCwall = new BBox(new Coord(-1, 0), new Coord(0, 11));
 
     public static BBox getBBox(Gob gob) {
         Resource res = null;
@@ -145,11 +146,14 @@ public class GobHitbox extends Sprite {
             return bboxWallseg;
         else if (name.endsWith("/hwall"))
             return bboxHwall;
+        else if (name.endsWith("gfx/terobjs/arch/cwall")){
+            return bboxCwall;
+        }
 
         Resource.Neg neg = gob.getneg();
 
-        /*if (name.endsWith("/alchemytable"))
-            System.out.println("alchemytable" +neg.bc+":"+neg.bs);*/
+        /*if (name.equals("gfx/terobjs/arch/cwall"))
+            System.out.println("gfx/terobjs/arch/cwall" +neg.bc+":"+neg.bs);*/
         return neg == null ? null : new BBox(neg.bc, neg.bs);
     }
 }

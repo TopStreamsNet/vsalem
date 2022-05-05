@@ -29,6 +29,7 @@ package haven;
 import haven.automation.HeldBy;
 import haven.automation.Holding;
 import haven.minimap.Radar.GobBlink;
+import haven.pathfinder.GobHitmap;
 import haven.res.lib.tree.TreeSprite;
 import haven.integrations.map.Navigation;
 
@@ -109,13 +110,10 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	}
 
 	public void ctick(int dt) {
-		try{
-			if (!discovered) {
-				resname().ifPresent(this::discovered);
-			}
-		}catch(Loading e){
-
+		if (!discovered) {
+			resname().ifPresent(this::discovered);
 		}
+
 		int dt2 = dt + initdelay;
 		initdelay = 0;
 		for(GAttrib a : attr.values()) {
@@ -215,7 +213,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 				final UI ui = UI.instance;
 				if (discovered) {
 					if (getattr(HeldBy.class) == null &&
-							(getattr(Holding.class) == null || ui == null || (ui.gui != null && ui.gui.map != null && getattr(Holding.class).held.id != MapView.plgob)) &&
+							(getattr(Holding.class) == null || (ui.gui != null && ui.gui.map != null && getattr(Holding.class).held.id != MapView.plgob)) &&
 							!pathfinding_blackout) {
 						hitboxcoords = glob.gobhitmap.add(this);
 					}
@@ -616,8 +614,14 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	}
 
 	private void discovered(final String name) {
-		if (GobHitbox.getBBox(this) != null) {
-			updateHitmap();
+		final UI ui = UI.instance;
+		if (ui != null && ui.gui != null && ui.gui.map != null && MapView.plgob != -1) {
+			res().ifPresent((res) -> {
+						if (GobHitbox.getBBox(this) != null) {
+							updateHitmap();
+						}
+					});
+			discovered = true;
 		}
 	}
 }
