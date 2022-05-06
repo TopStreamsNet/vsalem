@@ -58,4 +58,14 @@ public class Utils {
             c2[i] = abs(c[i], adding);
         return (c2);
     }
+
+    public static synchronized void launchLispScript(final String script, final SessionDetails session) {
+        try {
+            LispScript.reloadConfig();
+        }catch (Throwable t){
+            System.out.println("Config failed to reload!");
+        }
+        final Script thr = new LispScript(script, 0L, session);
+        thr.start();
+    }
 }

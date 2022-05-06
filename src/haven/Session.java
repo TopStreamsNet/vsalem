@@ -27,6 +27,7 @@
 package haven;
 
 import haven.ItemInfo.Owner;
+import haven.automation.SessionDetails;
 import haven.integrations.map.Navigation;
 
 import java.net.*;
@@ -90,6 +91,7 @@ public class Session implements Owner {
 	Map<Integer, Message> waiting = new TreeMap<Integer, Message>();
 	LinkedList<Message> pending = new LinkedList<Message>();
 	Map<Long, ObjAck> objacks = new TreeMap<Long, ObjAck>();
+	public final SessionDetails details;
 	String username;
 	byte[] cookie;
 	final Map<Integer, CachedRes> rescache = new TreeMap<Integer, CachedRes>();
@@ -833,6 +835,7 @@ public class Session implements Owner {
 
 	public Session(SocketAddress server, String username, byte[] cookie, Object... args) {
 		this.server = server;
+		this.details = new SessionDetails(this);
 		this.username = username;
 		this.cookie = cookie;
 		this.args = args;

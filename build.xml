@@ -32,6 +32,8 @@
 				<pathelement path="lib/abcl.jar" />
 				<pathelement path="lib/commons-text-1.8.jar" />
 				<pathelement path="lib/commons-lang3-3.10.jar" />
+				<pathelement path="lib/flogger.jar" />
+				<pathelement path="lib/flogger-system-backend.jar" />
 
 			</classpath>
 			<compilerarg value="-Xlint:unchecked" />
@@ -102,7 +104,7 @@
 			<fileset file="etc/item_data.json" />
 			<manifest>
 				<attribute name="Main-Class" value="haven.MainFrame" />
-				<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lclient-res.jar builtin-res.jar salem-res.jar gson-2.3.jar guava-18.0.jar abcl.jar commons-text-1.8.jar commons-lang3-3.10.jar" />
+				<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lclient-res.jar builtin-res.jar salem-res.jar gson-2.3.jar guava-18.0.jar abcl.jar commons-text-1.8.jar commons-lang3-3.10.jar flogger.jar flogger-system-backend.jar" />
 			</manifest>
 		</jar>
 		<chmod file="build/vsalem.jar" perm="a+x" />
@@ -123,6 +125,9 @@
 				<include name="abcl.jar" />
 				<include name="commons-text-1.8.jar" />
 				<include name="commons-lang3-3.10.jar" />
+				<include name="flogger.jar" />
+				<include name="flogger-system-backend.jar" />
+
 			</fileset>
                         <fileset dir="lib/jogl-natives" includes="*.jar">
                         </fileset>

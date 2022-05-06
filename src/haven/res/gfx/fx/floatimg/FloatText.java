@@ -1,7 +1,6 @@
 package haven.res.gfx.fx.floatimg;
 
 import haven.*;
-import haven.res.gfx.fx.floatimg.FloatSprite;
 import java.awt.Color;
 
 public class FloatText

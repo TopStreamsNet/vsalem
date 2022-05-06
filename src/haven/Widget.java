@@ -45,6 +45,15 @@ public class Widget {
     public final Collection<Anim> anims = new LinkedList<Anim>();
     static Map<String, Factory> types = new TreeMap<String, Factory>();
 
+    public Widget() {
+		this(Coord.z);
+    }
+
+	public Widget(Coord sz) {
+		this.c = Coord.z;
+		this.sz = sz;
+	}
+
     @dolda.jglob.Discoverable
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)

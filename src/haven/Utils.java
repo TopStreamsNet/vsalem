@@ -312,8 +312,15 @@ public class Utils {
 	    b |= ((long)ub(buf[i])) << (i * 8);
 	return(b);
     }
-	
-    public static void int32e(int num, byte[] buf, int off) {
+
+	public static void int64e(long num, byte[] buf, int off) {
+		for (int i = 0; i < 8; i++) {
+			buf[off++] = (byte) (num & 0xff);
+			num >>>= 8;
+		}
+	}
+
+	public static void int32e(int num, byte[] buf, int off) {
 	uint32e(((long)num) & 0xffffffff, buf, off);
     }
 	
