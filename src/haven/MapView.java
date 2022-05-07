@@ -1171,12 +1171,20 @@ public class MapView extends PView implements DTarget, Console.Directory {
 				}
 			}
 		} catch (Loading e) {
+			e.printStackTrace();
 			lastload = e;
-			String text = "Loading...";
-			g.chcolor(Color.BLACK);
-			g.frect(Coord.z, sz);
+			String text = e.getMessage();
+			if (text == null)
+				text = "Loading...";
+			if(!Config.noloading) {
+				g.chcolor(Color.BLACK);
+				g.frect(Coord.z, sz);
+			}
 			g.chcolor(Color.WHITE);
 			g.atext(text, sz.div(2), 0.5, 0.5);
+			if (e instanceof Resource.Loading) {
+				((Resource.Loading) e).boostprio(5);
+			}
 		}
 	}
 
@@ -1222,7 +1230,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 						} else {
 							reposend = new Coord3f(gobpath.tc.x, gobpath.tc.y, reposstart.z);
 						}
-						UI.instance.gui.syslog.append("Homing " + reposend.sub(reposstart), Color.CYAN);
+						//UI.instance.gui.syslog.append("Homing " + reposend.sub(reposstart), Color.CYAN);
 						if (gob.id == this.player().id) {
 							Coord3f relloc = reposend.sub(reposstart).div(11.0f);
 							LocatorTool.setlocation(new Coord((int) relloc.x, (int) relloc.y));

@@ -17,8 +17,16 @@ public class SecretWindow extends Window{
     private final void init_components()
     {
         new Label(Coord.z, this, "Secret controls");
-        int y = 0,x1=30,x2=120;
+        int y = 0,x1=30,x2=240;
         int step=20, big_step=30;
+        (new CheckBox(new Coord(x2,y), this, "No Loading") {
+            @Override
+            public void changed(boolean val) {
+                Config.noloading = val;
+                Utils.setprefb("noloading", Config.noloading);
+            }
+        }).a = Config.noloading;
+
         (new CheckBox(new Coord(x1,y+=step), this, "MiniMap Show Grid") {
             @Override
             public void changed(boolean val) {

@@ -197,6 +197,7 @@ public class Config {
 	public static boolean debug = Utils.getprefb("debug", false);
 	public static boolean clientshift = Utils.getprefb("clientshift", true);
 	public static boolean advroute = Utils.getprefb("advroute", false);
+	public static boolean noloading = Utils.getprefb("noloading", false);
 
 
 
