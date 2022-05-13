@@ -271,7 +271,7 @@ public class LocalMiniMap extends Window implements Console.Directory{
 						return;
 					}
 					else if (arg.equals("reload")) {
-						ui.sess.glob.oc.radar.reload();
+						ui.sess.glob.oc.radar.reload(null);
 						return;
 					}
 				}
@@ -303,49 +303,6 @@ public class LocalMiniMap extends Window implements Console.Directory{
 			}
 		};
 		gridbtn.recthit = true;
-	}
-
-
-	public Coord p2c(Coord pc) {
-		return(pc.div(tilesz).sub(cc).add(sz.div(2)));
-	}
-
-	public Coord c2p(Coord c) {
-		return(c.sub(sz.div(2)).add(cc).mul(tilesz).add(tilesz.div(2)));
-	}
-
-	public void drawicons(GOut g) {
-		OCache oc = ui.sess.glob.oc;
-		synchronized(oc) {
-			for(Gob gob : oc) {
-				try {
-					GobIcon icon = gob.getattr(GobIcon.class);
-					if(icon != null) {
-						Coord gc = p2c(gob.rc);
-						Tex tex = icon.tex();
-						g.image(tex, gc.sub(tex.sz().div(2)));
-					}
-				} catch(Loading l) {}
-			}
-		}
-	}
-
-	public Gob findicongob(Coord c) {
-		OCache oc = ui.sess.glob.oc;
-		synchronized(oc) {
-			for(Gob gob : oc) {
-				try {
-					GobIcon icon = gob.getattr(GobIcon.class);
-					if(icon != null) {
-						Coord gc = p2c(gob.rc);
-						Coord sz = icon.tex().sz();
-						if(c.isect(gc.sub(sz.div(2)), sz))
-							return(gob);
-					}
-				} catch(Loading l) {}
-			}
-		}
-		return(null);
 	}
 
 	@Override
@@ -467,6 +424,7 @@ public class LocalMiniMap extends Window implements Console.Directory{
 		}
 
 		drawmarkers(g, c0);
+		drawview(g, c0);
 		synchronized(ui.sess.glob.party.memb) {
 			try {
 				Tex tx = plx.layer(Resource.imgc).tex();
@@ -480,7 +438,7 @@ public class LocalMiniMap extends Window implements Console.Directory{
 					g.image(tx, ptc.sub(negc));
 					g.chcolor();
 				}
-			} catch (Loading e){}
+			} catch (Loading ignored){}
 		}
 
 		g.gl.glPopMatrix();
@@ -495,6 +453,25 @@ public class LocalMiniMap extends Window implements Console.Directory{
 		Coord locatedAC = Navigation.getAbsoluteCoordinates();
 		locatedAC = locatedAC==null ? new Coord(0,0) : locatedAC;
 		og.atext(locatedAC.div(11)+" x"+String.format("%.2f", scale),new Coord(0+og.sz.x/5, og.sz.y-og.sz.y/10), 0.5, 0.5);
+	}
+
+	private void drawview(GOut g, Coord tc) {
+			Gob player = ui.gui.map.player();
+			if (player != null) {
+				Coord3f ptc3f = player.getc();
+				if (ptc3f == null) {
+					return;
+				}
+				Coord rc = new Coord((int) ptc3f.x, (int) ptc3f.y);
+				rc = rc.div(MCache.tilesz).add(tc).sub(54,45);
+				g.chcolor(Color.BLUE);
+				Coord rect = new Coord(101,92);
+				g.line(rc, rc.add(rect.x - 1, 0), 1);
+				g.line(rc.add(rect.x - 1, 0), rc.add(rect), 1);
+				g.line(rc.add(rect).sub(1, 1), rc.add(0, rect.y - 1), 1);
+				g.line(rc.add(0, rect.y - 1), rc, 1);
+				g.chcolor();
+			}
 	}
 
 	private String mapfolder(){
@@ -706,18 +683,6 @@ public class LocalMiniMap extends Window implements Console.Directory{
 		}
 		return super.type(key, ev);
 	}
-
-/*if(cc == null)
-	    return(false);
-	MapView mv = getparent(GameUI.class).map;
-	if(mv == null)
-	    return(false);
-	Gob gob = findicongob(c);
-	if(gob == null)
-	    mv.wdgmsg("click", rootpos().add(c), c2p(c), button, ui.modflags());
-	else
-	    mv.wdgmsg("click", rootpos().add(c), c2p(c), button, ui.modflags(), 0, (int)gob.id, gob.rc, 0, -1);
-	return(true);*/
 
 	public void wdgmsg(String msg, Object... args) {
 	}

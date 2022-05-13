@@ -152,8 +152,10 @@ public class GobHitbox extends Sprite {
 
         Resource.Neg neg = gob.getneg();
 
-        /*if (name.equals("gfx/terobjs/arch/cwall"))
-            System.out.println("gfx/terobjs/arch/cwall" +neg.bc+":"+neg.bs);*/
+       // if (name.equals("gfx/kritter/wishpoosh/wishpoosh"))
+        //System.out.println("gfx/kritter/wishpoosh/wishpoosh" +neg.bc+":"+neg.bs);
+         //if (name.equals("gfx/kritter/darkenbear/darkenbear"))
+        //System.out.println("gfx/kritter/darkenbear/darkenbear" +neg.bc+":"+neg.bs);
         return neg == null ? null : new BBox(neg.bc, neg.bs);
     }
 }

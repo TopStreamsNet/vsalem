@@ -1171,7 +1171,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 				}
 			}
 		} catch (Loading e) {
-			e.printStackTrace();
+			//e.printStackTrace(System.out);
 			lastload = e;
 			String text = e.getMessage();
 			if (text == null)

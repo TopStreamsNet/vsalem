@@ -566,7 +566,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 					sb.append("ol: ").append("[id:").append(ol.id).append("]");
 					if (ol.res != null && ol.res.get() != null) sb.append("[r:").append(ol.res.get()).append("]");
 					if (ol.spr != null) sb.append("[s:").append(ol.spr).append("]");
-//                    if (ol.sdt != null) sb.append(", d").append(Arrays.toString(ol.sdt.rbuf));
+                    if (ol.sdt != null) sb.append(", d").append(Arrays.toString(ol.sdt.blob));
 					sb.append("\n");
 				}
 			}
@@ -588,7 +588,21 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 		for (Resource.Layer l : getres().layers()) {
 			sb.append("--").append(l).append("\n");
 		}
-
+		Resource.Neg neg = this.getneg();
+		if(neg != null){
+			sb.append("Neg: ").append("\n");
+			sb.append("cc: ").append(neg.cc).append("\n");
+			sb.append("bc: ").append(neg.bc).append("\n");
+			sb.append("bs: ").append(neg.bs).append("\n");
+			sb.append("sz: ").append(neg.sz).append("\n");
+			sb.append("ep: ");
+			for (Coord[] negca: neg.ep) {
+				for (Coord negc: negca){
+					sb.append("["+negc.toString()+"] ");
+				}
+			}
+			sb.append("\n");
+		}
 		return sb.toString();
 	}
 

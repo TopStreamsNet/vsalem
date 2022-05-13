@@ -1037,6 +1037,7 @@ public class OptWnd2 extends Window {
                         cm.show = val;
                     if(mf != null)
                         mf.setConfig(rc);
+					this.ui.sess.glob.oc.radar.reload(rc);
                 }		
             }.a = cg.show;
             y+=25;
