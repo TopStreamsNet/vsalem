@@ -29,103 +29,113 @@ package haven;
 import java.awt.Color;
 
 public class Bufflist extends Widget {
-    static final Tex frame = Resource.loadtex("gfx/hud/buffs/frame");
-    static final Tex cframe = Resource.loadtex("gfx/hud/buffs/cframe");
-    static final Tex ameter = Resource.loadtex("gfx/hud/buffs/cbar");
-    static final Coord imgoff = new Coord(6, 6);
-    static final Coord ameteroff = new Coord(4, 52);
-    static final Coord cmeteroff = new Coord(20, 20), cmeterul = new Coord(-20, -20), cmeterbr = new Coord(20, 20);
-    static final int margin = 2;
-    static final int num = 15;
-    
-    @RName("buffs")
-    public static class $_ implements Factory {
-	public Widget create(Coord c, Widget parent, Object[] args) {
-	    return(new Bufflist(c, parent));
-	}
-    }
-    
-    public Bufflist(Coord c, Widget parent) {
-	super(c, new Coord((num * frame.sz().x) + ((num - 1) * margin), cframe.sz().y), parent);
-    }
-    
-    public void draw(GOut g) {
-	int i = 0;
-	int w = frame.sz().x + margin;
-	synchronized(ui.sess.glob.buffs) {
-	    for(Buff b : ui.sess.glob.buffs.values()) {
-		if(!b.major)
-		    continue;
-		Coord bc = new Coord(i * w, 0);
-		if(b.ameter >= 0) {
-		    g.image(cframe, bc);
-		    g.image(ameter, bc.add(ameteroff), bc.add(ameteroff), new Coord((b.ameter * ameter.sz().x) / 100, ameter.sz().y));
-		} else {
-		    g.image(frame, bc);
+	static final Tex frame = Resource.loadtex("gfx/hud/buffs/frame");
+	static final Tex cframe = Resource.loadtex("gfx/hud/buffs/cframe");
+	static final Tex ameter = Resource.loadtex("gfx/hud/buffs/cbar");
+	static final Coord imgoff = new Coord(6, 6);
+	static final Coord ameteroff = new Coord(4, 52);
+	static final Coord cmeteroff = new Coord(20, 20), cmeterul = new Coord(-20, -20), cmeterbr = new Coord(20, 20);
+	static Resource alarmSound = Resource.load("sfx/invobjs/gemshard");
+	static long lastAlarm = 0L;
+	static long alarmSoundGap = 10000L;
+	static final int margin = 2;
+	static final int num = 15;
+
+	@RName("buffs")
+	public static class $_ implements Factory {
+		public Widget create(Coord c, Widget parent, Object[] args) {
+			return(new Bufflist(c, parent));
 		}
-		try {
-		    Tex img = b.res.get().layer(Resource.imgc).tex();
-		    g.image(img, bc.add(imgoff));
-		    if(b.nmeter >= 0) {
-			Tex ntext = b.nmeter();
-			g.image(ntext, bc.add(imgoff).add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
-		    }
-		    if(b.cmeter >= 0) {
-			g.chcolor(255, 255, 255, 128);
-			g.prect(bc.add(imgoff).add(cmeteroff), cmeterul, cmeterbr, Math.PI * 2 * b.getCstate());
-			g.chcolor();
-                        Tex ctext = b.cmeter();
-                        g.image(ctext, bc.add(imgoff).add(img.sz()).add(ctext.sz().inv()).add(-1, -1));
-		    }
-		} catch(Loading e) {}
-		if(++i >= num)
-		    break;
-	    }
 	}
-    }
-    
-    private long hoverstart;
-    private Tex shorttip, longtip;
-    private String tipped;
-    public Object tooltip(Coord c, Widget prev) {
-	long now = System.currentTimeMillis();
-	if(prev != this)
-	    hoverstart = now;
-	int i = 0;
-	int w = frame.sz().x + margin;
-	synchronized(ui.sess.glob.buffs) {
-	    for(Buff b : ui.sess.glob.buffs.values()) {
-		if(!b.major)
-		    continue;
-		Coord bc = new Coord(i * w, 0);
-		if(c.isect(bc, frame.sz())) {
-		    String tt = b.tooltip();
-		    if(tipped != tt)
-			shorttip = longtip = null;
-		    tipped = tt;
-		    try {
-			if(now - hoverstart < 1000) {
-			    if(shorttip == null)
-				shorttip = Text.render(tt).tex();
-			    return(shorttip);
-			} else {
-			    if(longtip == null) {
-				String text = RichText.Parser.quote(tt);
-				Resource.Pagina pag = b.res.get().layer(Resource.pagina);
-				if(pag != null)
-				    text += "\n\n" + pag.text;
-				longtip = RichText.render(text, 200).tex();
-			    }
-			    return(longtip);
+
+	public Bufflist(Coord c, Widget parent) {
+		super(c, new Coord((num * frame.sz().x) + ((num - 1) * margin), cframe.sz().y), parent);
+	}
+
+	public void draw(GOut g) {
+		int i = 0;
+		int w = frame.sz().x + margin;
+		long now = System.currentTimeMillis();
+		synchronized(ui.sess.glob.buffs) {
+			for(Buff b : ui.sess.glob.buffs.values()) {
+				if(!b.major)
+					continue;
+				Coord bc = new Coord(i * w, 0);
+				if(b.ameter >= 0) {
+					g.image(cframe, bc);
+					g.image(ameter, bc.add(ameteroff), bc.add(ameteroff), new Coord((b.ameter * ameter.sz().x) / 100, ameter.sz().y));
+				} else {
+					g.image(frame, bc);
+				}
+				try {
+					Tex img = b.res.get().layer(Resource.imgc).tex();
+					g.image(img, bc.add(imgoff));
+					if(b.nmeter >= 0) {
+						Tex ntext = b.nmeter();
+						g.image(ntext, bc.add(imgoff).add(img.sz()).add(ntext.sz().inv()).add(-1, -1));
+					}
+					if(b.cmeter >= 0) {
+						g.chcolor(255, 255, 255, 128);
+						g.prect(bc.add(imgoff).add(cmeteroff), cmeterul, cmeterbr, Math.PI * 2 * b.getCstate());
+						g.chcolor();
+						Tex ctext = b.cmeter();
+						g.image(ctext, bc.add(imgoff).add(img.sz()).add(ctext.sz().inv()).add(-1, -1));
+					}
+					if (b.cmeter >= 0 && b.cmeter <= 5){
+						if (now > lastAlarm + alarmSoundGap) {
+							lastAlarm = now;
+							Audio.play(alarmSound);
+						}
+					}
+				} catch(Loading e) {}
+				if(++i >= num)
+					break;
 			}
-		    } catch(Loading e) {
-			return("...");
-		    }
 		}
-		if(++i >= num)
-		    break;
-	    }
 	}
-	return(null);
-    }
+
+	private long hoverstart;
+	private Tex shorttip, longtip;
+	private String tipped;
+	public Object tooltip(Coord c, Widget prev) {
+		long now = System.currentTimeMillis();
+		if(prev != this)
+			hoverstart = now;
+		int i = 0;
+		int w = frame.sz().x + margin;
+		synchronized(ui.sess.glob.buffs) {
+			for(Buff b : ui.sess.glob.buffs.values()) {
+				if(!b.major)
+					continue;
+				Coord bc = new Coord(i * w, 0);
+				if(c.isect(bc, frame.sz())) {
+					String tt = b.tooltip();
+					if(tipped != tt)
+						shorttip = longtip = null;
+					tipped = tt;
+					try {
+						if(now - hoverstart < 1000) {
+							if(shorttip == null)
+								shorttip = Text.render(tt).tex();
+							return(shorttip);
+						} else {
+							if(longtip == null) {
+								String text = RichText.Parser.quote(tt);
+								Resource.Pagina pag = b.res.get().layer(Resource.pagina);
+								if(pag != null)
+									text += "\n\n" + pag.text;
+								longtip = RichText.render(text, 200).tex();
+							}
+							return(longtip);
+						}
+					} catch(Loading e) {
+						return("...");
+					}
+				}
+				if(++i >= num)
+					break;
+			}
+		}
+		return(null);
+	}
 }
