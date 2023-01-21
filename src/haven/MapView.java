@@ -64,6 +64,8 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	private Gob pathfindGob;
 	private int pathfindGobMod = 0;
 	private int pathfindGobMouse = 0;
+	private Coord pathfindPc = Coord.z;
+	private int pathfindRid = -1;
 	private Coord movingto;
 	private Coord lastrc;
 	private Queue<Coord> movequeue = new ArrayDeque<>();
@@ -1289,7 +1291,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 			}
 			if (!isclearmovequeue() && isfinishmovequeue()) {
 				if (pathfindGobMouse == 3 && movequeue.size() == 0 && pathfindGob != null && !isclickongob) {
-					wdgmsg("click", Coord.z, pathfindGob.rc, 3, pathfindGobMod, 0, (int) pathfindGob.id, pathfindGob.rc, 0, -1);
+					wdgmsg("click", pathfindPc, pathfindGob.rc, 3, pathfindGobMod, 0, (int) pathfindGob.id, pathfindGob.rc, 0, pathfindRid);
 					pllastcc = pathfindGob.rc;
 					isclickongob = true;
 				}
@@ -1490,12 +1492,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 				if(Config.advroute){
 					Coord finalMc = mc;
 					UI.instance.gui.map.glob.gobhitmap.debug();
-					Utils.defer(new Runnable() {
-						@Override
-						public void run() {
-							pathto(finalMc);
-						}
-					});
+					Utils.defer(() -> pathto(finalMc));
 				}else {
 					wdgmsg("click", pc, mc, clickb, modflags);
 					pllastcc = mc;
@@ -1503,7 +1500,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 			} else {
 				if (ui.modmeta) {
 					ChatUI.Channel channel = ui.gui.chat.sel;
-					if (channel != null && channel instanceof ChatUI.EntryChannel) {
+					if (channel instanceof ChatUI.EntryChannel) {
 						((ChatUI.EntryChannel) channel).send(String.format("$hl[%d]", inf.gob.id));
 					}
 					if(ui.modshift){
@@ -1523,8 +1520,12 @@ public class MapView extends PView implements DTarget, Console.Directory {
 				}
 				if (inf.ol == null) {
 					clearmovequeue();
-					wdgmsg("click", pc, mc, clickb, modflags, 0, (int) inf.gob.id, inf.gob.rc, 0, getid(inf.r));
-					pllastcc = mc;
+					if(Config.advroute && clickb == 3){
+						Utils.defer(() -> pathtoRightClick(inf.gob, modflags, pc, getid(inf.r)));
+					} else {
+						wdgmsg("click", pc, mc, clickb, modflags, 0, (int) inf.gob.id, inf.gob.rc, 0, getid(inf.r));
+						pllastcc = mc;
+					}
 				} else {
 					clearmovequeue();
 					wdgmsg("click", pc, mc, clickb, modflags, 1, (int) inf.gob.id, inf.gob.rc, inf.ol.id, getid(inf.r));
@@ -1914,6 +1915,15 @@ public class MapView extends PView implements DTarget, Console.Directory {
 		signalToStop = false;
 	}
 
+	public boolean los(final Coord c) {
+		final NBAPathfinder finder = new NBAPathfinder(ui);
+		return finder.walk(new Coord(ui.sess.glob.oc.getgob(plgob).getc()), c.floor());
+	}
+
+	public void los(final Gob g) {
+
+	}
+
 	public Move[] findpath(final Coord c) {
 		final NBAPathfinder finder = new NBAPathfinder(ui);
 		final List<Move> moves = finder.path(new Coord(ui.sess.glob.oc.getgob(plgob).getc()), c.floor());
@@ -1949,6 +1959,17 @@ public class MapView extends PView implements DTarget, Console.Directory {
 		return yea;
 	}
 
+	public boolean pathtoRightClick(final Gob g, int mod, Coord pc, int rId) {
+		g.updatePathfindingBlackout(true);
+		boolean yea = pathto(new Coord(g.getc()));
+		pathfindGob = g;
+		pathfindGobMod = mod;
+		pathfindGobMouse = 3;
+		pathfindPc = pc;
+		pathfindRid = rId;
+		g.updatePathfindingBlackout(false);
+		return yea;
+	}
 
 	private void updateSpeed(final double dt) {
 		final Gob pl = ui.sess.glob.oc.getgob(plgob);
@@ -1984,17 +2005,21 @@ public class MapView extends PView implements DTarget, Console.Directory {
 				final Coord plc = new Coord(pl.getc());
 				final double left = plc.dist(movingto) / mspeed;
 				//Only predictive models can trigger here
-				return movingto.dist(pl.rc) <= 5 || left == 0;
+				return movingto.dist(pl.rc) <= 8 || left == 0;
 			} else if (movingto == null || movingto.dist(pl.rc) <= 8) {
 				return true;
 			} else {
 				//Way off target and not moving, cancel
-				//clearmovequeue();
+				clearmovequeue();
 				return false;
 			}
 		} else {
 			return false;
 		}
+	}
+
+	public boolean hasmoves() {
+		return movequeue.size() > 0 || movingto != null;
 	}
 
 	public boolean isfinishmovequeue() {

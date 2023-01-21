@@ -35,6 +35,7 @@ import haven.integrations.map.Navigation;
 
 import java.awt.Color;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	public Coord rc, sc;
@@ -51,6 +52,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	private boolean pathfinding_blackout=false;
 	private List<Coord> hitboxcoords;
 	private boolean discovered=false;
+	private List<Pair<GAttrib, Consumer<Gob>>> dattrs = new ArrayList<>();
 
 	public static class Overlay implements Rendered {
 		public Indir<Resource> res;
@@ -122,6 +124,14 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			else
 				a.ctick(dt);
 		}
+
+		synchronized (dattrs) {
+			for (Pair<GAttrib, Consumer<Gob>> pair : dattrs) {
+				setattr(pair.a);
+				pair.b.accept(this);
+			}
+		}
+
 		for(Iterator<Overlay> i = ols.iterator(); i.hasNext();) {
 			Overlay ol = i.next();
 			if(ol.spr == null) {
@@ -255,6 +265,10 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			}
 		}
 		attr.put(ac, a);
+	}
+
+	public void delayedsetattr(GAttrib a, Consumer<Gob> cb) {
+		dattrs.add(new Pair<>(a, cb));
 	}
 
 	public <C extends GAttrib> C getattr(Class<C> c) {
@@ -527,6 +541,10 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 
 	public Optional<String> resname() {
 		return res().map((res) -> res.name);
+	}
+
+	public String name() {
+		return this.resname().map(Objects::toString).orElse("");
 	}
 
 	public String details() {

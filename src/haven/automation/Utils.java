@@ -10,6 +10,7 @@ public class Utils {
     private static final int HAND_DELAY = 5;
     private static final int PROG_ACT_DELAY = 8;
     private static final int PROG_FINISH_DELAY = 70;
+    private static Script thr;
 
     public static boolean waitForEmptyHand(GameUI gui, int timeout, String error) throws InterruptedException {
         int t = 0;
@@ -66,6 +67,11 @@ public class Utils {
             System.out.println("Config failed to reload!");
         }
         final Script thr = new LispScript(script, 0L, session);
+        Utils.thr = thr;
         thr.start();
+    }
+
+    public static void interruptLispScript() {
+        Utils.thr.interrupt();
     }
 }

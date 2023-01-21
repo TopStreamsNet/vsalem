@@ -26,6 +26,8 @@
 
 package haven;
 
+import haven.automation.HeldBy;
+import haven.automation.Holding;
 import haven.minimap.Marker;
 import haven.minimap.Radar;
 
@@ -43,8 +45,8 @@ public class OCache implements Iterable<Gob> {
 		this.glob = glob;
 	}
 
-	public Collection<Gob> getGobs(){
-		return new ArrayList<Gob>(objs.values());
+	public synchronized Gob[] getallgobs() {
+		return objs.values().toArray(new Gob[0]);
 	}
 
 	public synchronized void remove(long id, int frame) {
@@ -239,8 +241,16 @@ public class OCache implements Iterable<Gob> {
 	}
 
 	public synchronized void follow(Gob g, long oid, Indir<Resource> xfres, String xfname) {
+		//System.out.println("Follow: "+String.format("0x%08X", oid));
 		if(oid == 0xffffffffl) {
 			g.delattr(Following.class);
+			final HeldBy heldby = g.getattr(HeldBy.class);
+			if (heldby != null) {
+				g.delattr(HeldBy.class);
+				g.updateHitmap();
+				heldby.holder.delattr(Holding.class);
+				heldby.holder.updateHitmap();
+			}
 		} else {
 			Following flw = g.getattr(Following.class);
 			if(flw == null) {

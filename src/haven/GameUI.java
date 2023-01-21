@@ -1395,6 +1395,10 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		Audio.play(errsfx);
 	}
 
+	public void message(String msg) {
+		message(msg, Color.WHITE);
+	}
+
 	public static Color getMsgColor(MsgType type)
 	{
 		switch (type){

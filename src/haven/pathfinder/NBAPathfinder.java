@@ -70,8 +70,6 @@ public class NBAPathfinder extends Pathfinder {
         final Set<Coord> ignore = new HashSet<>();
         double fs;
         double ft;
-        System.out.println("FindPath!");
-
         {//Init
             /*
              * 8: g(s) = 0;        //First g(s) is 0
@@ -98,7 +96,6 @@ public class NBAPathfinder extends Pathfinder {
                 continue;
             break;
         }
-        System.out.println("FindPath! Done!");
         if (touched != null) {
             //start -> mid
             final List<Coord> fhalf = collect(startNodes.get(touched));

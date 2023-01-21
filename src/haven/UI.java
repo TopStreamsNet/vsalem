@@ -132,6 +132,16 @@ public class UI {
 					haven.automation.Utils.launchLispScript(script,UI.instance.sess.details);
 				}
 			});
+			setcmd("stop", new Command() {
+				public void run(Console cons, String[] args) {
+					haven.automation.Utils.interruptLispScript();
+				}
+			});
+			setcmd("test", new Command() {
+				public void run(Console cons, String[] args) {
+					UI.instance.gui.wdgmsg("act", "craft", "berrysalad\00");
+				}
+			});
 		}
 
 		private void findcmds(Map<String, Command> map, Widget wdg) {

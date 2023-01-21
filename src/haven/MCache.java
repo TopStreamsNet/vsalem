@@ -476,6 +476,7 @@ public class MCache {
 	public Optional<Grid> getgridto(Coord tc) {
 		return (getgrido(tc.div(cmaps)));
 	}
+
 	public Tile gethitmap(Coord tc) {
 		final Optional<Grid> g = getgridto(tc);
 		if (g.isPresent()) {
@@ -483,6 +484,12 @@ public class MCache {
 		} else {
 			return null;
 		}
+	}
+
+	public void sethitmap(Coord tc, Tile t) {
+		getgridto(tc).ifPresent(g -> {
+			g.sethitmap(tc.sub(g.ul), t);
+		});
 	}
 
 	public int gettile(Coord tc) {

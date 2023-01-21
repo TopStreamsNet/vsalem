@@ -1,5 +1,6 @@
 package haven.automation;
 
+import haven.FlowerMenu;
 import haven.Session;
 import haven.UI;
 
@@ -20,5 +21,9 @@ public class SessionDetails {
     public UI getUI() {
         final Session sess = session.get();
         return sess != null ? UI.instance : null;
+    }
+
+    public FlowerMenu getFlowermenu(){
+        return UI.instance.root.findchild(FlowerMenu.class);
     }
 }

@@ -65,12 +65,12 @@ public class MultipartUtility {
             throws IOException {
         writer.append("--" + boundary).append(LINE_FEED);
         writer.append(
-                "Content-Disposition: form-data; name=\"" + fieldName
-                        + "\"; filename=\"" + fileName + "\"")
+                        "Content-Disposition: form-data; name=\"" + fieldName
+                                + "\"; filename=\"" + fileName + "\"")
                 .append(LINE_FEED);
         writer.append(
-                "Content-Type: "
-                        + URLConnection.guessContentTypeFromName(fileName))
+                        "Content-Type: "
+                                + URLConnection.guessContentTypeFromName(fileName))
                 .append(LINE_FEED);
         writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
         writer.append(LINE_FEED);
