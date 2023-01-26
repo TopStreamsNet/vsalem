@@ -26,11 +26,10 @@
 
 package haven;
 
-import haven.integrations.map.Navigation;
-import haven.integrations.map.RemoteNavigation;
-
 import java.util.*;
 import java.lang.ref.*;
+import java.util.function.Consumer;
+
 import haven.Resource.Tileset;
 import haven.pathfinder.Tile;
 
@@ -46,8 +45,9 @@ public class MCache {
 	private final Reference<Tileset>[] csets = new Reference[256];
 	@SuppressWarnings("unchecked")
 	private final Reference<Tiler>[] tiles = new Reference[256];
-	Map<Coord, Request> req = new HashMap<Coord, Request>();
-	Map<Coord, Grid> grids = new HashMap<Coord, Grid>();
+	private final Waitable.Queue gridwait = new Waitable.Queue();
+	final Map<Coord, Request> req = Collections.synchronizedMap(new HashMap<>());
+	final Map<Coord, Grid> grids = Collections.synchronizedMap(new HashMap<>());
 	Session sess;
 	Set<Overlay> ols = new HashSet<Overlay>();
 	int olseq = 0;
@@ -55,9 +55,52 @@ public class MCache {
 	Map<Integer, Defrag> fragbufs = new TreeMap<Integer, Defrag>();
 
 	public static class LoadingMap extends Loading {
-		public LoadingMap() {}
+		public final Coord gc;
+		private transient final MCache map;
+
+		public LoadingMap(MCache map, Coord gc) {
+			super("Waiting for map data...");
+			this.gc = gc;
+			this.map = map;
+		}
+		public LoadingMap() {
+			super("Waiting for map data...");
+			this.gc = null;
+			this.map = null;
+		}
 		public LoadingMap(Throwable cause) {
 			super(cause);
+			this.gc = null;
+			this.map = null;
+		}
+
+		public void waitfor(Runnable callback, Consumer<Waitable.Waiting> reg) {
+			synchronized (map.grids) {
+				if (map.grids.containsKey(gc)) {
+					reg.accept(Waitable.Waiting.dummy);
+					callback.run();
+				} else {
+					reg.accept(new Waitable.Checker(callback) {
+						protected Object monitor() {
+							return (map.grids);
+						}
+
+						double st = Utils.rtime();
+
+						protected boolean check() {
+							if ((Utils.rtime() - st > 5)) {
+								st = Utils.rtime();
+								return (true);
+							}
+							return (map.grids.containsKey(gc));
+						}
+
+						protected Waitable.Waiting add() {
+							return (map.gridwait.add(this));
+						}
+					}.addi());
+				}
+			}
 		}
 	}
 
@@ -116,7 +159,6 @@ public class MCache {
 		public final Coord gc, ul;
 		public long id;
 		String mnm;
-		public Navigation.GridType gridType = Navigation.GridType.UNKNOWN;
 
 		private class Cut {
 			MapMesh mesh;
@@ -320,12 +362,6 @@ public class MCache {
 			}
 			Message blob = msg.inflate();
 			id = blob.int64();
-			HashSet<Integer> caveTileIds = getTileIdsByResNames(Navigation.UNDERGROUND_TILES);
-			HashSet<Integer> waterTileIds = getTileIdsByResNames(Navigation.WATER_TILES);
-			HashSet<Integer> pavingTileIds = getTileIdsByResNames(Collections.singletonList("pave"));
-			HashSet<Integer> nilTileIds = getTileIdsByResNames(Collections.singletonList("gfx/tiles/nil"));
-			HashSet<Integer> dreamTileIds = getTileIdsByResNames(Collections.singletonList("gfx/tiles/dreamfloor"));
-			HashSet<Integer> shallow_waterTileIds = getTileIdsByResNames(Navigation.SHALLOW_WATER_TILES);
 
 			int caveTilesCount = 0;
 			int waterTilesCount = 0;
@@ -334,41 +370,8 @@ public class MCache {
 			int dreamTilesCount = 0;
 			for(int i = 0; i < tiles.length; i++) {
 				tiles[i] = blob.uint8();
-				if(caveTileIds.contains(tiles[i])){
-					caveTilesCount++;
-					hitmap[i]=Tile.CAVE;
-				} else if (waterTileIds.contains(tiles[i])) {
-					waterTilesCount++;
-					if(shallow_waterTileIds.contains(tiles[i])) {
-						hitmap[i] = Tile.SHALLOWWATER;
-					} else{
-						hitmap[i] = Tile.DEEPWATER;
-					}
-				} else if (pavingTileIds.contains(tiles[i])) {
-					pavingTilesCount++;
-				} else if (nilTileIds.contains(tiles[i])) {
-					nilTilesCount++;
-				} else if (dreamTileIds.contains(tiles[i])){
-					dreamTilesCount++;
-				}
 			}
 
-			if(gridType == Navigation.GridType.UNKNOWN){
-				if(caveTilesCount > 0) {
-					gridType = Navigation.GridType.CAVE;
-				} else if(dreamTilesCount > 0){
-					gridType = Navigation.GridType.DREAM;
-				} else if (waterTilesCount == cmaps.x * cmaps.y) {
-					gridType = Navigation.GridType.UNKNOWN_WATER;
-				} else if (pavingTilesCount == cmaps.x * cmaps.y) {
-					gridType = Navigation.GridType.UNKNOWN_PAVING; // FIXME: Can only pave on Surface in salem
-				} else if (nilTilesCount > (cmaps.x * cmaps.y) * 0.9d) {
-					gridType = Navigation.GridType.HOUSE;
-				} else {
-					gridType = Navigation.GridType.SURFACE;
-				}
-			}
-			Navigation.receiveGridData(gc, id, gridType);
 			for(int i = 0; i < z.length; i++)
 				z[i] = blob.int16();
 			for(int i = 0; i < ol.length; i++)
@@ -404,7 +407,6 @@ public class MCache {
 				}
 			}
 			invalidate();
-			RemoteNavigation.getInstance().receiveGrid(this);
 		}
 	}
 
@@ -437,22 +439,21 @@ public class MCache {
 			trim(ul, lr);
 		} else if(type == 2) {
 			trimall();
-			Navigation.mapdataReset();
 		}
 	}
 
 	private Grid cached = null;
 
 	public Grid getgrid(Coord gc) {
-		synchronized(grids) {
-			if((cached == null) || !cached.gc.equals(cached)) {
+		synchronized (grids) {
+			if ((cached == null) || !cached.gc.equals(gc)) {
 				cached = grids.get(gc);
-				if(cached == null) {
+				if (cached == null) {
 					request(gc);
-					throw(new LoadingMap());
+					throw (new LoadingMap(this, gc));
 				}
 			}
-			return(cached);
+			return (cached);
 		}
 	}
 
@@ -553,11 +554,14 @@ public class MCache {
 			synchronized(req) {
 				if(req.containsKey(c)) {
 					Grid g = grids.get(c);
-					if(g == null)
+					if(g == null) {
 						grids.put(c, g = new Grid(c));
+						cached = null;
+					}
 					g.fill(msg);
 					req.remove(c);
 					olseq++;
+					gridwait.wnotify();
 				}
 			}
 		}
@@ -675,7 +679,9 @@ public class MCache {
 					g.dispose();
 				grids.clear();
 				req.clear();
+				cached = null;
 			}
+			gridwait.wnotify();
 		}
 	}
 
@@ -696,7 +702,9 @@ public class MCache {
 					if((gc.x < ul.x) || (gc.y < ul.y) || (gc.x > lr.x) || (gc.y > lr.y))
 						i.remove();
 				}
+				cached = null;
 			}
+			gridwait.wnotify();
 		}
 	}
 
@@ -721,6 +729,7 @@ public class MCache {
 
 	public void sendreqs() {
 		long now = System.currentTimeMillis();
+		boolean updated = false;
 		synchronized(req) {
 			for(Iterator<Map.Entry<Coord, Request>> i = req.entrySet().iterator(); i.hasNext();) {
 				Map.Entry<Coord, Request> e = i.next();
@@ -730,12 +739,18 @@ public class MCache {
 					r.lastreq = now;
 					if(++r.reqs >= 5) {
 						i.remove();
+						updated = true;
 					} else {
 						Message msg = new Message(Session.MSG_MAPREQ);
 						msg.addcoord(c);
 						sess.sendmsg(msg);
 					}
 				}
+			}
+		}
+		if (updated) {
+			synchronized (grids) {
+				gridwait.wnotify();
 			}
 		}
 	}

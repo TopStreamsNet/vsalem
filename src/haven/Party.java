@@ -26,8 +26,6 @@
 
 package haven;
 
-import haven.integrations.map.Navigation;
-
 import java.util.*;
 import java.awt.Color;
 
@@ -96,7 +94,6 @@ public class Party {
 				boolean vis = msg.uint8() == 1;
 				if(vis)
 					c = msg.coord();
-				Navigation.addPartyCoordinates(gobId, c);
 				Color col = msg.color();
 				if(m != null) {
 					m.c = c;

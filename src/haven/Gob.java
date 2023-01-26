@@ -28,10 +28,10 @@ package haven;
 
 import haven.automation.HeldBy;
 import haven.automation.Holding;
+import haven.integrations.map.MappingClient;
 import haven.minimap.Radar.GobBlink;
 import haven.pathfinder.GobHitmap;
 import haven.res.lib.tree.TreeSprite;
-import haven.integrations.map.Navigation;
 
 import java.awt.Color;
 import java.util.*;
@@ -215,7 +215,12 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			this.rc = c;
 
 			if (isplayer()) {
-				Navigation.setPlayerCoordinates(c);
+				if (UI.instance != null) {
+					UI ui = UI.instance;
+					if (ui != null && ui.sess != null && ui.sess.alive() && ui.sess.username != null) {
+						MappingClient.getInstance(ui.sess.username).CheckGridCoord(c);
+					}
+				}
 			}
 
 			this.a = a;

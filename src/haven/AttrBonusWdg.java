@@ -94,8 +94,7 @@ public class AttrBonusWdg extends Widget {
 				for (Object slotted : slots) {
 				    if (slotted == null) continue;
 
-				    //noinspection unchecked
-				    ArrayList<Object> infos = (ArrayList<Object>) Reflect.getFieldValue(slotted, "info");
+					@SuppressWarnings("unchecked") ArrayList<Object> infos = (ArrayList<Object>) Reflect.getFieldValue(slotted, "info");
 				    for (Object info : infos) {
 					String[] attrs = (String[]) Reflect.getFieldValue(info, "attrs");
 					int[] vals = (int[]) Reflect.getFieldValue(info, "vals");

@@ -96,6 +96,11 @@ public class UI {
 					UI.instance.gui.syslog.append("Coordinate: "+plc+ "Grid ID: "+plgrid.id+" Tile:"+pltc.sub(plgrid.ul),Color.CYAN);
 				}
 			});
+			setcmd("grids", new Command() {
+				public void run(Console cons, String[] args) {
+					UI.instance.sess.glob.map.grids.forEach((Coord a, MCache.Grid b) -> {System.out.println(a+" "+b.id);});
+				}
+			});
 			setcmd("windows", new Command() {
 				public void run(Console cons, String[] args) {
 					UI.instance.gui.listWindows();

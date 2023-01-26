@@ -48,6 +48,7 @@ public class Utils {
     public static final java.nio.charset.Charset utf8 = java.nio.charset.Charset.forName("UTF-8");
     public static final java.nio.charset.Charset ascii = java.nio.charset.Charset.forName("US-ASCII");
     public static final java.awt.image.ColorModel rgbm = java.awt.image.ColorModel.getRGBdefault();
+	private static final long rtimeoff = System.nanoTime();
     private static Preferences prefs = null;
 
     static Coord imgsz(BufferedImage img) {
@@ -1148,6 +1149,10 @@ public class Utils {
 	    throw(new RuntimeException(e));
 	}
     }
+
+	public static double rtime() {
+		return ((System.nanoTime() - rtimeoff) / 1e9);
+	}
 
     static {
 	Console.setscmd("die", new Console.Command() {

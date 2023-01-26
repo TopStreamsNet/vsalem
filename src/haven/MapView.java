@@ -26,8 +26,6 @@
 
 package haven;
 
-import haven.integrations.map.Navigation;
-import haven.integrations.map.RemoteNavigation;
 import haven.pathfinder.Move;
 import haven.pathfinder.NBAPathfinder;
 
@@ -608,10 +606,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 		glob = ui.sess.glob;
 		this.cc = cc;
 		MapView.plgob = plgob;
-		try {
-			Navigation.setCharacterId(plgob, glob.oc.getgob(plgob).rc);
-		} catch (Exception ignore) {
-		}
+
 		this.gridol = new TileOutline(glob.map);
 		setcanfocus(true);
 
@@ -1508,13 +1503,8 @@ public class MapView extends PView implements DTarget, Console.Directory {
 						Coord gobtc = gobc.div(11.0f);
 						MCache.Grid gobgrid = UI.instance.sess.glob.map.getgridt(gobtc);
 						Coord gridOffset = gobtc.sub(gobgrid.ul);
-						RemoteNavigation.MarkerData markerData = new RemoteNavigation.MarkerData();
-						ResDrawable d = inf.gob.getattr(ResDrawable.class);
-						markerData.setName(d.res.get().basename());
-						markerData.setGridId(gobgrid.id);
-						markerData.setGridOffset(gridOffset);
-						markerData.setImage(d.res.get().name);
-						RemoteNavigation.getInstance().uploadMarkerData(markerData);
+						// upload GOB marker
+
 					}
 					System.out.println(inf.gob.details());
 				}

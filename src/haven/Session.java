@@ -28,14 +28,12 @@ package haven;
 
 import haven.ItemInfo.Owner;
 import haven.automation.SessionDetails;
-import haven.integrations.map.Navigation;
+import haven.integrations.map.MappingClient;
 
 import java.net.*;
 import java.util.*;
 import java.io.*;
 import java.lang.ref.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class Session implements Owner {
 	public static final int PVER = 36;
@@ -414,7 +412,7 @@ public class Session implements Owner {
 							long oid = msg.uint32();
 							Indir<Resource> xfres = null;
 							String xfname = null;
-							if(oid != 0xffffffffl) {
+							if(oid != 0xffffffffL) {
 								xfres = getres(msg.uint16());
 								xfname = msg.string();
 							}
@@ -422,10 +420,10 @@ public class Session implements Owner {
 								oc.follow(gob, oid, xfres, xfname);
 						} else if(type == OD_HOMING) {
 							long oid = msg.uint32();
-							if(oid == 0xffffffffl) {
+							if(oid == 0xffffffffL) {
 								if(gob != null)
 									oc.homostop(gob);
-							} else if(oid == 0xfffffffel) {
+							} else if(oid == 0xfffffffeL) {
 								Coord tgtc = msg.coord();
 								int v = msg.uint16();
 								if(gob != null)
@@ -851,7 +849,6 @@ public class Session implements Owner {
 		sworker.start();
 		ticker = new Ticker();
 		ticker.start();
-		Navigation.reset();
 	}
 
 	private void sendack(int seq) {
@@ -865,6 +862,14 @@ public class Session implements Owner {
 
 	public void close() {
 		sworker.interrupt();
+		rworker.interrupt();
+		ticker.interrupt();
+		if (this.alive() && this.username != null) {
+			MappingClient.getInstance(username).SetEndpoint("");
+			MappingClient.getInstance(username).EnableGridUploads(false);
+			MappingClient.getInstance(username).EnableTracking(false);
+			MappingClient.removeInstance(username);
+		}
 	}
 
 	public synchronized boolean alive() {

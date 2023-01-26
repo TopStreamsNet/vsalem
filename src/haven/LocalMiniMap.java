@@ -32,7 +32,6 @@ import static haven.Tempers.text;
 
 import haven.Defer.Future;
 import haven.MCache.LoadingMap;
-import haven.integrations.map.Navigation;
 import haven.minimap.Marker;
 import haven.minimap.Radar;
 import haven.pathfinder.Tile;
@@ -450,10 +449,12 @@ public class LocalMiniMap extends Window implements Console.Directory{
 		lockbtn.draw(og.reclipl(xlate(lockbtn.c, true), lockbtn.sz));
 		gridbtn.draw(og.reclipl(xlate(gridbtn.c, true), gridbtn.sz));
 
-		//
+		// Absolute coordinates
+		/*
 		Coord locatedAC = Navigation.getAbsoluteCoordinates();
 		locatedAC = locatedAC==null ? new Coord(0,0) : locatedAC;
 		og.atext(locatedAC.div(11)+" x"+String.format("%.2f", scale),new Coord(0+og.sz.x/5, og.sz.y-og.sz.y/10), 0.5, 0.5);
+		 */
 	}
 
 	private void drawview(GOut g, Coord tc) {

@@ -29,7 +29,6 @@ package haven;
 import haven.Gob.Overlay;
 import haven.res.lib.HomeTrackerFX;
 import org.ender.timer.TimerController;
-import haven.integrations.map.RemoteNavigation;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
