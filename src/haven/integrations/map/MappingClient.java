@@ -41,20 +41,7 @@ public class MappingClient {
     public String mapString;
     public final String accName;
 
-//    private static volatile MappingClient INSTANCE = null;
-
     private static volatile Map<String, MappingClient> clients = new HashMap<>();
-
-//    public static MappingClient getInstance() {
-//        if (INSTANCE == null) {
-//            synchronized (MappingClient.class) {
-//                if (INSTANCE == null) {
-//                    INSTANCE = new MappingClient();
-//                }
-//            }
-//        }
-//        return INSTANCE;
-//    }
 
     public static MappingClient getInstance(String username) {
         MappingClient client = clients.get(username);
@@ -225,6 +212,45 @@ public class MappingClient {
                 }
 
             } catch (final Exception ex) {
+            }
+        }
+    }
+
+    /***
+     * Update Marker
+     */
+    public void setMarker(ArrayList<JSONObject> loadedMarkers){
+        try {
+            scheduler.execute(new MarkerUpdate(new JSONArray(loadedMarkers.toArray())));
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    private class MarkerUpdate implements Runnable {
+        JSONArray data;
+
+        MarkerUpdate(JSONArray data) {
+            this.data = data;
+        }
+
+        @Override
+        public void run() {
+            try {
+                System.out.println("Uploading markers");
+                HttpURLConnection connection =
+                        (HttpURLConnection) new URL(endpoint + "/markerUpdate").openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                connection.setDoOutput(true);
+                try (DataOutputStream out = new DataOutputStream(connection.getOutputStream())) {
+                    final String json = data.toString();
+                    System.out.println("Marker json: "+json);
+                    out.write(json.getBytes(StandardCharsets.UTF_8));
+                }
+                System.out.println("Marker upload " + connection.getResponseCode());
+            } catch (Exception ex) {
+                //System.out.println("MarkerUpdate " + ex);
             }
         }
     }

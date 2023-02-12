@@ -45,6 +45,10 @@ public class OCache implements Iterable<Gob> {
 		this.glob = glob;
 	}
 
+	public Collection<Gob> getGobs() {
+		return new ArrayList<Gob>(objs.values());
+	}
+
 	public synchronized Gob[] getallgobs() {
 		return objs.values().toArray(new Gob[0]);
 	}

@@ -26,8 +26,11 @@
 
 package haven;
 
+import haven.integrations.map.MappingClient;
 import haven.pathfinder.Move;
 import haven.pathfinder.NBAPathfinder;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.media.opengl.GL;
 import java.awt.*;
@@ -1503,8 +1506,21 @@ public class MapView extends PView implements DTarget, Console.Directory {
 						Coord gobtc = gobc.div(11.0f);
 						MCache.Grid gobgrid = UI.instance.sess.glob.map.getgridt(gobtc);
 						Coord gridOffset = gobtc.sub(gobgrid.ul);
+						ArrayList<JSONObject> loadedMarkers = new ArrayList<>();
 						// upload GOB marker
-
+						JSONObject o = new JSONObject();
+						try {
+							o.put("name", inf.gob.basename());
+							o.put("gridID", String.valueOf(gobgrid.id));
+							o.put("x", gridOffset.x);
+							o.put("y", gridOffset.y);
+							o.put("type", "shared");
+							o.put("image", inf.gob.name());
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+						loadedMarkers.add(o);
+						MappingClient.getInstance(ui.sess.username).setMarker(loadedMarkers);
 					}
 					System.out.println(inf.gob.details());
 				}

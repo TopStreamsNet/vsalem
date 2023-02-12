@@ -549,7 +549,15 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	}
 
 	public String name() {
-		return this.resname().map(Objects::toString).orElse("");
+		return this.resname().map(Objects::toString).orElse("unknown");
+	}
+
+	public String basename() {
+		String name = this.name();
+		int p = name.lastIndexOf('/');
+		if(p < 0)
+			return(name);
+		return(name.substring(p + 1));
 	}
 
 	public String details() {
