@@ -86,9 +86,9 @@ public abstract class Pathfinder {
      */
     private boolean hitGob(final Coord mc) {
         Coord pc = ui.gui.map.player().rc;
-        final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(mc).add(2,2);
-        Coord xy = new Coord(0,0);
+        final Coordf c = plhb.a.add(mc);
+        final Coordf br = plhb.b.add(mc).add(2,2);
+        Coordf xy = new Coordf(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1) {
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
                 if (ui.sess.glob.gobhitmap.checkHit(xy) && pc.dist(new Coord(mc)) > 3) {
@@ -105,12 +105,12 @@ public abstract class Pathfinder {
      * TODO: plhb is problem slightly too big for this since tiles will let you usually overlap a bit
      */
     private boolean hitOnBoat(final Coord mc) {
-        final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(mc).add(2,2);;
-        Coord xy = new Coord(0,0);
+        final Coordf c = plhb.a.add(mc);
+        final Coordf br = plhb.b.add(mc).add(2,2);;
+        Coordf xy = new Coordf(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
-                final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz).floor());
+                final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz).toCoord());
                 if (t != Tile.DEEPWATER && t != Tile.SHALLOWWATER)
                     return (true);
             }
@@ -124,12 +124,12 @@ public abstract class Pathfinder {
      * Especially the case in caves, not so much with ridges...
      */
     private boolean hitOnLand(final Coord mc) {
-        final Coord c = plhb.a.add(mc);
-        final Coord br = plhb.b.add(mc).add(2,2);
-        Coord xy = new Coord(0,0);
+        final Coordf c = plhb.a.add(mc);
+        final Coordf br = plhb.b.add(mc).add(2,2);
+        Coordf xy = new Coordf(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
-                final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz).floor());
+                final Tile t = ui.sess.glob.map.gethitmap(xy.div(MCache.tilesz).toCoord());
                 if (t != Tile.SHALLOWWATER && t != null)
                     return (true);
             }

@@ -10,7 +10,7 @@ public class GobHitbox extends Sprite {
     private int mode;
     private States.ColState clrstate;
 
-    public GobHitbox(Gob gob, Coord ac, Coord bc, boolean fill) {
+    public GobHitbox(Gob gob, Coordf ac, Coordf bc, boolean fill) {
         super(gob, null);
 
         if (fill) {
@@ -59,16 +59,20 @@ public class GobHitbox extends Sprite {
     }
 
     public static class BBox {
-        public Coord a;
-        public Coord b;
-        public Coord[] points;
+        public Coordf a;
+        public Coordf b;
+        public Coordf[] points;
+
+        public BBox(Coordf a, Coordf b) {
+            this.a = a.add(-0.5f,0.5f);
+            this.b = b.add(-0.5f, 0.5f);
+            this.points = new Coordf[]{
+                    new Coordf(this.a.x, -this.a.y), new Coordf(this.b.x, -this.a.y), new Coordf(this.b.x, -this.b.y), new Coordf(this.a.x, -this.b.y)
+            };
+        }
 
         public BBox(Coord a, Coord b) {
-            this.a = a;
-            this.b = b;
-            this.points = new Coord[]{
-                    new Coord(a.x, -a.y), new Coord(b.x, -a.y), new Coord(b.x, -b.y), new Coord(a.x, -b.y)
-            };
+            this(new Coordf(a.x, a.y), new Coordf(b.x,b.y));
         }
 
         public boolean ishitable() {
@@ -89,6 +93,8 @@ public class GobHitbox extends Sprite {
     private static final BBox bboxForge = new BBox(new Coord(-5, -50), new Coord(5, 40));
     private static final BBox bboxCons = new BBox(new Coord(-5, 5), new Coord(5, -5));
     private static final BBox bboxCwall = new BBox(new Coord(-1, 0), new Coord(0, 11));
+    /*private static final BBox bboxChest = new BBox(new Coordf(-4.5f, -3.5f), new Coordf(3.5f, 4.5f));
+    private static final BBox bboxBorka = new BBox(new Coordf(-4.5f, -3.5f), new Coordf(3.5f, 4.5f));*/
 
     public static BBox getBBox(Gob gob) {
         Resource res = null;
@@ -116,6 +122,10 @@ public class GobHitbox extends Sprite {
             return bboxPig;
         else if (name.startsWith("gfx/terobjs/consobj"))
             return bboxCons;
+        /*else if (name.startsWith("gfx/terobjs/chest"))
+            return bboxChest;
+        else if (name.startsWith("gfx/borka/body"))
+            return bboxBorka;*/
 
         // dual state gobs
         if (name.endsWith("gate") && name.startsWith("gfx/terobjs/")) {

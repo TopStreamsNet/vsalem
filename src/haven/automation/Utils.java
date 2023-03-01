@@ -1,6 +1,7 @@
 package haven.automation;
 
 import haven.Coord;
+import haven.Coordf;
 import haven.GameUI;
 import haven.Gob;
 
@@ -29,9 +30,9 @@ public class Utils {
         return true;
     }
 
-    public static boolean insect(Coord[] polygon1, Coord[] polygon2, Gob gob1, Gob gob2) {
+    public static boolean insect(Coordf[] polygon1, Coordf[] polygon2, Gob gob1, Gob gob2) {
         Coord gobc1 = gob1.rc, gobc2 = gob2.rc;
-        Coord[] p1 = new Coord[polygon1.length], p2 = new Coord[polygon2.length];
+        Coordf[] p1 = new Coordf[polygon1.length], p2 = new Coordf[polygon2.length];
         for (int i = 0; i < polygon1.length; i++)
             p1[i] = polygon1[i].rotate((float) gob1.a).add(gobc1);
         for (int i = 0; i < polygon2.length; i++)
@@ -43,18 +44,18 @@ public class Utils {
         return (false);
     }
 
-    public static boolean crossing(Coord c1, Coord c2, Coord c3, Coord c4) {
+    public static boolean crossing(Coordf c1, Coordf c2, Coordf c3, Coordf c4) {
         Line2D l1 = new Line2D.Double(c1.x, c1.y, c2.x, c2.y);
         Line2D l2 = new Line2D.Double(c3.x, c3.y, c4.x, c4.y);
         return l1.intersectsLine(l2);
     }
 
-    public static Coord abs(Coord c, double adding) {
-        return (new Coord(c.x + (c.x / Math.abs(c.x) * adding), c.y + (c.y / Math.abs(c.y) * adding)));
+    public static Coordf abs(Coordf c, float adding) {
+        return (new Coordf(c.x + (c.x / Math.abs(c.x) * adding), c.y + (c.y / Math.abs(c.y) * adding)));
     }
 
-    public static Coord[] abs(Coord[] c, double adding) {
-        Coord[] c2 = new Coord[c.length];
+    public static Coordf[] abs(Coordf[] c, float adding) {
+        Coordf[] c2 = new Coordf[c.length];
         for (int i = 0; i < c.length; i++)
             c2[i] = abs(c[i], adding);
         return (c2);

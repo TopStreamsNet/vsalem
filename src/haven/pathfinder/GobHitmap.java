@@ -120,7 +120,7 @@ public class GobHitmap {
         }
     }
 
-    public synchronized boolean checkHit(final Coord c) {
+    public synchronized boolean checkHit(final Coordf c) {
         return map.containsKey(c);
     }
 
