@@ -24,6 +24,15 @@ public class SessionDetails {
     }
 
     public FlowerMenu getFlowermenu(){
-        return UI.instance.root.findchild(FlowerMenu.class);
+        FlowerMenu fm = UI.instance.root.findchild(FlowerMenu.class);
+        if(fm != null) {
+            for (FlowerMenu.Petal petal : fm.opts) {
+                if (petal == null) {
+                    fm = null;
+                    break;
+                }
+            }
+        }
+        return fm;
     }
 }

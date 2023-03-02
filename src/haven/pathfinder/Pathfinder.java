@@ -86,9 +86,9 @@ public abstract class Pathfinder {
      */
     private boolean hitGob(final Coord mc) {
         Coord pc = ui.gui.map.player().rc;
-        final Coordf c = plhb.a.add(mc);
-        final Coordf br = plhb.b.add(mc).add(2,2);
-        Coordf xy = new Coordf(0,0);
+        final Coord c = plhb.a.add(mc).add(-2,-2).toCoord();
+        final Coord br = plhb.b.add(mc).add(2,2).toCoord();
+        Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1) {
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
                 if (ui.sess.glob.gobhitmap.checkHit(xy) && pc.dist(new Coord(mc)) > 3) {
