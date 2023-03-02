@@ -75,7 +75,7 @@ public class UIConfig {
                 font.style = Font.PLAIN;
                 break;
         }
-        System.out.println("Configured font "+font.target+" with family "+font.family+" color "+font.color+" size "+font.size);
+        //System.out.println("Configured font "+font.target+" with family "+font.family+" color "+font.color+" size "+font.size);
         return font;
     }
 
