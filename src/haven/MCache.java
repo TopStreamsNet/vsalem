@@ -29,11 +29,17 @@ package haven;
 import java.util.*;
 import java.lang.ref.*;
 import java.util.function.Consumer;
+import java.util.regex.Pattern;
 
 import haven.Resource.Tileset;
 import haven.pathfinder.Tile;
 
 public class MCache {
+	private static final Tile[] id2tile = new Tile[256];
+	private static final Pattern deepwater = Pattern.compile("(gfx/tiles/deep)");
+	private static final Pattern shallowater = Pattern.compile("(gfx/tiles/water)");
+	private static final Pattern cave = Pattern.compile("(gfx/tiles/mine.+)");
+
 	public static final Coord tilesz = new Coord(11, 11);
 	public static final Coord cmaps = new Coord(100, 100);
 	public static final Coord cutsz = new Coord(25, 25);
@@ -363,19 +369,15 @@ public class MCache {
 			Message blob = msg.inflate();
 			id = blob.int64();
 
-			int caveTilesCount = 0;
-			int waterTilesCount = 0;
-			int pavingTilesCount = 0;
-			int nilTilesCount = 0;
-			int dreamTilesCount = 0;
 			for(int i = 0; i < tiles.length; i++) {
 				tiles[i] = blob.uint8();
+
+				hitmap[i] = id2tile[tiles[i]];
 			}
 
 			for(int i = 0; i < z.length; i++)
 				z[i] = blob.int16();
-			for(int i = 0; i < ol.length; i++)
-				ol[i] = 0;
+			Arrays.fill(ol, 0);
 			while(true) {
 				int pidx = blob.uint8();
 				if(pidx == 255)
@@ -646,6 +648,13 @@ public class MCache {
 			String resnm = msg.string();
 			int resver = msg.uint16();
 			nsets[id] = new Resource.Spec(resnm, resver);
+			if (shallowater.matcher(resnm).matches()) {
+				id2tile[id] = Tile.SHALLOWWATER;
+			} else if (deepwater.matcher(resnm).matches()) {
+				id2tile[id] = Tile.DEEPWATER;
+			} else if (cave.matcher(resnm).matches()) {
+				id2tile[id] = Tile.CAVE;
+			}
 		}
 	}
 

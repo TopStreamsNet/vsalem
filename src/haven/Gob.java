@@ -215,11 +215,8 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			this.rc = c;
 
 			if (isplayer()) {
-				if (UI.instance != null) {
-					UI ui = UI.instance;
-					if (ui != null && ui.sess != null && ui.sess.alive() && ui.sess.username != null) {
-						MappingClient.getInstance(ui.sess.username).CheckGridCoord(c);
-					}
+				if (UI.instance != null && UI.instance.sess != null && UI.instance.sess.alive() && UI.instance.sess.username != null) {
+					MappingClient.getInstance(UI.instance.sess.username).CheckGridCoord(c);
 				}
 			}
 

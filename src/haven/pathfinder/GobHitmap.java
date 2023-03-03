@@ -86,6 +86,17 @@ public class GobHitmap {
         tmap.put(Tile.RIDGE, Color.YELLOW);
         tmap.put(Tile.PLAYER, Color.GREEN);
 
+        for(int x = tl.x; x < br.x; x++){
+            for (int y = tl.y; y < br.y; y++){
+                final int x_offset = x-tl.x;
+                final int y_offset = y-tl.y;
+                final Tile tt = UI.instance.sess.glob.map.gethitmap(new Coord(x/MCache.tilesz.x,y/MCache.tilesz.y));
+                if (tt != null) {
+                    buf.setRGB(x_offset, y_offset, tmap.get(tt).getRGB());
+                }
+            }
+        }
+
         for (final Coord c : map.keySet()) {
             final Coord offset = c.sub(tl);
             buf.setRGB(offset.x, offset.y, tmap.get(map.get(c).tile).getRGB());
@@ -232,7 +243,7 @@ public class GobHitmap {
         if (hb != null) {
             ArrayList<Coord> coordes = new ArrayList<>();
             for (int j = 0; j < hb.points.length; j++) {
-                Coord c = new Coord(hb.points[j].x, hb.points[j].y);
+                Coord c = new Coord(hb.points[j].round().x, hb.points[j].round().y);
                 c = c.rotate((float) g.a);
                 final Coord gc = new Coord(g.getc());
                 c = gc.add(c);

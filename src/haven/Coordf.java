@@ -39,4 +39,8 @@ public class Coordf {
     public Coord toCoord() {
         return(new Coord((int)this.x,(int)this.y));
     }
+
+    public Coord round() {
+        return new Coord(Math.round(x), Math.round(y));
+    }
 }
