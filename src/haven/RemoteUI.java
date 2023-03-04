@@ -56,6 +56,9 @@ public class RemoteUI implements UI.Receiver, UI.Runner {
 		while(true) {
 			Message msg;
 			while((msg = sess.getuimsg()) != null) {
+				if(Config.debug) {
+					System.out.println("RemoteUI Receiver : "+msg.type);
+				}
 				if(msg.type == Message.RMSG_NEWWDG) {
 					int id = msg.uint16();
 					String type = msg.string();
@@ -63,6 +66,21 @@ public class RemoteUI implements UI.Receiver, UI.Runner {
 					Object[] pargs = msg.list();
 					Object[] cargs = msg.list();
 					ui.newwidget(id, type, parent, pargs, cargs);
+					if(Config.debug) {
+						int i = 0;
+						try {
+							for (Object obj : pargs) {
+								System.out.println("\tpargs["+i+"]" + obj);
+								i++;
+							}
+							i = 0;
+							for (Object obj : cargs) {
+								System.out.println("\tcargs["+i+"]" + obj);
+								i++;
+							}
+						} catch (ArrayIndexOutOfBoundsException ignored) {
+						}
+					}
 
 				} else if(msg.type == Message.RMSG_WDGMSG) {
 					int id = msg.uint16();
@@ -71,6 +89,17 @@ public class RemoteUI implements UI.Receiver, UI.Runner {
 					ui.uimsg(id, name, args);
 
 					checkvents(name, args);
+					if(Config.debug) {
+						System.out.println("\tname: "+name);
+						int i = 0;
+						try {
+							for (Object obj : args) {
+								System.out.println("\targs["+i+"]" + obj);
+								i++;
+							}
+						} catch (ArrayIndexOutOfBoundsException ignored) {
+						}
+					}
 				} else if(msg.type == Message.RMSG_DSTWDG) {
 					int id = msg.uint16();
 					ui.destroy(id);

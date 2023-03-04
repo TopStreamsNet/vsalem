@@ -579,7 +579,8 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 		if (dw != null) {
 			sb.append("ResDraw: ").append(Arrays.toString(dw.sdt.blob));
 			sb.append("\n");
-			sb.append("sdt: ").append(dw.sdtnum()).append("\n");
+			sb.append("sdttype: ").append(dw.sdt.type).append("\n");
+			sb.append("sdtnum: ").append(dw.sdtnum()).append("\n");
 		} else {
 			/*Composite comp = getattr(Composite.class);
 			if (comp != null) {
