@@ -30,7 +30,6 @@ import haven.automation.HeldBy;
 import haven.automation.Holding;
 import haven.integrations.map.MappingClient;
 import haven.minimap.Radar.GobBlink;
-import haven.pathfinder.GobHitmap;
 import haven.res.lib.tree.TreeSprite;
 
 import java.awt.Color;

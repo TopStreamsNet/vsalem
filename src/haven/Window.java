@@ -33,169 +33,170 @@ import java.util.*;
 import static haven.PUtils.*;
 
 public class Window extends Widget implements DTarget {
-    protected static final Tex tleft = Resource.loadtex("gfx/hud/wnd/tleft");
-    protected static final Tex tmain = Resource.loadtex("gfx/hud/wnd/tmain");
-    protected static final Tex tright = Resource.loadtex("gfx/hud/wnd/tright");
-    public static final BufferedImage[] cbtni = new BufferedImage[] {
-	Resource.loadimg("gfx/hud/wnd/cbtn"),
-	Resource.loadimg("gfx/hud/wnd/cbtnd"),
-	Resource.loadimg("gfx/hud/wnd/cbtnh")};
-    public static final BufferedImage[] lbtni = new BufferedImage[] {
-	Resource.loadimg("gfx/hud/wnd/lbtn"),
-	Resource.loadimg("gfx/hud/wnd/lbtnd"),
-	Resource.loadimg("gfx/hud/wnd/lbtnh")};
-    public static final BufferedImage[] rbtni = new BufferedImage[] {
-	Resource.loadimg("gfx/hud/wnd/rbtn"),
-	Resource.loadimg("gfx/hud/wnd/rbtnd"),
-	Resource.loadimg("gfx/hud/wnd/rbtnh")};
-    public static final BufferedImage[] obtni = new BufferedImage[] {
-	    Resource.loadimg("gfx/hud/wnd/obtn"),
-	    Resource.loadimg("gfx/hud/wnd/obtnd"),
-	    Resource.loadimg("gfx/hud/wnd/obtnh")};
-    public static final BufferedImage[] gbtni = new BufferedImage[] {
-	    Resource.loadimg("gfx/hud/wnd/gbtn"),
-	    Resource.loadimg("gfx/hud/wnd/gbtnd"),
-	    Resource.loadimg("gfx/hud/wnd/gbtnh")};
-    public static final Color cc = new Color(248, 230, 190);
-    public static final Text.Furnace cf = new Text.Imager(new Text.Foundry(MainFrame.uiConfig.getFontConfig("wndTitle"))) { // vSalem Change Font - ???
-	    protected BufferedImage proc(Text text) {
-		return(rasterimg(blurmask2(text.img.getRaster(), 1, 1, Color.BLACK)));
-	    }
+	protected static final Tex tleft = Resource.loadtex("gfx/hud/wnd/tleft");
+	protected static final Tex tmain = Resource.loadtex("gfx/hud/wnd/tmain");
+	protected static final Tex tright = Resource.loadtex("gfx/hud/wnd/tright");
+	public static final BufferedImage[] cbtni = new BufferedImage[] {
+			Resource.loadimg("gfx/hud/wnd/cbtn"),
+			Resource.loadimg("gfx/hud/wnd/cbtnd"),
+			Resource.loadimg("gfx/hud/wnd/cbtnh")};
+	public static final BufferedImage[] lbtni = new BufferedImage[] {
+			Resource.loadimg("gfx/hud/wnd/lbtn"),
+			Resource.loadimg("gfx/hud/wnd/lbtnd"),
+			Resource.loadimg("gfx/hud/wnd/lbtnh")};
+	public static final BufferedImage[] rbtni = new BufferedImage[] {
+			Resource.loadimg("gfx/hud/wnd/rbtn"),
+			Resource.loadimg("gfx/hud/wnd/rbtnd"),
+			Resource.loadimg("gfx/hud/wnd/rbtnh")};
+	public static final BufferedImage[] obtni = new BufferedImage[] {
+			Resource.loadimg("gfx/hud/wnd/obtn"),
+			Resource.loadimg("gfx/hud/wnd/obtnd"),
+			Resource.loadimg("gfx/hud/wnd/obtnh")};
+	public static final BufferedImage[] gbtni = new BufferedImage[] {
+			Resource.loadimg("gfx/hud/wnd/gbtn"),
+			Resource.loadimg("gfx/hud/wnd/gbtnd"),
+			Resource.loadimg("gfx/hud/wnd/gbtnh")};
+	public static final Color cc = new Color(248, 230, 190);
+	public static final Text.Furnace cf = new Text.Imager(new Text.Foundry(MainFrame.uiConfig.getFontConfig("wndTitle"))) { // vSalem Change Font - ???
+		protected BufferedImage proc(Text text) {
+			return(rasterimg(blurmask2(text.img.getRaster(), 1, 1, Color.BLACK)));
+		}
 	};
-    public static final IBox fbox = new IBox("gfx/hud", "ftl", "ftr", "fbl", "fbr", "fl", "fr", "ft", "fb");
-    public static final IBox swbox = new IBox("gfx/hud", "stl", "str", "sbl", "sbr", "sl", "sr", "st", "sb");
-    public static final IBox wbox = new IBox("gfx/hud/wnd", "tl", "tr", "bl", "br", "vl", "vr", "ht", "hb");
-    protected static final IBox topless = new IBox(Tex.empty, Tex.empty, wbox.cbl, wbox.cbr, wbox.bl, wbox.br, Tex.empty, wbox.bb);
-    protected static final int th = tleft.sz().y, tdh = th - tmain.sz().y, tc = tdh + 18;
-    private static final Coord capc = new Coord(20, th - 3);
-    public Coord mrgn = new Coord(10, 10);
-    public Text cap;
-    public boolean dt = false;
-    public boolean dm = false;
-    public Coord ctl, csz, atl, asz, ac;
-    public Coord doff;
-    protected final IButton cbtn;
-    private final Collection<Widget> twdgs = new LinkedList<Widget>();
+	public static final IBox fbox = new IBox("gfx/hud", "ftl", "ftr", "fbl", "fbr", "fl", "fr", "ft", "fb");
+	public static final IBox swbox = new IBox("gfx/hud", "stl", "str", "sbl", "sbr", "sl", "sr", "st", "sb");
+	public static final IBox wbox = new IBox("gfx/hud/wnd", "tl", "tr", "bl", "br", "vl", "vr", "ht", "hb");
+	protected static final IBox topless = new IBox(Tex.empty, Tex.empty, wbox.cbl, wbox.cbr, wbox.bl, wbox.br, Tex.empty, wbox.bb);
+	protected static final int th = tleft.sz().y, tdh = th - tmain.sz().y, tc = tdh + 18;
+	private static final Coord capc = new Coord(20, th - 3);
+	public Coord mrgn = new Coord(10, 10);
+	public Text cap;
+	public boolean dt = false;
+	public boolean dm = false;
+	public Coord ctl, csz, atl, asz, ac;
+	public Coord doff;
+	protected final IButton cbtn;
+	private final Collection<Widget> twdgs = new LinkedList<Widget>();
 
-// ******************************
-    private static final String OPT_POS = "_pos";
-//    static Tex bg = Resource.loadtex("gfx/hud/bgtex");
+	// ******************************
+	private static final String OPT_POS = "_pos";
+	//    static Tex bg = Resource.loadtex("gfx/hud/bgtex");
 //    static Tex cl = Resource.loadtex("gfx/hud/cleft");
 //    static Tex cm = Resource.loadtex("gfx/hud/cmain");
 //    static Tex cr = Resource.loadtex("gfx/hud/cright");
-    public Coord tlo, rbo;
-    public boolean justclose = false;
-    protected final String name;
-    @RName("wnd")
-    public static class $_ implements Factory {
-	public Widget create(Coord c, Widget parent, Object[] args) {
-	    if(args.length < 2)
-		return(new Window(c, (Coord)args[0], parent, null));
-	    else
-		return(new Window(c, (Coord)args[0], parent, (String)args[1]));
+	public Coord tlo, rbo;
+	public boolean justclose = false;
+	protected final String name;
+	@RName("wnd")
+	public static class $_ implements Factory {
+		public Widget create(Coord c, Widget parent, Object[] args) {
+			if(args.length < 2)
+				return(new Window(c, (Coord)args[0], parent, null));
+			else
+				return(new Window(c, (Coord)args[0], parent, (String)args[1]));
+		}
 	}
-    }
 
-    public Window(Coord c, Coord sz, Widget parent, String cap) {
-	super(c, new Coord(0, 0), parent);
-	if(cap != null){
-	    this.cap = cf.render(cap);
-	    name = cap;
-	} else {
-	    this.cap = null;
-	    name = null;
+	public Window(Coord c, Coord sz, Widget parent, String cap) {
+		super(c, new Coord(0, 0), parent);
+		if(cap != null){
+
+			this.cap = cf.render(cap);
+			name = cap;
+		} else {
+			this.cap = null;
+			name = null;
+		}
+		resize(sz);
+		setfocustab(true);
+		parent.setfocus(this);
+		cbtn = new IButton(Coord.z, this, cbtni[0], cbtni[1], cbtni[2]);
+		cbtn.recthit = true;
+		addtwdg(cbtn);
+		loadOpts();
 	}
-	resize(sz);
-	setfocustab(true);
-	parent.setfocus(this);
-	cbtn = new IButton(Coord.z, this, cbtni[0], cbtni[1], cbtni[2]);
-	cbtn.recthit = true;
-	addtwdg(cbtn);
-	loadOpts();
-    }
 
-    public Coord contentsz() {
-	Coord max = new Coord(0, 0);
-	for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-	    if(twdgs.contains(wdg))
-		continue;
-	    if(!wdg.visible)
-		continue;
-	    Coord br = wdg.c.add(wdg.sz);
-	    if(br.x > max.x)
-		max.x = br.x;
-	    if(br.y > max.y)
-		max.y = br.y;
+	public Coord contentsz() {
+		Coord max = new Coord(0, 0);
+		for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+			if(twdgs.contains(wdg))
+				continue;
+			if(!wdg.visible)
+				continue;
+			Coord br = wdg.c.add(wdg.sz);
+			if(br.x > max.x)
+				max.x = br.x;
+			if(br.y > max.y)
+				max.y = br.y;
+		}
+		return(max.sub(1, 1));
 	}
-	return(max.sub(1, 1));
-    }
 
-    protected void placetwdgs() {
-	int x = sz.x - 5;
-	for(Widget ch : twdgs) {
-	    if(ch.visible){
-		ch.c = xlate(new Coord(x -= ch.sz.x + 5, tc - (ch.sz.y / 2)), false);
-	    }
+	protected void placetwdgs() {
+		int x = sz.x - 5;
+		for(Widget ch : twdgs) {
+			if(ch.visible){
+				ch.c = xlate(new Coord(x -= ch.sz.x + 5, tc - (ch.sz.y / 2)), false);
+			}
+		}
 	}
-    }
 
-    public void addtwdg(Widget wdg) {
-	twdgs.add(wdg);
-	placetwdgs();
-    }
-
-    public void resize(Coord sz) {
-	IBox box;
-	int th;
-	if(cap == null){
-	    box = wbox;
-	    th = 0;
-	} else {
-	    box = topless;
-	    th = Window.th;
+	public void addtwdg(Widget wdg) {
+		twdgs.add(wdg);
+		placetwdgs();
 	}
-	sz = sz.add(box.bisz()).add(0, th).add(mrgn.mul(2));
-	this.sz = sz;
-	ctl = box.btloff().add(0, th);
-	csz = sz.sub(box.bisz()).sub(0, th);
-	atl = ctl.add(mrgn);
-	asz = csz.sub(mrgn.mul(2));
-	ac = new Coord();
-	//ac = tlo.add(wbox.btloff()).add(mrgn);
-	placetwdgs();
-	for(Widget ch = child; ch != null; ch = ch.next)
-	    ch.presize();
-    }
 
-    public Coord xlate(Coord c, boolean in) {
-	if(in)
-	    return(c.add(atl));
-	else
-	    return(c.sub(atl));
-    }
-
-    public void cdraw(GOut g) {
-    }
-
-    public void draw(GOut g) {
-	g.chcolor(0, 0, 0, 160);
-	if(ctl == null || csz == null){return;}
-	g.frect(ctl, csz);
-	g.chcolor();
-	cdraw(g.reclip(xlate(Coord.z, true), asz));
-	if(cap != null){
-	    topless.draw(g, new Coord(0, th), sz.sub(0, th));
-	    g.image(tleft, Coord.z);
-	    Coord tmul = new Coord(tleft.sz().x, tdh);
-	    Coord tmbr = new Coord(sz.x - tright.sz().x, th);
-	    for(int x = tmul.x; x < tmbr.x; x += tmain.sz().x) {
-		g.image(tmain, new Coord(x, tdh), tmul, tmbr);
-	    }
-	    g.image(tright, new Coord(sz.x - tright.sz().x, tdh));
-	    g.image(cap.tex(), capc.sub(0, cap.sz().y));
-	} else {
-	    wbox.draw(g, Coord.z, sz);
+	public void resize(Coord sz) {
+		IBox box;
+		int th;
+		if(cap == null){
+			box = wbox;
+			th = 0;
+		} else {
+			box = topless;
+			th = Window.th;
+		}
+		sz = sz.add(box.bisz()).add(0, th).add(mrgn.mul(2));
+		this.sz = sz;
+		ctl = box.btloff().add(0, th);
+		csz = sz.sub(box.bisz()).sub(0, th);
+		atl = ctl.add(mrgn);
+		asz = csz.sub(mrgn.mul(2));
+		ac = new Coord();
+		//ac = tlo.add(wbox.btloff()).add(mrgn);
+		placetwdgs();
+		for(Widget ch = child; ch != null; ch = ch.next)
+			ch.presize();
 	}
+
+	public Coord xlate(Coord c, boolean in) {
+		if(in)
+			return(c.add(atl));
+		else
+			return(c.sub(atl));
+	}
+
+	public void cdraw(GOut g) {
+	}
+
+	public void draw(GOut g) {
+		g.chcolor(0, 0, 0, 160);
+		if(ctl == null || csz == null){return;}
+		g.frect(ctl, csz);
+		g.chcolor();
+		cdraw(g.reclip(xlate(Coord.z, true), asz));
+		if(cap != null){
+			topless.draw(g, new Coord(0, th), sz.sub(0, th));
+			g.image(tleft, Coord.z);
+			Coord tmul = new Coord(tleft.sz().x, tdh);
+			Coord tmbr = new Coord(sz.x - tright.sz().x, th);
+			for(int x = tmul.x; x < tmbr.x; x += tmain.sz().x) {
+				g.image(tmain, new Coord(x, tdh), tmul, tmbr);
+			}
+			g.image(tright, new Coord(sz.x - tright.sz().x, tdh));
+			g.image(cap.tex(), capc.sub(0, cap.sz().y));
+		} else {
+			wbox.draw(g, Coord.z, sz);
+		}
 	/*
 	if(cap != null) {
 	    GOut cg = og.reclip(new Coord(0, -7), sz.add(0, 7));
@@ -206,138 +207,138 @@ public class Window extends Widget implements DTarget {
 	    cg.image(cap.tex(), new Coord((sz.x / 2) - (w / 2), 0));
 	}
 	*/
-	super.draw(g);
-    }
-
-    public void uimsg(String msg, Object... args) {
-	if(msg == "pack") {
-	    pack();
-	} else if(msg == "dt") {
-	    dt = (Integer)args[0] != 0;
-	} else {
-	    super.uimsg(msg, args);
+		super.draw(g);
 	}
-    }
 
-    public boolean mousedown(Coord c, int button) {
-	if(c.y < tdh && cap != null)
-	    return(false);
-	parent.setfocus(this);
-	raise();
-	if(super.mousedown(c, button))
-	    return(true);
-	if(button == 1) {
-	    ui.grabmouse(this);
-	    dm = true;
-	    doff = c;
+	public void uimsg(String msg, Object... args) {
+		if(msg == "pack") {
+			pack();
+		} else if(msg == "dt") {
+			dt = (Integer)args[0] != 0;
+		} else {
+			super.uimsg(msg, args);
+		}
 	}
-	return(true);
-    }
 
-    public boolean mouseup(Coord c, int button) {
-	if(dm) {
-	    canceldm();
-	    storeOpt(OPT_POS, this.c);
-	} else {
-	    super.mouseup(c, button);
+	public boolean mousedown(Coord c, int button) {
+		if(c.y < tdh && cap != null)
+			return(false);
+		parent.setfocus(this);
+		raise();
+		if(super.mousedown(c, button))
+			return(true);
+		if(button == 1) {
+			ui.grabmouse(this);
+			dm = true;
+			doff = c;
+		}
+		return(true);
 	}
-	return(true);
-    }
 
-    public void canceldm() {
-	if(dm)
-	    ui.grabmouse(null);
-	dm = false;
-    }
-	
-    public void mousemove(Coord c) {
-	if(dm) {
-	    this.c = this.c.add(c.add(doff.inv()));
-	} else {
-	    super.mousemove(c);
+	public boolean mouseup(Coord c, int button) {
+		if(dm) {
+			canceldm();
+			storeOpt(OPT_POS, this.c);
+		} else {
+			super.mouseup(c, button);
+		}
+		return(true);
 	}
-    }
 
-    public void wdgmsg(Widget sender, String msg, Object... args) {
-	if(sender == cbtn) {
-	    if(justclose)
-		ui.destroy(this);
-	    else
-		wdgmsg("close");
-	} else {
-	    super.wdgmsg(sender, msg, args);
+	public void canceldm() {
+		if(dm)
+			ui.grabmouse(null);
+		dm = false;
 	}
-    }
 
-    public boolean type(char key, java.awt.event.KeyEvent ev) {
-	if(super.type(key, ev))
-	    return(true);
-	if(key == 27) {
-	    if(justclose)
-		ui.destroy(this);
-	    else
-		wdgmsg("close");
-	    return(true);
+	public void mousemove(Coord c) {
+		if(dm) {
+			this.c = this.c.add(c.add(doff.inv()));
+		} else {
+			super.mousemove(c);
+		}
 	}
-	return(false);
-    }
 
-    public boolean drop(Coord cc, Coord ul) {
-	if(dt) {
-	    wdgmsg("drop", cc);
-	    return(true);
+	public void wdgmsg(Widget sender, String msg, Object... args) {
+		if(sender == cbtn) {
+			if(justclose)
+				ui.destroy(this);
+			else
+				wdgmsg("close");
+		} else {
+			super.wdgmsg(sender, msg, args);
+		}
 	}
-	return(false);
-    }
 
-    public boolean iteminteract(Coord cc, Coord ul) {
-	return(false);
-    }
+	public boolean type(char key, java.awt.event.KeyEvent ev) {
+		if(super.type(key, ev))
+			return(true);
+		if(key == 27) {
+			if(justclose)
+				ui.destroy(this);
+			else
+				wdgmsg("close");
+			return(true);
+		}
+		return(false);
+	}
 
-    public Object tooltip(Coord c, Widget prev) {
-	Object ret = super.tooltip(c, prev);
-	if(ret != null)
-	    return(ret);
-	else
-	    return("");
-    }
-    
-    public void storeOpt(String opt, String value){
-	if(name == null){return;}
-	Config.setWindowOpt(name+opt, value);
-    }
-    
-    public void storeOpt(String opt, Coord value){
-	storeOpt(opt, value.toString());
-    }
-    
-    public void storeOpt(String opt, boolean value){
-	if(name == null){return;}
-	Config.setWindowOpt(name+opt, value);
-    }
-    
-    public Coord getOptCoord(String opt, Coord def){
-	synchronized (Config.window_props) {
-	    try {
-		return new Coord(Config.window_props.getProperty(name+opt, def.toString()));
-	    } catch (Exception e){
-		return def;
-	    }
+	public boolean drop(Coord cc, Coord ul) {
+		if(dt) {
+			wdgmsg("drop", cc);
+			return(true);
+		}
+		return(false);
 	}
-    }
-    
-    public boolean getOptBool(String opt, boolean def){
-	synchronized (Config.window_props) {
-	    try {
-		return Config.window_props.getProperty(name+opt, null).equals("true");
-	    } catch (Exception e){
-		return def;
-	    }
+
+	public boolean iteminteract(Coord cc, Coord ul) {
+		return(false);
 	}
-    }
-    
-    protected void loadOpts(){
-	if(name == null){return;}
-	c = getOptCoord(OPT_POS, c);
-    }
+
+	public Object tooltip(Coord c, Widget prev) {
+		Object ret = super.tooltip(c, prev);
+		if(ret != null)
+			return(ret);
+		else
+			return("");
+	}
+
+	public void storeOpt(String opt, String value){
+		if(name == null){return;}
+		Config.setWindowOpt(name+opt, value);
+	}
+
+	public void storeOpt(String opt, Coord value){
+		storeOpt(opt, value.toString());
+	}
+
+	public void storeOpt(String opt, boolean value){
+		if(name == null){return;}
+		Config.setWindowOpt(name+opt, value);
+	}
+
+	public Coord getOptCoord(String opt, Coord def){
+		synchronized (Config.window_props) {
+			try {
+				return new Coord(Config.window_props.getProperty(name+opt, def.toString()));
+			} catch (Exception e){
+				return def;
+			}
+		}
+	}
+
+	public boolean getOptBool(String opt, boolean def){
+		synchronized (Config.window_props) {
+			try {
+				return Config.window_props.getProperty(name+opt, null).equals("true");
+			} catch (Exception e){
+				return def;
+			}
+		}
+	}
+
+	protected void loadOpts(){
+		if(name == null){return;}
+		c = getOptCoord(OPT_POS, c);
+	}
 }
