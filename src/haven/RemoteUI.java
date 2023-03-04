@@ -27,82 +27,82 @@
 package haven;
 
 public class RemoteUI implements UI.Receiver, UI.Runner {
-    Session sess, ret;
-    UI ui;
-	
-    public RemoteUI(Session sess) {
-	this.sess = sess;
-	Widget.initnames();
-    }
-	
-    public void rcvmsg(int id, String name, Object... args) {
-	Message msg = new Message(Message.RMSG_WDGMSG);
-	msg.adduint16(id);
-	msg.addstring(name);
-	msg.addlist(args);
-	sess.queuemsg(msg);
-    }
-	
-    public void ret(Session sess) {
-	synchronized(this.sess) {
-	    this.ret = sess;
-	    this.sess.notifyAll();
+	Session sess, ret;
+	UI ui;
+
+	public RemoteUI(Session sess) {
+		this.sess = sess;
+		Widget.initnames();
 	}
-    }
 
-    public Session run(UI ui) throws InterruptedException {
-	this.ui = ui;
-	ui.setreceiver(this);
-	while(true) {
-	    Message msg;
-	    while((msg = sess.getuimsg()) != null) {
-		if(msg.type == Message.RMSG_NEWWDG) {
-		    int id = msg.uint16();
-		    String type = msg.string();
-		    int parent = msg.uint16();
-		    Object[] pargs = msg.list();
-		    Object[] cargs = msg.list();
-		    ui.newwidget(id, type, parent, pargs, cargs);
+	public void rcvmsg(int id, String name, Object... args) {
+		Message msg = new Message(Message.RMSG_WDGMSG);
+		msg.adduint16(id);
+		msg.addstring(name);
+		msg.addlist(args);
+		sess.queuemsg(msg);
+	}
 
-		} else if(msg.type == Message.RMSG_WDGMSG) {
-		    int id = msg.uint16();
-		    String name = msg.string();
-		    Object[] args = msg.list();
-		    ui.uimsg(id, name, args);
-                    
-		    checkvents(name, args);
-		} else if(msg.type == Message.RMSG_DSTWDG) {
-		    int id = msg.uint16();
-		    ui.destroy(id);
+	public void ret(Session sess) {
+		synchronized(this.sess) {
+			this.ret = sess;
+			this.sess.notifyAll();
 		}
-	    }
-	    synchronized(sess) {
-		if(ret != null) {
-		    sess.close();
-		    return(ret);
+	}
+
+	public Session run(UI ui) throws InterruptedException {
+		this.ui = ui;
+		ui.setreceiver(this);
+		while(true) {
+			Message msg;
+			while((msg = sess.getuimsg()) != null) {
+				if(msg.type == Message.RMSG_NEWWDG) {
+					int id = msg.uint16();
+					String type = msg.string();
+					int parent = msg.uint16();
+					Object[] pargs = msg.list();
+					Object[] cargs = msg.list();
+					ui.newwidget(id, type, parent, pargs, cargs);
+
+				} else if(msg.type == Message.RMSG_WDGMSG) {
+					int id = msg.uint16();
+					String name = msg.string();
+					Object[] args = msg.list();
+					ui.uimsg(id, name, args);
+
+					checkvents(name, args);
+				} else if(msg.type == Message.RMSG_DSTWDG) {
+					int id = msg.uint16();
+					ui.destroy(id);
+				}
+			}
+			synchronized(sess) {
+				if(ret != null) {
+					sess.close();
+					return(ret);
+				}
+				if(!sess.alive())
+					return(null);
+				sess.wait(50);
+			}
 		}
-		if(!sess.alive())
-		    return(null);
-		sess.wait(50);
-	    }
 	}
-    }
 
-    private void checkvents(String name, Object[] args) {
-	if(name.equals("prog")){
-	    if(args.length == 0){
-		progressComplete();
-	    }
+	private void checkvents(String name, Object[] args) {
+		if(name.equals("prog")){
+			if(args.length == 0){
+				progressComplete();
+			}
+		}
 	}
-    }
 
-    private void progressComplete() {
-	try {
-	    if (Config.autosift && UI.isCursor(UI.Cursor.SIFTING)) {
-		MapView map = UI.instance.gui.map;
-		Gob player = map.player();
-		map.wdgmsg(map, "click", player.sc, player.rc, 1, 0);
-	    }
-	} catch(Exception ignored){}
-    }
+	private void progressComplete() {
+		try {
+			if (Config.autosift && UI.isCursor(UI.Cursor.SIFTING)) {
+				MapView map = UI.instance.gui.map;
+				Gob player = map.player();
+				map.wdgmsg(map, "click", player.sc, player.rc, 1, 0);
+			}
+		} catch(Exception ignored){}
+	}
 }
