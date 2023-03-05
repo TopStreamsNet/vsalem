@@ -510,7 +510,7 @@ public class MenuGrid extends Widget {
     private Pagina paginafor(Resource res) {
 	return(ui.sess.glob.paginafor(res));
     }
-    
+
     public Pagina paginafor(String name){
 	Set<Pagina> pags = ui.sess.glob.paginae;
 	for(Pagina p : pags){
@@ -528,8 +528,8 @@ public class MenuGrid extends Widget {
     public void useres(Resource r){
 	use(paginafor(r));
     }
-    
-    public void use(Pagina r) {
+
+    private void use(Pagina r, boolean reset) {
 	Collection<Pagina> sub = new LinkedList<Pagina>(),
 	    cur = new LinkedList<Pagina>();
 	cons(r, sub);
@@ -551,12 +551,11 @@ public class MenuGrid extends Widget {
 		curoff += off;
 	} else {
 	    r.newp = 0;
-	    if (!senduse(r)) return;
-            if(Config.menugrid_resets)
-            {
-                this.cur = null;
-                curoff = 0;
-            }
+	    wdgmsg("act", (Object[])r.act().ad);
+	    if(reset) {
+		this.cur = null;
+		curoff = 0;
+	    }
 	}
 	updlayout();
     }
@@ -597,7 +596,7 @@ public class MenuGrid extends Widget {
 		dragging = pressed = null;
 	    } else if(pressed != null) {
 		if(pressed == h)
-		    use(h);
+		    use(h, false);
 		pressed = null;
 	    }
 	    ui.grabmouse(null);
@@ -628,12 +627,12 @@ public class MenuGrid extends Widget {
 	    updlayout();
 	    return(true);
 	} else if((k == KeyEvent.VK_N) && (layout[gsz.x - 2][gsz.y - 1] == next)) {
-	    use(next);
+	    use(next, false);
 	    return(true);
 	}
 	Pagina r = hotmap.get(k);
 	if(r != null) {
-	    use(r);
+	    use(r, true);
 	    return(true);
 	}
 	return(false);
