@@ -27,7 +27,8 @@
 package haven;
 
 public class RemoteUI implements UI.Receiver, UI.Runner {
-	Session sess, ret;
+	public final Session sess;
+	private Session	ret;
 	UI ui;
 
 	public RemoteUI(Session sess) {
