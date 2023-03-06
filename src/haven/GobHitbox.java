@@ -156,9 +156,9 @@ public class GobHitbox extends Sprite {
             return bboxWallseg;
         else if (name.endsWith("/hwall"))
             return bboxHwall;
-        else if (name.endsWith("gfx/terobjs/arch/cwall")){
+        else if (name.endsWith("gfx/terobjs/arch/cwall"))
             return bboxCwall;
-        }
+
 
         Resource.Neg neg = gob.getneg();
 
