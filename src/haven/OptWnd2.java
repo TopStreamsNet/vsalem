@@ -1024,7 +1024,7 @@ public class OptWnd2 extends Window {
 
 		//create the new one
 		radartab = body.new Tab(new Coord(400,0), 70, "Radar config") {
-			RadarList list = new RadarList(new Coord(200, 55), this);
+			RadarList list = new RadarList(new Coord(25, 55), this);
 		};
 		/*
         int x = 0, y = 35;

@@ -80,10 +80,7 @@ public class RadarList extends Scrollport {
                 }
             };
             cb.a = cg.show;
-
             cb.canactivate = true;
-            new IButton(new Coord(178, 5), this, cbtni[0], cbtni[1], cbtni[2]);
-
         }
 
         @Override
@@ -136,7 +133,6 @@ public class RadarList extends Scrollport {
 
         @Override
         public void wdgmsg(Widget sender, String msg, Object... args) {
-            System.out.println("Got msg "+msg);
             if (msg.equals("ch")) {
                 wdgmsg("changed", name, args[0]);
             } else if (msg.equals("activate")) {
