@@ -717,7 +717,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 		{
 			ssl = new SslHelper();
 			try {
-				ssl.trust(ssl.loadX509(Resource.class.getResourceAsStream("ressrv.crt")));
+				ssl.trust(Resource.class.getResourceAsStream("ressrv.crt"));
 			} catch(java.security.cert.CertificateException e) {
 				throw(new Error("Invalid built-in certificate", e));
 			} catch(IOException e) {
@@ -750,6 +750,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 						c = ssl.connect(resurl);
 					else
 						c = resurl.openConnection();
+					/* Apparently, some versions of Java Web Start has
+					 * a bug in its internal cache where it refuses to
+					 * reload a URL even when it has changed. */
+					c.setUseCaches(false);
 					c.addRequestProperty("User-Agent", "Haven/1.0");
 					return(c.getInputStream());
 				} catch(ConnectException e) {

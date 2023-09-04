@@ -81,7 +81,7 @@
 	</target>
 
 	<target name="resources">
-		<java jar="resources/LayerUtil.jar" fork="true">
+		<java jar="resources/LayerUtil.jar" fork="true" >
 			<arg line="-re resources/src resources/compiled/res"/>
 		</java>
 		<jar destfile="build/lclient-res.jar" update="true">
