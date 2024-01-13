@@ -1,25 +1,28 @@
 <?xml version="1.0" ?>
 
 <project name="salem" default="deftgt">
-	<target name="build-env">
-		<mkdir dir="build" />
-		<mkdir dir="build/classes" />
-		<available property="has-res-jar" file="build/salem-res.jar" />
-		<available property="has-buildinfo" file="build/classes/buildinfo" />
-		<available property="unpacked-lib" file="build/classes-lib" />
-	</target>
+  <property file="build.properties" />
 
-	<target name="buildinfo" depends="build-env">
-		<tstamp>
-			<format property="gitrev" pattern="dd.MM.yyyy HH:mm" />
-		</tstamp>
-		<echo file="build/classes/buildinfo">
+  <target name="build-env">
+    <mkdir dir="build" />
+    <mkdir dir="build/classes" />
+    <available property="has-res-jar" file="build/salem-res.jar" />
+    <available property="has-buildinfo" file="build/classes/buildinfo" />
+    <available property="unpacked-lib" file="build/classes-lib" />
+  </target>
+  
+  <target name="buildinfo" depends="build-env" unless="has-buildinfo">
+    <exec executable="git" outputproperty="gitrev" failifexecutionfails="false">
+      <arg line="rev-parse HEAD" />
+    </exec>
+    <echo file="build/classes/buildinfo" xml:space="default">
       git-rev = ${gitrev}
     </echo>
 	</target>
 
 	<target name="salem-client" depends="build-env">
-		<javac srcdir="src" destdir="build/classes" debug="on" source="1.7" target="1.7" includeantruntime="no" encoding="iso-8859-1">
+		<javac srcdir="src" destdir="build/classes" debug="on" source="1.7" target="1.7" includeantruntime="no" encoding="iso-8859-1"
+	   			bootclasspath="${boot-classpath}">>
 			<classpath>
 				<pathelement path="lib/jogl-all.jar" />
 				<pathelement path="lib/gluegen-rt.jar" />
