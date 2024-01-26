@@ -39,7 +39,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
+import java.net.URI;
+import java.io.PrintStream;
 import static haven.Utils.getprop;
 
 public class Config {
@@ -480,6 +481,18 @@ public class Config {
 	}
     }
     
+
+    private static URI geturi(String name, String def) {
+	String val = getprop(name, def);
+	if(val.equals(""))
+	    return(null);
+	try {
+	    return(new URI(val));
+	} catch(java.net.URISyntaxException e) {
+	    throw(new RuntimeException(e));
+	}
+    }
+
     private static void usage(PrintStream out) {
 	out.println("usage: haven.jar [OPTIONS] [SERVER[:PORT]]");
 	out.println("Options include:");
