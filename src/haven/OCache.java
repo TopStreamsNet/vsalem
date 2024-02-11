@@ -246,7 +246,7 @@ public class OCache implements Iterable<Gob> {
 
 	public synchronized void follow(Gob g, long oid, Indir<Resource> xfres, String xfname) {
 		//System.out.println("Follow: "+String.format("0x%08X", oid));
-		if(oid == 0xffffffffl) {
+		if(oid == 0xffffffffL) {
 			g.delattr(Following.class);
 			final HeldBy heldby = g.getattr(HeldBy.class);
 			if (heldby != null) {
