@@ -1026,7 +1026,7 @@ public class JSONObject {
      * @throws JSONException If the key is null or if the number is invalid.
      */
     public JSONObject put(String key, double value) throws JSONException {
-        put(key, new Double(value));
+        put(key, (Double)(value));
         return this;
     }
 
@@ -1040,7 +1040,7 @@ public class JSONObject {
      * @throws JSONException If the key is null.
      */
     public JSONObject put(String key, int value) throws JSONException {
-        put(key, new Integer(value));
+        put(key, (Integer)(value));
         return this;
     }
 
@@ -1054,7 +1054,7 @@ public class JSONObject {
      * @throws JSONException If the key is null.
      */
     public JSONObject put(String key, long value) throws JSONException {
-        put(key, new Long(value));
+        put(key, (Long)(value));
         return this;
     }
 
@@ -1255,7 +1255,7 @@ public class JSONObject {
             if (b == '0' && string.length() > 2 &&
                         (string.charAt(1) == 'x' || string.charAt(1) == 'X')) {
                 try {
-                    return new Integer(Integer.parseInt(string.substring(2), 16));
+                    return (Integer)(Integer.parseInt(string.substring(2), 16));
                 } catch (Exception ignore) {
                 }
             }
@@ -1264,9 +1264,9 @@ public class JSONObject {
                         string.indexOf('e') > -1 || string.indexOf('E') > -1) {
                     return Double.valueOf(string);
                 } else {
-                    Long myLong = new Long(string);
-                    if (myLong.longValue() == myLong.intValue()) {
-                        return new Integer(myLong.intValue());
+                    long myLong = Long.parseLong(string);
+                    if (myLong == (int) myLong) {
+                        return (int) myLong;
                     } else {
                         return myLong;
                     }

@@ -161,15 +161,15 @@ public class GLProgram implements java.io.Serializable {
     public int uniform(String name) {
 	Integer r = umap.get(name);
 	if(r == null)
-	    umap.put(name, r = new Integer(glp.uniform(name)));
-	return(r.intValue());
+	    umap.put(name, r = glp.uniform(name));
+	return(r);
     }
 
     private final Map<String, Integer> amap = new IdentityHashMap<String, Integer>();
     public int attrib(String name) {
 	Integer r = amap.get(name);
 	if(r == null)
-	    amap.put(name, r = new Integer(glp.attrib(name)));
-	return(r.intValue());
+	    amap.put(name, r = glp.attrib(name));
+	return(r);
     }
 }

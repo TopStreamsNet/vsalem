@@ -265,7 +265,7 @@ public class JSONWriter {
 
     /**
      * Push an array or object scope.
-     * @param c The scope to open.
+     * @param jo The scope to open.
      * @throws JSONException If nesting is too deep.
      */
     private void push(JSONObject jo) throws JSONException {
@@ -296,7 +296,7 @@ public class JSONWriter {
      * @throws JSONException If the number is not finite.
      */
     public JSONWriter value(double d) throws JSONException {
-        return this.value(new Double(d));
+        return this.value(d);
     }
 
     /**

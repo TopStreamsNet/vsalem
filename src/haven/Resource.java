@@ -1066,14 +1066,10 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 
 	public static Resource classres(final Class<?> cl) {
-		return(java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<Resource>() {
-			public Resource run() {
-				ClassLoader l = cl.getClassLoader();
-				if(l instanceof ResClassLoader)
-					return(((ResClassLoader)l).getres());
-				throw(new RuntimeException("Cannot fetch resource of non-resloaded class " + cl));
-			}
-		}));
+		ClassLoader l = cl.getClassLoader();
+		if(l instanceof ResClassLoader)
+			return(((ResClassLoader)l).getres());
+		throw(new RuntimeException("Cannot fetch resource of non-resloaded class " + cl));
 	}
 
   public <T> T getcode(Class<T> cl, boolean fail) {
@@ -1154,26 +1150,22 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 
 			synchronized(CodeEntry.this) {
 				if(this.loader == null) {
-					this.loader = java.security.AccessController.doPrivileged(new java.security.PrivilegedAction<ClassLoader>() {
-						public ClassLoader run() {
-							ClassLoader parent = Resource.class.getClassLoader();
-							if(classpath.size() > 0) {
-								Collection<ClassLoader> loaders = new LinkedList<ClassLoader>();
-								for(Resource res : classpath) {
-									if(wait)
-										res.loadwait();
-									loaders.add(res.layer(CodeEntry.class).loader(wait));
-								}
-								parent = new LibClassLoader(parent, loaders);
-							}
-							return(new ResClassLoader(parent) {
-								public Class<?> findClass(String name) throws ClassNotFoundException {
-									Code c = clmap.get(name);
-									if(c == null)
-										throw(new ClassNotFoundException("Could not find class " + name + " in resource (" + Resource.this + ")"));
-									return(defineClass(name, c.data, 0, c.data.length));
-								}
-							});
+					ClassLoader parent = Resource.class.getClassLoader();
+					if(classpath.size() > 0) {
+						Collection<ClassLoader> loaders = new LinkedList<ClassLoader>();
+						for(Resource res : classpath) {
+							if(wait)
+								res.loadwait();
+							loaders.add(res.layer(CodeEntry.class).loader(wait));
+						}
+						parent = new LibClassLoader(parent, loaders);
+					}
+					this.loader = (new ResClassLoader(parent) {
+						public Class<?> findClass(String name) throws ClassNotFoundException {
+							Code c = clmap.get(name);
+							if(c == null)
+								throw(new ClassNotFoundException("Could not find class " + name + " in resource (" + Resource.this + ")"));
+							return(defineClass(name, c.data, 0, c.data.length));
 						}
 					});
 				}

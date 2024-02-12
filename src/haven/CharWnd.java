@@ -183,10 +183,10 @@ public class CharWnd extends Window {
     public static int[] sortattrs(final String[] attrs) {
 	Integer[] o = new Integer[attrs.length];
 	for(int i = 0; i < o.length; i++)
-	    o[i] = new Integer(i);
+	    o[i] = i;
 	Arrays.sort(o, new Comparator<Integer>() {
 		public int compare(Integer a, Integer b) {
-		    return(attrorder.indexOf(attrs[a.intValue()]) - attrorder.indexOf(attrs[b.intValue()]));
+		    return(attrorder.indexOf(attrs[a]) - attrorder.indexOf(attrs[b]));
 		}
 	    });
 	int[] r = new int[o.length];

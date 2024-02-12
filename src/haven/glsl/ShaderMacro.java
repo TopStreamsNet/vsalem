@@ -148,12 +148,12 @@ public interface ShaderMacro {
 	    if(r == null) {
 		String nm = built.symtab.get(var.name);
 		if(nm == null)
-		    r = new Integer(-1);
+		    r = -1;
 		else
-		    r = new Integer(uniform(nm));
+		    r = uniform(nm);
 		umap.put(var, r);
 	    }
-	    return(r.intValue());
+	    return(r);
 	}
 	public int uniform(Uniform var) {
 	    int r = cuniform(var);
@@ -167,9 +167,9 @@ public interface ShaderMacro {
 	    if(r == null) {
 		String nm = built.symtab.get(var.name);
 		if(nm == null)
-		    r = new Integer(-1);
+		    r = -1;
 		else
-		    r = new Integer(attrib(nm));
+		    r = attrib(nm);
 		amap.put(var, r);
 	    }
 	    return(r.intValue());
