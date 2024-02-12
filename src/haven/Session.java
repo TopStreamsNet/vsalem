@@ -34,6 +34,8 @@ import java.net.*;
 import java.util.*;
 import java.io.*;
 import java.lang.ref.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Session implements Owner {
 	public static final int PVER = 36;
