@@ -76,6 +76,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
     private WItem vhand;
     public ChatUI chat;
     public FilterWnd filter = new FilterWnd(this);
+    public FlatnessTool flat;
     public ChatUI.Channel syslog;
     private HomeTrackerFX.HTrackWdg hrtptr;
     public int prog = -1;
@@ -1096,7 +1097,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    x+=18;
 	    lndb = new MenuButton(new Coord(x, y), this, "lnd", -1, "Display Landscape Tool") {
 		public void click() {
-		    FlatnessTool.instance(ui);
+		    FlatnessTool.instance(GameUI.this.ui).toggle();
 		}
 	    };
 	    x+=18;
@@ -1295,8 +1296,35 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    mainmenu.cash = cash;
 	}
 	
-        if(mainmenu.manual != null || mainmenu.cash != null)
-            mainmenu.apply_visibility();
+	if(mainmenu.manual != null || mainmenu.cash != null)
+		mainmenu.apply_visibility();
+	if((Config.manualurl != null) && (WebBrowser.self != null)) {
+	    new IButton(Coord.z, this, Resource.loadimg("gfx/hud/manu"), Resource.loadimg("gfx/hud/mand"), Resource.loadimg("gfx/hud/manh")) {
+		{
+		    tooltip = Text.render("Go to Wiki!");
+		}
+		
+		public void click() {
+		    URL base = Config.manualurl;
+		    try {
+			WebBrowser.self.show(base);
+		    } catch(WebBrowser.BrowserException e) {
+			error("Could not launch web browser.");
+		    }
+		}
+
+		public void presize() {
+		    this.c = mainmenu.c.sub(0, this.sz.y).add(140, 0);
+		}
+
+		public Object tooltip(Coord c, Widget prev) {
+		    if(checkhit(c))
+			return(super.tooltip(c, prev));
+		    return(null);
+		}
+	    }.presize();
+	}
+
     }
     
     public boolean globtype(char key, KeyEvent ev) {
