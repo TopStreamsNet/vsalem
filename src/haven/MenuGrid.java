@@ -526,10 +526,11 @@ public class MenuGrid extends Widget {
     }
     
     public void useres(Resource r){
-	use(paginafor(r));
+	use(paginafor(r), false);
     }
 
-    private void use(Pagina r, boolean reset) {
+    public void use(Pagina r, boolean reset) {
+	System.out.println("Pagina acting on " + r.res().name);
 	Collection<Pagina> sub = new LinkedList<Pagina>(),
 	    cur = new LinkedList<Pagina>();
 	cons(r, sub);
@@ -562,12 +563,13 @@ public class MenuGrid extends Widget {
 
     public boolean senduse(Pagina r) {
 	String [] ad = r.act().ad;
+	System.out.println("Attempting to senduse " + ad);
 	if((ad == null) || (ad.length < 1)){
 	    return false;
 	}
 	if(ad[0].equals("@")) {
 	    if(!XTendedPaginae.useXTended(ui,ad))
-                use(null);
+                use(null, false);
 	} else {
 	    wdgmsg("act", (Object[])ad);
 	}

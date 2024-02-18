@@ -1143,8 +1143,12 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    for (Widget w: tohide){
 		w.visible = Config.mainmenu_full;
 	    }
-	    cash.presize();
-	    manual.presize();
+	    if(cash != null) {
+	    	cash.presize();
+	    }
+	    if(manual != null) {
+	    	manual.presize();
+	    }
 	}
 
     }

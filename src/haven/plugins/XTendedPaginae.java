@@ -92,6 +92,7 @@ public class XTendedPaginae {
 
     public static boolean useXTended(UI ui, String[] ad) {
         boolean handled = true;
+        System.out.println("Handling" + ad);
         if (ad[1].equals("act")) {
             String[] args = new String[ad.length - 2];
             System.arraycopy(ad, 2, args, 0, args.length);
@@ -99,6 +100,7 @@ public class XTendedPaginae {
         } else if (dictionary.containsKey(ad[1])) {
             dictionary.get(ad[1]).execute(ui);
         } else {
+            System.out.println("Miss!");
             handled = false;
         }
 
