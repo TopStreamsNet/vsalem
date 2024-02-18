@@ -129,7 +129,7 @@
 		<java jar="build/lsalem.jar" 
 				dir="build" 
 				fork="true" 
-				maxmemory="256m"
+				maxmemory="1024m"
 				classpath="java">
 			<arg line="-d -U http://game.salemthegame.com/res/ game.salemthegame.com"/>
                         <jvmarg line="-XX:-UseGCOverheadLimit" />
@@ -140,7 +140,7 @@
 		<java jar="build/lsalem.jar"
 				dir="build"
 				fork="true"
-				maxmemory="256m"
+				maxmemory="1024m"
 				classpath="java">
 			<arg line="-d -U http://game.salemthegame.com/res/ game.salemthegame.com"/>
                         <jvmarg line="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:-UseGCOverheadLimit" />
