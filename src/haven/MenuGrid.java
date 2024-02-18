@@ -530,7 +530,6 @@ public class MenuGrid extends Widget {
     }
 
     public void use(Pagina r, boolean reset) {
-	System.out.println("Pagina acting on " + r.res().name);
 	Collection<Pagina> sub = new LinkedList<Pagina>(),
 	    cur = new LinkedList<Pagina>();
 	cons(r, sub);
@@ -552,7 +551,7 @@ public class MenuGrid extends Widget {
 		curoff += off;
 	} else {
 	    r.newp = 0;
-	    wdgmsg("act", (Object[])r.act().ad);
+	    if (!senduse(r)) return;
 	    if(reset) {
 		this.cur = null;
 		curoff = 0;
