@@ -176,6 +176,12 @@ public class UIConfig {
             fc.color = new Color(248, 230, 190);
             fc.style = Font.BOLD;
             fc.aa = true;
+        }else if(target.equals("fastText")){
+            fc.family = Font.SERIF;
+            fc.size = 15;
+            fc.color = new Color(248, 230, 190);
+            fc.style = Font.BOLD;
+            fc.aa = true;
         }else{
             fc.family = Font.SANS_SERIF;
             fc.size = 40;
