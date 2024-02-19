@@ -149,7 +149,7 @@ public class UIConfig {
         }else if(target.equals("textEntry")){
             fc.family = Font.SANS_SERIF;
             fc.size = 12;
-            fc.color = new Color(0, 0, 0);
+            fc.color = new Color(255, 255, 255);
             fc.style = Font.PLAIN;
             fc.aa = true;
         }else if(target.equals("stdRichText")){

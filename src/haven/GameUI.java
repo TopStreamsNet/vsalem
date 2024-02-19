@@ -70,10 +70,12 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	public Polity polity;
 	public HelpWnd help;
 	public OptWnd opts;
+	public Store storewnd;
 	public Collection<GItem> hand = new LinkedList<GItem>();
 	public WItem vhand;
 	public ChatUI chat;
 	public FilterWnd filter = new FilterWnd(this);
+	public FlatnessTool flat;
 	public ChatUI.Channel syslog;
 	private HomeTrackerFX.HTrackWdg hrtptr;
 	public int prog = -1;
@@ -851,6 +853,9 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 			ui.destroy(help);
 			help = null;
 			return;
+		} else if((sender == storewnd) && (msg == "close")) {
+			storewnd.hide();
+			return;
 		}
 		super.wdgmsg(sender, msg, args);
 	}
@@ -1107,7 +1112,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 			x+=18;
 			lndb = new MenuButton(new Coord(x, y), this, "lnd", -1, "Display Landscape Tool") {
 				public void click() {
-					FlatnessTool.instance(ui);
+					FlatnessTool.instance(GameUI.this.ui).toggle();
 				}
 			};
 			x+=18;
@@ -1264,39 +1269,21 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 					tooltip = Text.render("Salem Store");
 				}
 
-				private String encode(String in) {
-					StringBuilder buf = new StringBuilder();
-					byte[] enc;
-					try {
-						enc = in.getBytes("utf-8");
-					} catch(java.io.UnsupportedEncodingException e) {
-						/* ¦] */
-						throw(new Error(e));
-					}
-					for(byte c : enc) {
-						if(((c >= 'a') && (c <= 'z')) || ((c >= 'A') && (c <= 'Z')) ||
-								((c >= '0') && (c <= '9')) || (c == '.')) {
-							buf.append((char)c);
-						} else {
-							buf.append("%" + Utils.num2hex((c & 0xf0) >> 4) + Utils.num2hex(c & 0x0f));
-						}
-					}
-					return(buf.toString());
-				}
-
 				public void click() {
-					URL base = Config.storeurl;
-					try {
-						WebBrowser.self.show(new URL(base.getProtocol(), base.getHost(), base.getPort(), base.getFile() + "?userid=" + encode(ui.sess.username)));
-					} catch(java.net.MalformedURLException e) {
-						throw(new RuntimeException(e));
-					} catch(WebBrowser.BrowserException e) {
-						error("Could not launch web browser.");
+					if(storewnd == null) {
+						storewnd = new Store(Coord.z, GameUI.this, Config.storebase);
+						storewnd.hide();
+						storewnd.c = storewnd.parent.sz.sub(storewnd.sz).div(2);
+					}
+					if(storewnd.show(!storewnd.visible)) {
+						storewnd.raise();
+						fitwdg(storewnd);
+						GameUI.this.setfocus(storewnd);
 					}
 				}
 
 				public void presize() {
-					this.c = new Coord(90, (mainmenu.c.y - sz.y + (Config.mainmenu_full?0:119)));
+					this.c = mainmenu.c.sub(0, this.sz.y);
 				}
 
 				public Object tooltip(Coord c, Widget prev) {

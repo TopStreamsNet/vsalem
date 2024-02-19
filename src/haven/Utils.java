@@ -29,6 +29,7 @@ package haven;
 import java.awt.RenderingHints;
 import java.io.*;
 import java.nio.*;
+import java.nio.file.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.lang.reflect.*;
@@ -147,8 +148,7 @@ public class Utils {
 	Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
 	try {
 	    if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-		String text = (String)t.getTransferData(DataFlavor.stringFlavor);
-		return text;
+			return (String)t.getTransferData(DataFlavor.stringFlavor);
 	    }
 	} catch (UnsupportedFlavorException e) {
 	} catch (IOException e) {
@@ -157,6 +157,35 @@ public class Utils {
     }
     
 	
+
+    public static URI uri(String uri) {
+	try {
+	    return(new URI(uri));
+	} catch(URISyntaxException e) {
+	    throw(new IllegalArgumentException(uri, e));
+	}
+    }
+
+    public static URL url(String url) {
+	try {
+	    return(uri(url).toURL());
+	} catch(MalformedURLException e) {
+	    throw(new IllegalArgumentException(url, e));
+	}
+    }
+
+    public static Path path(String path) {
+	if(path == null)
+	    return(null);
+	return(FileSystems.getDefault().getPath(path));
+    }
+
+    public static Path pj(Path base, String... els) {
+	for(String el : els)
+	    base = base.resolve(el);
+	return(base);
+    }
+
     static synchronized Preferences prefs() {
 	if(prefs == null) {
 	    Preferences node = Preferences.userNodeForPackage(Utils.class);
@@ -279,7 +308,50 @@ public class Utils {
     public static int ub(byte b) {
 	return(((int)b) & 0xff);
     }
-	
+
+    /* Nested format: [[KEY, VALUE], [KEY, VALUE], ...] */
+    public static <K, V> Map<K, V> mapdecn(Object ob, Class<K> kt, Class<V> vt) {
+	Map<K, V> ret = new HashMap<>();
+	Object[] enc = (Object[])ob;
+	for(Object sob : enc) {
+	    Object[] ent = (Object[])sob;
+	    ret.put(kt.cast(ent[0]), vt.cast(ent[1]));
+	}
+	return(ret);
+    }
+    public static Map<Object, Object> mapdecn(Object ob) {
+	return(mapdecn(ob, Object.class, Object.class));
+    }
+    public static Object[] mapencn(Map<?, ?> map) {
+	Object[] ret = new Object[map.size()];
+	int a = 0;
+	for(Map.Entry<?, ?> ent : map.entrySet())
+	    ret[a++] = new Object[] {ent.getKey(), ent.getValue()};
+	return(ret);
+    }
+
+    /* Flat format: [KEY, VALUE, KEY, VALUE, ...] */
+    public static <K, V> Map<K, V> mapdecf(Object ob, Class<K> kt, Class<V> vt) {
+	Map<K, V> ret = new HashMap<>();
+	Object[] enc = (Object[])ob;
+	for(int a = 0; a < enc.length - 1; a += 2)
+	    ret.put(kt.cast(enc[a]), vt.cast(enc[a + 1]));
+	return(ret);
+    }
+    public static Map<Object, Object> mapdecf(Object ob) {
+	return(mapdecf(ob, Object.class, Object.class));
+    }
+    public static Object[] mapencf(Map<?, ?> map) {
+	Object[] ret = new Object[map.size() * 2];
+	int a = 0;
+	for(Map.Entry<?, ?> ent : map.entrySet()) {
+	    ret[a + 0] = ent.getKey();
+	    ret[a + 1] = ent.getValue();
+	    a += 2;
+	}
+	return(ret);
+    }
+
     public static byte sb(int b) {
 	return((byte)b);
     }
@@ -611,6 +683,50 @@ public class Utils {
 	}
     }
     
+    public static interface IOFunction<T> {
+	/* Checked exceptions banzai :P */
+	public T run() throws IOException;
+    }
+
+    /* XXX: Sometimes, the client is getting strange and weird OS
+     * errors on Windows. For example, file sharing violations are
+     * sometimes returned even though Java always opens
+     * RandomAccessFiles in non-exclusive mode, and other times,
+     * permission is spuriously denied. I've had zero luck in trying
+     * to find a root cause for these errors, so just assume the error
+     * is transient and retry. :P */
+    public static <T> T ioretry(IOFunction<? extends T> task) throws IOException {
+	double[] retimes = {0.01, 0.1, 0.5, 1.0, 5.0};
+	Throwable last = null;
+	boolean intr = false;
+	try {
+	    for(int r = 0; true; r++) {
+		try {
+		    return(task.run());
+		} catch(RuntimeException | IOException exc) {
+		    if(last == null)
+			new Throwable("weird I/O error occurred on " + String.valueOf(task), exc).printStackTrace();
+		    if(last != null)
+			exc.addSuppressed(last);
+		    last = exc;
+		    if(r < retimes.length) {
+			try {
+			    Thread.sleep((long)(retimes[r] * 1000));
+			} catch(InterruptedException irq) {
+			    Thread.currentThread().interrupted();
+			    intr = true;
+			}
+		    } else {
+			throw(exc);
+		    }
+		}
+	    }
+	} finally {
+	    if(intr)
+		Thread.currentThread().interrupt();
+	}
+    }
+
     private static void dumptg(ThreadGroup tg, PrintWriter out, int indent) {
 	for(int o = 0; o < indent; o++)
 	    out.print("    ");
@@ -1154,50 +1270,30 @@ public class Utils {
 		return ((System.nanoTime() - rtimeoff) / 1e9);
 	}
 
-	public static class AddressFormatException extends IllegalArgumentException {
-		public final String addr, type;
-
-		public AddressFormatException(String message, CharSequence addr, String type) {
-			super(message);
-			this.addr = addr.toString();
-			this.type = type;
-		}
-
-		public AddressFormatException(String message, CharSequence addr, String type, Throwable cause) {
-			super(message, cause);
-			this.addr = addr.toString();
-			this.type = type;
-		}
-
-		public String getMessage() {
-			return(super.getMessage() + ": " + addr + " (" + type + ")");
-		}
-	}
-
 	public static Inet4Address in4_pton(CharSequence as) {
 		int dbuf = -1, o = 0;
 		byte[] abuf = new byte[4];
 		for(int i = 0; i < as.length(); i++) {
 			char c = as.charAt(i);
 			if((c >= '0') && (c <= '9')) {
-				dbuf = (((dbuf < 0) ? 0 : dbuf) * 10) + (c - '0');
+				dbuf = ((Math.max(dbuf, 0)) * 10) + (c - '0');
 				if(dbuf >= 256)
-					throw(new AddressFormatException("illegal octet", as, "in4"));
+					throw(new IllegalArgumentException("illegal octet"));
 			} else if(c == '.') {
 				if(dbuf < 0)
-					throw(new AddressFormatException("dot without preceding octet", as, "in4"));
+					throw(new IllegalArgumentException("dot without preceding octet"));
 				if(o >= 3)
-					throw(new AddressFormatException("too many address octets", as, "in4"));
+					throw(new IllegalArgumentException("too many address octets"));
 				abuf[o++] = (byte)dbuf;
 				dbuf = -1;
 			} else {
-				throw(new AddressFormatException("illegal address character", as, "in4"));
+				throw(new IllegalArgumentException("illegal address character"));
 			}
 		}
 		if(dbuf < 0)
-			throw(new AddressFormatException("end without preceding octet", as, "in4"));
+			throw(new IllegalArgumentException("end without preceding octet"));
 		if(o != 3)
-			throw(new AddressFormatException("too few address octets", as, "in4"));
+			throw(new IllegalArgumentException("too few address octets"));
 		abuf[o++] = (byte)dbuf;
 		try {
 			return((Inet4Address)InetAddress.getByAddress(abuf));
@@ -1225,14 +1321,14 @@ public class Utils {
 					hbuf = dbuf = 0;
 				hbuf = (hbuf * 16) + dv;
 				if(hbuf >= 65536)
-					throw(new AddressFormatException("illegal address number", as, "in6"));
+					throw(new IllegalArgumentException("illegal address number"));
 				if(dbuf >= 0)
 					dbuf = (dv >= 10) ? -1 : ((dbuf * 10) + dv);
 				if(dbuf >= 256)
 					dbuf = -1;
 			} else if(c == ':') {
 				if(v4map >= 0)
-					throw(new AddressFormatException("illegal embedded v4 address", as, "in6"));
+					throw(new IllegalArgumentException("illegal embedded v4 address"));
 				if(hbuf < 0) {
 					if(p == 0) {
 						if(o[p] == 0) {
@@ -1240,66 +1336,66 @@ public class Utils {
 								p = 1;
 								i++;
 							} else {
-								throw(new AddressFormatException("colon without preceeding address number", as, "in6"));
+								throw(new IllegalArgumentException("colon without preceeding address number"));
 							}
 						} else {
 							p = 1;
 						}
 					} else {
-						throw(new AddressFormatException("duplicate zero-string", as, "in6"));
+						throw(new IllegalArgumentException("duplicate zero-string"));
 					}
 				} else {
 					if(o[p] >= 14)
-						throw(new AddressFormatException("too many address numbers", as, "in6"));
+						throw(new IllegalArgumentException("too many address numbers"));
 					abuf[p][o[p]++] = (byte)((hbuf & 0xff00) >> 8);
 					abuf[p][o[p]++] = (byte) (hbuf & 0x00ff);
 					hbuf = -1;
 				}
 			} else if(c == '.') {
 				if((hbuf < 0) || (dbuf < 0))
-					throw(new AddressFormatException("illegal embedded v4 octet", as, "in6"));
+					throw(new IllegalArgumentException("illegal embedded v4 octet"));
 				if((p == 0) && (o[p] == 0))
-					throw(new AddressFormatException("embedded v4 at start of address", as, "in6"));
+					throw(new IllegalArgumentException("embedded v4 at start of address"));
 				if(v4map++ >= 2)
-					throw(new AddressFormatException("too many embedded v4 octets", as, "in6"));
+					throw(new IllegalArgumentException("too many embedded v4 octets"));
 				if(o[p] >= 15)
-					throw(new AddressFormatException("too many address numbers", as, "in6"));
+					throw(new IllegalArgumentException("too many address numbers"));
 				abuf[p][o[p]++] = (byte)dbuf;
 				hbuf = -1;
 			} else if(c == '%') {
 				scope = as.subSequence(i + 1, as.length()).toString();
 				break;
 			} else {
-				throw(new AddressFormatException("illegal address character", as, "in6"));
+				throw(new IllegalArgumentException("illegal address character"));
 			}
 		}
 		if(hbuf < 0) {
 			if((p < 1) || (o[p] > 0))
-				throw(new AddressFormatException("unterminated address", as, "in6"));
+				throw(new IllegalArgumentException("unterminated address"));
 		} else {
 			if(v4map < 0) {
 				if(o[p] >= 15)
-					throw(new AddressFormatException("too many address numbers", as, "in6"));
+					throw(new IllegalArgumentException("too many address numbers"));
 				abuf[p][o[p]++] = (byte)((hbuf & 0xff00) >> 8);
 				abuf[p][o[p]++] = (byte) (hbuf & 0x00ff);
 			} else {
 				if(dbuf < 0)
-					throw(new AddressFormatException("illegal embedded v4 octet", as, "in6"));
+					throw(new IllegalArgumentException("illegal embedded v4 octet"));
 				if(v4map != 2)
-					throw(new AddressFormatException("too few embedded v4 octets", as, "in6"));
+					throw(new IllegalArgumentException("too few embedded v4 octets"));
 				if(o[p] >= 16)
-					throw(new AddressFormatException("too many address numbers", as, "in6"));
+					throw(new IllegalArgumentException("too many address numbers"));
 				abuf[p][o[p]++] = (byte)dbuf;
 			}
 		}
 		byte[] fbuf;
 		if(p == 0) {
 			if(o[0] != 16)
-				throw(new AddressFormatException("too few address numbers", as, "in6"));
+				throw(new IllegalArgumentException("too few address numbers"));
 			fbuf = abuf[0];
 		} else {
 			if((o[0] + o[1]) >= 16)
-				throw(new AddressFormatException("illegal zero-string", as, "in6"));
+				throw(new IllegalArgumentException("illegal zero-string"));
 			fbuf = new byte[16];
 			System.arraycopy(abuf[0], 0, fbuf, 0, o[0]);
 			System.arraycopy(abuf[1], 0, fbuf, 16 - o[1], o[1]);
@@ -1313,10 +1409,10 @@ public class Utils {
 				try {
 					NetworkInterface iface = NetworkInterface.getByName(scope);
 					if(iface == null)
-						throw(new AddressFormatException("could not resolve scoped interface: " + scope, as, "in6"));
+						throw(new IllegalArgumentException("could not resolve scoped interface: " + scope));
 					return(Inet6Address.getByAddress(null, fbuf, iface));
 				} catch(SocketException e2) {
-					throw(new AddressFormatException("could not resolve scoped interface: " + scope, as, "in6", e));
+					throw(new IllegalArgumentException("could not resolve scoped interface: " + scope, e));
 				}
 			}
 		} catch(UnknownHostException e) {

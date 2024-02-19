@@ -510,7 +510,7 @@ public class MenuGrid extends Widget {
     private Pagina paginafor(Resource res) {
 	return(ui.sess.glob.paginafor(res));
     }
-    
+
     public Pagina paginafor(String name){
 	Set<Pagina> pags = ui.sess.glob.paginae;
 	for(Pagina p : pags){
@@ -526,10 +526,10 @@ public class MenuGrid extends Widget {
     }
     
     public void useres(Resource r){
-	use(paginafor(r));
+	use(paginafor(r), false);
     }
-    
-    public void use(Pagina r) {
+
+    public void use(Pagina r, boolean reset) {
 	Collection<Pagina> sub = new LinkedList<Pagina>(),
 	    cur = new LinkedList<Pagina>();
 	cons(r, sub);
@@ -552,23 +552,23 @@ public class MenuGrid extends Widget {
 	} else {
 	    r.newp = 0;
 	    if (!senduse(r)) return;
-            if(Config.menugrid_resets)
-            {
-                this.cur = null;
-                curoff = 0;
-            }
+	    if(reset) {
+		this.cur = null;
+		curoff = 0;
+	    }
 	}
 	updlayout();
     }
 
     public boolean senduse(Pagina r) {
 	String [] ad = r.act().ad;
+	System.out.println("Attempting to senduse " + ad);
 	if((ad == null) || (ad.length < 1)){
 	    return false;
 	}
 	if(ad[0].equals("@")) {
 	    if(!XTendedPaginae.useXTended(ui,ad))
-                use(null);
+                use(null, false);
 	} else {
 	    wdgmsg("act", (Object[])ad);
 	}
@@ -597,7 +597,7 @@ public class MenuGrid extends Widget {
 		dragging = pressed = null;
 	    } else if(pressed != null) {
 		if(pressed == h)
-		    use(h);
+		    use(h, false);
 		pressed = null;
 	    }
 	    ui.grabmouse(null);
@@ -628,12 +628,12 @@ public class MenuGrid extends Widget {
 	    updlayout();
 	    return(true);
 	} else if((k == KeyEvent.VK_N) && (layout[gsz.x - 2][gsz.y - 1] == next)) {
-	    use(next);
+	    use(next, false);
 	    return(true);
 	}
 	Pagina r = hotmap.get(k);
 	if(r != null) {
-	    use(r);
+	    use(r, true);
 	    return(true);
 	}
 	return(false);

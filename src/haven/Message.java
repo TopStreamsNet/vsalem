@@ -174,7 +174,7 @@ public class Message implements java.io.Serializable {
 				adduint8(T_NIL);
 			} else if(o instanceof Integer) {
 				adduint8(T_INT);
-				addint32(((Integer)o).intValue());
+				addint32((Integer) o);
 			} else if(o instanceof String) {
 				adduint8(T_STR);
 				addstring((String)o);
@@ -191,6 +191,10 @@ public class Message implements java.io.Serializable {
 					addint32(b.length);
 				}
 				addbytes(b);
+			} else if(o instanceof Object[]) {
+				adduint8(T_TTOL);
+				addlist((Object[])o);
+				adduint8(T_END);
 			} else {
 				throw(new RuntimeException("Cannot encode a " + o.getClass() + " as TTO"));
 			}

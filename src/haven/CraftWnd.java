@@ -49,7 +49,7 @@ public class CraftWnd extends Window implements DTarget2{
 			}
 			item = menu.getParent(item);
 		    }
-		    menu.use(item);
+		    menu.use(item, false);
 		}
 	    }
 	};

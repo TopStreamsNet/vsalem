@@ -27,7 +27,6 @@
 package haven;
 
 import java.util.*;
-import java.security.*;
 
 public class Defer extends ThreadGroup {
 	private static final Map<ThreadGroup, Defer> groups = new WeakHashMap<ThreadGroup, Defer>();
@@ -268,10 +267,17 @@ public class Defer extends ThreadGroup {
 		}
 	}
 
-	public <T> Future<T> defer(Callable<T> task) {
+	public <T> Future<T> defer(Callable<T> task, boolean run) {
 		Future<T> f = new Future<T>(task);
-		defer(f);
+		if(run)
+			defer(f);
+		else
+		  f.chstate("resched");
 		return (f);
+	}
+
+	public <T> Future<T> defer(Callable<T> task) {
+		return(defer(task, true));
 	}
 
 	private static Defer getgroup() {
@@ -286,8 +292,18 @@ public class Defer extends ThreadGroup {
 		return (d);
 	}
 
+	public static <T> Future<T> later(Callable<T> task, boolean run) {
+		ThreadGroup tg = Thread.currentThread().getThreadGroup();
+		if(tg instanceof Defer)
+			return(((Defer)tg).defer(task, run));
+		Defer d;
+		synchronized(groups) {
+			if((d = groups.get(tg)) == null)
+				groups.put(tg, d = new Defer(tg));
+		}
+		return(d.defer(task, run));
+	}
 	public static <T> Future<T> later(Callable<T> task) {
-		Defer d = getgroup();
-		return (d.defer(task));
+		return(later(task, true));
 	}
 }

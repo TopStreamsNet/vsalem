@@ -124,12 +124,11 @@ public class Wiki {
                     while(true){
                         try {
                             load(requests.take());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace(System.out);
-                        } catch(Exception e) {
+                        }
+						catch (Exception e) {
                             e.printStackTrace(System.out);
                         }
-                    }
+					}
 		}
 	    }, "Wiki loader "+i);
 	    t.setDaemon(true);
@@ -219,7 +218,7 @@ public class Wiki {
     private static String do_search(String name) {
 	String content = null;
 	try {
-	    URI uri = new URI("https", null, "salemthegame.wiki", -1, "/api.php", String.format(SEARCH_URL, name), null);
+	    URI uri = new URI("http", null, "salemthegame.wiki", -1, "/api.php", String.format(SEARCH_URL, name), null);
 
 	    URL url = uri.toURL();
 	    String data = Utils.stream2str(url.openStream());
@@ -408,7 +407,7 @@ public class Wiki {
 	String content;
 	String data = null;
 	try {
-	    URI uri = new URI("https", null, "salemthegame.wiki", -1, "/api.php", null, null);
+	    URI uri = new URI("http", null, "salemthegame.wiki", -1, "/api.php", null, null);
 
 	    URL link = uri.toURL();
 	    HttpURLConnection conn = (HttpURLConnection) link.openConnection();
@@ -443,7 +442,7 @@ public class Wiki {
     private static String parse_wiki(Item item){
 	String content;
 	try {
-	    URI uri = new URI("https", null, "salemthegame.wiki", -1, "/api.php", null, null);
+	    URI uri = new URI("http", null, "salemthegame.wiki", -1, "/api.php", null, null);
 
 	    URL link = uri.toURL();
 	    HttpURLConnection conn = (HttpURLConnection) link.openConnection();
@@ -673,7 +672,7 @@ public class Wiki {
 	try {
 	    if(date < update_date){return true;}//ignore old cache
 	    //String p = String.format("%s%s", WIKI_URL, name);
-	    URI uri = new URI("https","salemthegame.wiki","/index.php/"+name, null);
+	    URI uri = new URI("http","salemthegame.wiki","/index.php/"+name, null);
 	    URL  url = uri.toURL();
 	    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 	    conn.setRequestMethod("HEAD");

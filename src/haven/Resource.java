@@ -33,7 +33,7 @@ import java.lang.annotation.*;
 import java.util.*;
 import java.net.*;
 import java.io.*;
-
+import java.nio.file.*;
 import javax.imageio.*;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
@@ -64,13 +64,13 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 
 	static {
 		try {
-			chainloader(new Loader(new FileSource(new File(Config.userhome+"/custom_res"))));
+			chainloader(new Loader(new FileSource(Utils.path(Config.userhome+"/custom_res"))));
 
 			String dir = Config.resdir;
 			if(dir == null)
 				dir = System.getenv("SALEM_RESDIR");
 			if(dir != null)
-				chainloader(new Loader(new FileSource(new File(dir))));
+				chainloader(new Loader(new FileSource(Utils.path(dir))));
 		} catch(Exception e) {
 			/* Ignore these. We don't want to be crashing the client
 			 * for users just because of errors in development
@@ -310,19 +310,49 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 	}
 
  	public static class FileSource implements ResSource, Serializable {
-		File base;
+		public static final Collection<String> wintraps =
+				new HashSet<>(Arrays.asList("con", "prn", "aux", "nul",
+						"com0", "com1", "com2", "com3", "com4",
+						"com5", "com6", "com7", "com8", "com9",
+						"lpt0", "lpt1", "lpt2", "lpt3", "lpt4",
+						"lpt5", "lpt6", "lpt7", "lpt8", "lpt9"));
+		public static final boolean windows = System.getProperty("os.name", "").startsWith("Windows");
+		private static final boolean[] winsafe;
+		public final Path base;
 
-		public FileSource(File base) {
+		static {
+			boolean[] buf = new boolean[128];
+			String safe = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_@";
+			for(int i = 0; i < safe.length(); i++)
+				buf[safe.charAt(i)] = true;
+			winsafe = buf;
+		}
+
+		public static boolean winsafechar(char c) {
+			return((c >= winsafe.length) || winsafe[c]);
+		}
+
+		public FileSource(Path base) {
 			this.base = base;
 		}
 
-		public InputStream get(String name) throws FileNotFoundException {
-			File cur = base;
+		private static String checkpart(String part, String whole) throws FileNotFoundException {
+			if(windows && wintraps.contains(part))
+				throw(new FileNotFoundException(whole));
+			return(part);
+		}
+
+		public InputStream get(String name) throws IOException {
+			Path cur = base;
 			String[] parts = name.split("/");
 			for(int i = 0; i < parts.length - 1; i++)
-				cur = new File(cur, parts[i]);
-			cur = new File(cur, parts[parts.length - 1] + ".res");
-			return(new FileInputStream(cur));
+				cur = cur.resolve(checkpart(parts[i], name));
+			cur = cur.resolve(checkpart(parts[parts.length - 1], name) + ".res");
+			try {
+				return(Files.newInputStream(cur));
+			} catch(NoSuchFileException e) {
+				throw((FileNotFoundException)new FileNotFoundException(name).initCause(e));
+			}
 		}
 
 		public String toString() {

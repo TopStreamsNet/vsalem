@@ -39,7 +39,8 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
+import java.net.URI;
+import java.io.PrintStream;
 import static haven.Utils.getprop;
 
 public class Config {
@@ -48,12 +49,12 @@ public class Config {
     public static String defserv = getprop("haven.defserv", "127.0.0.1");
     public static URL resurl = geturl("haven.resurl", "");
     public static URL mapurl = geturl("haven.mapurl", "");
-    public static URL screenurl = geturl("haven.screenurl", "http://game.salemthegame.com/mt/ss");
-	public static boolean enableNavigationTracking = true;
-	public static boolean sendCustomMarkers = false;
-    public static URL manualurl = geturl("haven.manualurl", "http://www.salemthegame.com/salemj/index");
-    public static URL storeurl = geturl("haven.storeurl", "http://login.salemthegame.com/portal/tostore");
-    public static URL regurl = geturl("haven.regurl", "http://login.salemthegame.com/beta/nregister");
+    public static URI cachebase = geturi("haven.cachebase", "");
+    public static URL screenurl = geturl("haven.screenurl", "");
+    public static URL manualurl = geturl("haven.manualurl", "https://salemthegame.wiki");
+    public static URL storeurl = geturl("haven.storeurl", "");
+    public static URI storebase = geturi("haven.storebase", "");
+    public static URL regurl = geturl("haven.regurl", "");
     public static boolean dbtext = getprop("haven.dbtext", "off").equals("on");
     public static boolean bounddb = getprop("haven.bounddb", "off").equals("on");
     public static boolean profile = getprop("haven.profile", "off").equals("on");
@@ -194,11 +195,13 @@ public class Config {
     public static int autodrinkthreshold = Utils.getprefi("autodrinkthreshold", 80);
     public static boolean showgrid = Utils.getprefb("showgrid", false);
     public static boolean showflavour = Utils.getprefb("showflavour", true);
-	public static String aiscript = "salem.lisp";
-	public static boolean debug = Utils.getprefb("debug", false);
-	public static boolean clientshift = Utils.getprefb("clientshift", true);
-	public static boolean advroute = Utils.getprefb("advroute", false);
-	public static boolean noloading = Utils.getprefb("noloading", false);
+  	public static String aiscript = "salem.lisp";
+  	public static boolean debug = Utils.getprefb("debug", false);
+  	public static boolean clientshift = Utils.getprefb("clientshift", true);
+  	public static boolean advroute = Utils.getprefb("advroute", false);
+  	public static boolean noloading = Utils.getprefb("noloading", false);
+	  public static boolean enableNavigationTracking = true;
+  	public static boolean sendCustomMarkers = false;
 
 
 
@@ -497,6 +500,18 @@ public class Config {
 	}
     }
     
+
+    private static URI geturi(String name, String def) {
+	String val = getprop(name, def);
+	if(val.equals(""))
+	    return(null);
+	try {
+	    return(new URI(val));
+	} catch(java.net.URISyntaxException e) {
+	    throw(new RuntimeException(e));
+	}
+    }
+
     private static void usage(PrintStream out) {
 	out.println("usage: haven.jar [OPTIONS] [SERVER[:PORT]]");
 	out.println("Options include:");

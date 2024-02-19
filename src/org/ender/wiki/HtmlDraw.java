@@ -28,7 +28,7 @@ public class HtmlDraw {
     public HtmlDraw(String text, HyperlinkListener links){
 	this.links = links;
 	if(text == null){text = "<H1>Nothing found, sorry :(</H1>";}
-	text = text.replaceAll("=\"/", "=\"http://salemwiki.info/");//fix links
+	text = text.replaceAll("=\"/", "=\"http://salemthegame.wiki/");//fix links
 	
 	//fix food table backgrounds
 	Pattern rows = Pattern.compile("<tr style=\"background:(.*?);(.*?)\">(.*?)</tr>", Pattern.DOTALL|Pattern.MULTILINE);
