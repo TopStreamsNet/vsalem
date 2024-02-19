@@ -239,7 +239,11 @@ public abstract class ItemInfo {
     public static double getGobbleMeter(List<ItemInfo> infos){
 	GobbleInfo gobble = find(GobbleInfo.class, infos);
 	if (gobble != null && UI.instance != null && UI.instance.gui != null && UI.instance.gui.gobble != null) {
-	    return UI.instance.gui.gobble.foodeff(gobble);
+	    if(UI.instance.gui.gobble instanceof Gobble){
+	        return ((Gobble) UI.instance.gui.gobble).foodeff(gobble);
+	    } else if(UI.instance.gui.gobble instanceof OldGobble){
+	        return ((OldGobble) UI.instance.gui.gobble).foodeff(gobble);
+	    } else return 0.0;
 	}
 
 	return 0;
