@@ -73,8 +73,12 @@ public class LoginScreen extends Widget {
             @Override
             public void click()
             {
-		// TODO: Allow alternative auth server usage
-		setAuthServer("Providence");
+				// TODO: Allow alternative auth server usage
+				if (Config.authserver_name.equals("Providence")) {
+               		this.setAuthServer("Popham");
+            	} else {
+               		this.setAuthServer("Providence");
+            	}
             }
             
             public void setAuthServer(String name)
