@@ -743,8 +743,8 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		tm.cravail(ui.sess.getres((Integer)args[0]));
 	} else if(msg == "gobble") {
 	    boolean g = (Integer)args[0] != 0;
-	    boolean old = args.length < 2 || (Integer)args[1] == 0;
 	    if(g && (gobble == null)) {
+		boolean old = args.length < 2 || (Integer)args[1] == 0;
 		tm.hide();
 		gobble = old ? new OldGobble(Coord.z, this) : new Gobble(Coord.z, this);
 		resize(sz);
