@@ -52,7 +52,7 @@ public class LoginScreen extends Widget {
     static final Coord cboxc = new Coord((bg.sz().x - cbox.sz().x) / 2, 310);
     Text progress = null;
     AccountList accounts;
-    Button providencestate,pophamstate;
+    Button providencestate,expeditionstate;
 	
     static {
 	textf = new Text.Foundry(MainFrame.uiConfig.getFontConfig("loginForm")); // vSalem Change Font - login screen
@@ -68,19 +68,13 @@ public class LoginScreen extends Widget {
 	new Img(cboxc, cbox, this);
 
 	accounts = new AccountList(Coord.z, this, 10);
-        
+
         new Button(new Coord(this.sz.x-210, 20),190,this, "Connecting to Providence"){
             @Override
             public void click()
             {
-                if(Config.authserver_name.equals("Providence"))
-                {
-                    setAuthServer("Concord");
-                }
-                else
-                {
-                    setAuthServer("Providence");
-                }
+		// TODO: Allow alternative auth server usage
+		setAuthServer("Providence");
             }
             
             public void setAuthServer(String name)
@@ -98,8 +92,8 @@ public class LoginScreen extends Widget {
                 }
                 this.change("Connecting to "+name);
             }
-        }.setAuthServer(Config.authserver_name);
-        
+        };
+
         providencestate = new Button(new Coord(this.sz.x-210, 45),190,this,"Providence: unknown"){
             @Override
             public void click()
@@ -107,7 +101,7 @@ public class LoginScreen extends Widget {
                 update_server_statuses();                    
             }
         };
-        pophamstate = new Button(new Coord(this.sz.x-210, 65),190,this,"Concord: unknown"){
+        expeditionstate = new Button(new Coord(this.sz.x-210, 65),190,this,"Concord: unknown"){
             @Override
             public void click()
             {
@@ -124,7 +118,7 @@ public class LoginScreen extends Widget {
     private void update_server_statuses()
     {
         providencestate.change("Providence: checking ...");
-        pophamstate.change("Concord: checking ...");
+        expeditionstate.change("Concord: checking ...");
 
         try{
             URL statepage = new URL("http://login.salemthegame.com/portal/state");
@@ -139,14 +133,15 @@ public class LoginScreen extends Widget {
             String[] lines = html.split("\n");
             String prov = lines[48];
             providencestate.change("Providence: "+prov.substring(prov.indexOf('>')+1,prov.lastIndexOf('<')));
-            String pop = lines[61];
-            pophamstate.change("Concord: "+pop.substring(pop.indexOf('>')+1,pop.lastIndexOf('<')));
+	    String expname = lines[57];
+            String expstate = lines[61];
+            expeditionstate.change(expname.substring(expname.indexOf('>')+1,expname.lastIndexOf('<')) + ": "+expstate.substring(expstate.indexOf('>')+1,expstate.lastIndexOf('<')));
         }
         catch(IOException ex)
         {
             String explanation = "Status page not found.";
             providencestate.change(explanation);
-            pophamstate.change(explanation);
+            expeditionstate.change(explanation);
         }
     }
 

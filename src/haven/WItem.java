@@ -473,9 +473,17 @@ public class WItem extends Widget implements DTarget {
 
     @Override
     public void tick(double dt) {
-	if(ui.gui.gobble != null && ui.gui.gobble.lastUpdate != gobbleUpdateTime){
-	    gobbleUpdateTime = ui.gui.gobble.lastUpdate;
-	    gobblemeter.reset();
+	if(ui.gui.gobble != null){
+	    long lastUpdate = 0;
+	    if(ui.gui.gobble instanceof Gobble){
+		lastUpdate = ((Gobble) ui.gui.gobble).lastUpdate;
+	    } else if(ui.gui.gobble instanceof OldGobble){
+		lastUpdate = ((OldGobble) ui.gui.gobble).lastUpdate;
+	    }
+	    if(lastUpdate != gobbleUpdateTime && lastUpdate > 0){
+	        gobbleUpdateTime = lastUpdate;
+	        gobblemeter.reset();
+	    }
 	}
 	super.tick(dt);
     }

@@ -53,7 +53,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	public MenuGrid menu;
 	public CraftWnd craftwnd;
 	public Tempers tm;
-	public Gobble gobble;
+	public Widget gobble;
 	public MapView map;
 	public LocalMiniMap mmap;
 	public Fightview fv;
@@ -760,17 +760,8 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 				gobble = null;
 				tm.show();
 			}
-		} else if(msg == "gtm") {
-			int[] n = new int[4];
-			for(int i = 0; i < 4; i++)
-				n[i] = (Integer)args[i];
-			gobble.updt(n);
-		} else if(msg == "glvlup") {
-			gobble.lvlup((Integer)args[0]);
-		} else if(msg == "glvls") {
-			gobble.lcount((Integer)args[0], (Color)args[1]);
-		} else if(msg == "gtypemod") {
-			gobble.typemod(ui.sess.getres((Integer)args[0]), ((Integer)args[1]) / 100.0);
+		} else if(Gobble.msgs.contains(msg)) {
+      gobble.uimsg(msg, args);
 		} else if(msg == "polowner") {
 			String o = (String)args[0];
 			boolean n = ((Integer)args[1]) != 0;

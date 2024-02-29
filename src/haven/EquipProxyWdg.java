@@ -53,7 +53,7 @@ public class EquipProxyWdg extends Widget implements DTarget {
 		if(w != null){
 		    w.draw(g.reclipl(sqoff(c0), g.sz));
 		} else {
-		    Tex ebg = Equipory.ebgs[slot];
+		    Tex ebg = Equipory.boxen[slot].bg;
 		    if(ebg != null){
 			g.image(ebg,sqoff(c0));
 		    }
