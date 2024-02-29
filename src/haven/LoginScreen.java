@@ -112,7 +112,7 @@ public class LoginScreen extends Widget {
                 update_server_statuses();                    
             }
         };
-        update_server_statuses();
+        //update_server_statuses();
         
 	if(Config.isUpdate){
 	    showChangelog();
@@ -137,7 +137,7 @@ public class LoginScreen extends Widget {
             String[] lines = html.split("\n");
             String prov = lines[48];
             providencestate.change("Providence: "+prov.substring(prov.indexOf('>')+1,prov.lastIndexOf('<')));
-	    String expname = lines[57];
+	   		String expname = lines[57];
             String expstate = lines[61];
             expeditionstate.change(expname.substring(expname.indexOf('>')+1,expname.lastIndexOf('<')) + ": "+expstate.substring(expstate.indexOf('>')+1,expstate.lastIndexOf('<')));
         }

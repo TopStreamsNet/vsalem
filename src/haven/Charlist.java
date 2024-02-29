@@ -154,11 +154,8 @@ public class Charlist extends Widget {
         };
         filter.changed();
         if(ui.sess != null && ui.sess.alive() && ui.sess.username != null){
-            if(Config.authserver_name.equals("Providence")) {
-                MappingClient.getInstance(ui.sess.username).SetEndpoint("http://salem.0xebfe.me:8585/client/10793004b8794d0c74a4014e59769b31");
-            }else{
-                MappingClient.getInstance(ui.sess.username).SetEndpoint("http://salem.0xebfe.me:8686/client/a02f6c16499bf1413fc7c723e7950e5c");
-            }
+            //MappingClient.getInstance(ui.sess.username).SetEndpoint("http://salem.0xebfe.me:8585/client/10793004b8794d0c74a4014e59769b31");
+            MappingClient.getInstance(ui.sess.username).SetEndpoint("http://salem.0xebfe.me:8686/client/a02f6c16499bf1413fc7c723e7950e5c");
             MappingClient.getInstance(ui.sess.username).EnableGridUploads(true);
             MappingClient.getInstance(ui.sess.username).EnableTracking(true);
         }

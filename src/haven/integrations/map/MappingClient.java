@@ -421,7 +421,7 @@ public class MappingClient {
                             }
                         }
                     }
-                } catch (Exception ex) {
+                } catch (Exception ignored) {
                 }
             }
         }
