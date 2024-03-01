@@ -123,7 +123,7 @@ public class LoginScreen extends Widget {
             is.close();
             String html = buffer.toString();
             String[] lines = html.split("\n");
-            String prov = lines[50];
+            String prov = lines[48];
             providencestate.change("New Haven: "+prov.substring(prov.indexOf('>')+1,prov.lastIndexOf('<')));
         }
         catch(IOException ex)

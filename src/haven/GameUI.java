@@ -1218,7 +1218,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	    }
 	}.presize();
 	if((Config.manualurl != null) && (WebBrowser.self != null)) {
-	    IButton manual = new IButton(Coord.z, this, Resource.loadimg("gfx/hud/manu"), Resource.loadimg("gfx/hud/mand"), Resource.loadimg("gfx/hud/manh")) {
+	    IButton manual = new IButton(new Coord(150, 0), this, Resource.loadimg("gfx/hud/manu"), Resource.loadimg("gfx/hud/mand"), Resource.loadimg("gfx/hud/manh")) {
 		{
 		    tooltip = Text.render("Open Manual");
 		}
@@ -1233,7 +1233,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		}
 
 		public void presize() {
-		    this.c = new Coord(0, (mainmenu.c.y - sz.y + (Config.mainmenu_full?0:119)));
+		    this.c = mainmenu.c.sub(0, this.sz.y).add(50, 0);
 		}
 
 		public Object tooltip(Coord c, Widget prev) {
@@ -1245,7 +1245,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
             manual.presize();
             mainmenu.manual = manual;
 	}
-	if((Config.storeurl != null) && (WebBrowser.self != null)) {
+	if((Config.storebase != null) && (WebBrowser.self != null)) {
 	    IButton cash = new IButton(Coord.z, this, Resource.loadimg("gfx/hud/cashu"), Resource.loadimg("gfx/hud/cashd"), Resource.loadimg("gfx/hud/cashh")) {
 		{
 		    tooltip = Text.render("Salem Store");
