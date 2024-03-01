@@ -53,7 +53,7 @@ public class Config {
     public static URL screenurl = geturl("haven.screenurl", "");
     public static URL manualurl = geturl("haven.manualurl", "https://salemthegame.wiki");
     public static URL storeurl = geturl("haven.storeurl", "");
-    public static URI storebase = geturi("haven.storebase", "");
+    public static URI storebase = geturi("haven.storebase", "https://game.salemthegame.com/store/client/");
     public static URL regurl = geturl("haven.regurl", "");
     public static boolean dbtext = getprop("haven.dbtext", "off").equals("on");
     public static boolean bounddb = getprop("haven.bounddb", "off").equals("on");

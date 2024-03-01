@@ -52,7 +52,7 @@ public class LoginScreen extends Widget {
     static final Coord cboxc = new Coord((bg.sz().x - cbox.sz().x) / 2, 310);
     Text progress = null;
     AccountList accounts;
-    Button providencestate,expeditionstate;
+    Button providencestate;
 	
     static {
 	textf = new Text.Foundry(MainFrame.uiConfig.getFontConfig("loginForm")); // vSalem Change Font - login screen
@@ -69,7 +69,7 @@ public class LoginScreen extends Widget {
 
 	accounts = new AccountList(Coord.z, this, 10);
 
-        new Button(new Coord(this.sz.x-210, 20),190,this, "Connecting to Providence"){
+        new Button(new Coord(this.sz.x-210, 20),190,this, "Connecting to New Haven"){
             @Override
             public void click()
             {
@@ -105,14 +105,7 @@ public class LoginScreen extends Widget {
                 update_server_statuses();                    
             }
         };
-        expeditionstate = new Button(new Coord(this.sz.x-210, 65),190,this,"Concord: unknown"){
-            @Override
-            public void click()
-            {
-                update_server_statuses();                    
-            }
-        };
-        //update_server_statuses();
+        update_server_statuses();
         
 	if(Config.isUpdate){
 	    showChangelog();
@@ -122,7 +115,6 @@ public class LoginScreen extends Widget {
     private void update_server_statuses()
     {
         providencestate.change("Providence: checking ...");
-        expeditionstate.change("Concord: checking ...");
 
         try{
             URL statepage = new URL("http://login.salemthegame.com/portal/state");
@@ -136,16 +128,12 @@ public class LoginScreen extends Widget {
             String html = buffer.toString();
             String[] lines = html.split("\n");
             String prov = lines[48];
-            providencestate.change("Providence: "+prov.substring(prov.indexOf('>')+1,prov.lastIndexOf('<')));
-	   		String expname = lines[57];
-            String expstate = lines[61];
-            expeditionstate.change(expname.substring(expname.indexOf('>')+1,expname.lastIndexOf('<')) + ": "+expstate.substring(expstate.indexOf('>')+1,expstate.lastIndexOf('<')));
+            providencestate.change("New Haven: "+prov.substring(prov.indexOf('>')+1,prov.lastIndexOf('<')));
         }
         catch(IOException ex)
         {
             String explanation = "Status page not found.";
             providencestate.change(explanation);
-            expeditionstate.change(explanation);
         }
     }
 
