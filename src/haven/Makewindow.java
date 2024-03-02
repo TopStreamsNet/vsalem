@@ -201,7 +201,7 @@ public class Makewindow extends Widget {
 	    Pagina p = ui.mnu.paginafor((String)tt);
 	    if(p != null){
                 store();
-		ui.mnu.use(p, false);
+		ui.mnu.use(p);
 		return true;
 	    }
 	}
@@ -231,7 +231,7 @@ public class Makewindow extends Widget {
 	    String name = list.pop();
             requested_restore = true;
 	    Pagina p = ui.mnu.paginafor(name);
-	    ui.mnu.use(p, false);
+	    ui.mnu.use(p);
 	} catch (Exception e){e.printStackTrace(System.out);}
     }
 

@@ -200,7 +200,7 @@ public class Config {
   	public static boolean clientshift = Utils.getprefb("clientshift", true);
   	public static boolean advroute = Utils.getprefb("advroute", false);
   	public static boolean noloading = Utils.getprefb("noloading", false);
-	  public static boolean enableNavigationTracking = true;
+	public static boolean enableNavigationTracking = true;
   	public static boolean sendCustomMarkers = false;
 
 

@@ -313,6 +313,8 @@ public class LocalMiniMap extends Window implements Console.Directory{
 
 	public void toggleHeight(){
 		if(height == 0){
+			height = 0x01000000;
+		} else if(height == 0x01000000){
 			height = 0xb5000000;
 		} else if(height == 0xb5000000){
 			height = 0xff000000;
@@ -458,22 +460,22 @@ public class LocalMiniMap extends Window implements Console.Directory{
 	}
 
 	private void drawview(GOut g, Coord tc) {
-			Gob player = ui.gui.map.player();
-			if (player != null) {
-				Coord3f ptc3f = player.getc();
-				if (ptc3f == null) {
-					return;
-				}
-				Coord rc = new Coord((int) ptc3f.x, (int) ptc3f.y);
-				rc = rc.div(MCache.tilesz).add(tc).sub(54,45);
-				g.chcolor(Color.BLUE);
-				Coord rect = new Coord(101,92);
-				g.line(rc, rc.add(rect.x - 1, 0), 1);
-				g.line(rc.add(rect.x - 1, 0), rc.add(rect), 1);
-				g.line(rc.add(rect).sub(1, 1), rc.add(0, rect.y - 1), 1);
-				g.line(rc.add(0, rect.y - 1), rc, 1);
-				g.chcolor();
+		Gob player = ui.gui.map.player();
+		if (player != null) {
+			Coord3f ptc3f = player.getc();
+			if (ptc3f == null) {
+				return;
 			}
+			Coord rc = new Coord((int) ptc3f.x, (int) ptc3f.y);
+			rc = rc.div(MCache.tilesz).add(tc).sub(54,45);
+			g.chcolor(Color.BLUE);
+			Coord rect = new Coord(101,92);
+			g.line(rc, rc.add(rect.x - 1, 0), 1);
+			g.line(rc.add(rect.x - 1, 0), rc.add(rect), 1);
+			g.line(rc.add(rect).sub(1, 1), rc.add(0, rect.y - 1), 1);
+			g.line(rc.add(0, rect.y - 1), rc, 1);
+			g.chcolor();
+		}
 	}
 
 	private String mapfolder(){
