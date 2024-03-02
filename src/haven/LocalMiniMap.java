@@ -341,7 +341,7 @@ public class LocalMiniMap extends Window implements Console.Directory{
 	if(height == 0){
 	    height = 0x01000000;
 	} else if(height == 0x01000000){
-	    height = 0xff000000;
+	    height = 0xb5000000;
 	} else if(height == 0xb5000000){
 	    height = 0xff000000;
 	} else {
