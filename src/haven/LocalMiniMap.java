@@ -459,7 +459,7 @@ public class LocalMiniMap extends Window implements Console.Directory{
 			if (mapRef != null) {
 				Coord locatedAC = mapRef.gc;
 				locatedAC = locatedAC == null ? new Coord(0, 0) : locatedAC;
-				og.atext(locatedAC + " x" + String.format("%.2f", scale), new Coord(0 + og.sz.x / 5, og.sz.y - og.sz.y / 10), 0.5, 0.5);
+				og.atext(locatedAC + " x" + String.format("%.2f", scale), new Coord(og.sz.x / 5, og.sz.y - og.sz.y / 10), 0.5, 0.5);
 			}
 		}
 
