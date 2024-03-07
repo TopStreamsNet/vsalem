@@ -26,6 +26,7 @@
 
 package haven;
 
+import haven.automation.MapViewExt;
 import haven.integrations.map.MappingClient;
 import haven.pathfinder.Move;
 import haven.pathfinder.NBAPathfinder;
@@ -47,7 +48,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	public static long plgob = -1;
 	public Coord cc;
 	public final Glob glob;
-	private int view = 2;
+	private final int view = 2;
 	private Collection<Delayed> delayed = new LinkedList<Delayed>();
 	private Collection<Delayed> delayed2 = new LinkedList<Delayed>();
 	private Collection<Rendered> extradraw = new LinkedList<Rendered>();
@@ -73,6 +74,8 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	private double mspeed, totaldist = 0, mspeedavg, totaldt = 0;
 	private long lastMove = System.currentTimeMillis();
 	public Coord pllastcc;
+
+	public final MapViewExt ext = new MapViewExt(this);
 
 	{
 		camtypes.put("follow", FollowCam.class);
@@ -1482,6 +1485,10 @@ public class MapView extends PView implements DTarget, Console.Directory {
 
 		protected void hit(Coord pc, Coord mc, ClickInfo inf) {
 			int modflags = ui.modflags();
+			if(ui.modctrl && ui.modmeta && clickb == 3){
+				System.out.println("Marking "+mc+" for script");
+				ext.markForScript(mc);
+			}
 			if (inf == null) {
 				if (Config.center) {
 					mc = mc.div(11).mul(11).add(5, 5);

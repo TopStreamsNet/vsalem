@@ -782,60 +782,60 @@ public class Widget {
 	}
 	return(null);
     }
-    
-    public <T extends Widget> Set<T> children(final Class<T> cl) {
-	return(new AbstractSet<T>() {
-		public int size() {
-		    int i = 0;
-		    for(T w : this)
-			i++;
-		    return(i);
-		}
-		
-		public Iterator<T> iterator() {
-		    return(new Iterator<T>() {
-			    T cur = n(Widget.this.child);
-			    
-			    private T n(Widget w) {
-				Widget n;
-				if(w == null) {
-				    return(null);
-				} else if(w.child != null) {
-				    n = w.child;
-				} else if(w.next != null) {
-				    n = w.next;
-				} else if(w.parent == Widget.this) {
-				    return(null);
-				} else {
-				    n = w.parent;
-				}
-				if((n == null) || cl.isInstance(n))
-				    return(cl.cast(n));
-				else
-				    return(n(n));
-			    }
-			    
-			    public T next() {
-				if(cur == null)
-				    throw(new NoSuchElementException());
-				T ret = cur;
-				cur = n(ret);
-				return(ret);
-			    }
-			    
-			    public boolean hasNext() {
-				return(cur != null);
-			    }
-			    
-			    public void remove() {
-				throw(new UnsupportedOperationException());
-			    }
-			});
-		}
-	    });
-    }
 
-    public Resource getcurs(Coord c) {
+	public <T extends Widget> Set<T> children(final Class<T> cl) {
+		return (new AbstractSet<T>() {
+			public int size() {
+				int i = 0;
+				for (T w : this)
+					i++;
+				return (i);
+			}
+
+			public Iterator<T> iterator() {
+				return (new Iterator<T>() {
+					T cur = n(Widget.this);
+
+					private T n(Widget w) {
+						for (Widget n; true; w = n) {
+							if (w == null) {
+								return (null);
+							} else if (w.child != null) {
+								n = w.child;
+							} else if (w == Widget.this) {
+								return (null);
+							} else if (w.next != null) {
+								n = w.next;
+							} else {
+								for (n = w.parent; (n != null) && (n.next == null) && (n != Widget.this); n = n.parent)
+									;
+								if ((n == null) || (n == Widget.this))
+									return (null);
+								n = n.next;
+							}
+							if ((n == null) || cl.isInstance(n))
+								return (cl.cast(n));
+						}
+					}
+
+					public T next() {
+						if (cur == null)
+							throw (new NoSuchElementException());
+						T ret = cur;
+						cur = n(ret);
+						return (ret);
+					}
+
+					public boolean hasNext() {
+						return (cur != null);
+					}
+				});
+			}
+		});
+	}
+
+
+	public Resource getcurs(Coord c) {
 	Resource ret;
 		
 	for(Widget wdg = lchild; wdg != null; wdg = wdg.prev) {
@@ -952,4 +952,10 @@ public class Widget {
 
 	public abstract void ntick(double a);
     }
+
+	protected void binded() {
+	}
+
+	protected void removed() {
+	}
 }

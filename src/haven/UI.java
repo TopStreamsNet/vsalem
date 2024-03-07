@@ -194,6 +194,7 @@ public class UI {
 	public void bind(Widget w, int id) {
 		widgets.put(id, w);
 		rwidgets.put(w, id);
+		w.binded();
 	}
 
 	public void drawafter(AfterDraw ad) {
@@ -257,6 +258,7 @@ public class UI {
 	}
 
 	private void removeid(Widget wdg) {
+		wdg.removed();
 		if(rwidgets.containsKey(wdg)) {
 			int id = rwidgets.get(wdg);
 			widgets.remove(id);

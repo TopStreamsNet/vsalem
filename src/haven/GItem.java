@@ -29,8 +29,10 @@ package haven;
 import haven.ItemInfo.Name;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GItem> {
     public static volatile long infoUpdated;
@@ -306,5 +308,55 @@ public class GItem extends AWidget implements ItemInfo.ResOwner, Comparable<GIte
         } else {
             return new Coord(1, 1);
         }
+    }
+
+    public <T> Optional<T> getinfo(Class<T> type) {
+        try {
+            for (final ItemInfo info : info()) {
+                if (type.isInstance(info)) {
+                    return Optional.of(type.cast(info));
+                }
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public <T> Optional<T> getinfo(Class<T> type, List<ItemInfo> infolst) {
+        try {
+            for (final ItemInfo info : infolst) {
+                if (type.isInstance(info)) {
+                    return Optional.of(type.cast(info));
+                }
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public <T> List<T> getinfos(Class<T> type) {
+        final List<T> infos = new ArrayList<>();
+        try {
+            for (final ItemInfo info : info()) {
+                if (type.isInstance(info)) {
+                    infos.add(type.cast(info));
+                }
+            }
+            return infos;
+        } catch (Exception e) {
+            return infos;
+        }
+    }
+    public String[] getRawContents() {
+        final ArrayList<String> contents = new ArrayList<>();
+
+        for (ItemInfo.Contents cont : getinfos(ItemInfo.Contents.class)) {
+            getinfo(ItemInfo.Name.Name.class, cont.sub)
+                    .ifPresent((cnt) -> contents.add(cnt.str.text));
+        }
+
+        return contents.toArray(new String[0]);
     }
 }

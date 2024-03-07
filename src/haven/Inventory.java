@@ -28,6 +28,7 @@ package haven;
 
 import java.util.*;
 import com.google.common.collect.*;
+import haven.automation.SessionDetails;
 
 public class Inventory extends Widget implements DTarget {
     private static final Tex obt = Resource.loadtex("gfx/hud/inv/obt");
@@ -44,6 +45,7 @@ public class Inventory extends Widget implements DTarget {
     public static final Tex sqlite = Resource.loadtex("gfx/hud/inv/sq1");
     public static final Coord sqlo = new Coord(4, 4);
     public static final Tex refl = Resource.loadtex("gfx/hud/invref");
+    private SessionDetails.InventoryType type;
 
     private Comparator<WItem> sorter = null;
 
@@ -626,4 +628,41 @@ public class Inventory extends Widget implements DTarget {
         return items;
     }
 
+
+    @Override
+    protected void removed() {
+        ui.sess.details.removeInventory(this, type);
+    }
+    @Override
+    protected void binded() {
+        super.binded();
+        if (parent instanceof Window) {
+            final Window par = (Window) parent;
+            if (par.cap != null) {
+                switch (par.cap.text) {
+                    case "Inventory":
+                        type = SessionDetails.InventoryType.MAIN;
+                        break;
+                    case "Belt":
+                        type = SessionDetails.InventoryType.BELT;
+                        break;
+                    default:
+                        type = SessionDetails.InventoryType.SUPPLEMENTAL;
+                        break;
+                }
+            } else {
+                type = SessionDetails.InventoryType.SUPPLEMENTAL;
+            }
+            ui.sess.details.attachInventory(this, type);
+        }
+    }
+    public GItem[] items() {
+        synchronized (wmap) {
+            final List<GItem> items = new ArrayList<>();
+            for (final WItem wi : wmap.values()) {
+                items.add(wi.item);
+            }
+            return items.toArray(new GItem[0]);
+        }
+    }
 }

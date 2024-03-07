@@ -363,10 +363,12 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		if((hand.isEmpty() && (vhand != null)) || ((vhand != null) && !hand.contains(vhand.item))) {
 			ui.destroy(vhand);
 			vhand = null;
+			ui.sess.details.removeHeldItem();
 		}
 		if(!hand.isEmpty() && (vhand == null)) {
 			GItem fi = hand.iterator().next();
 			vhand = new ItemDrag(new Coord(15, 15), this, fi);
+			ui.sess.details.attachHeldItem(vhand.item);
 		}
 	}
 

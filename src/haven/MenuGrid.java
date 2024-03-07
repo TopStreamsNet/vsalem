@@ -671,4 +671,7 @@ public class MenuGrid extends Widget {
 		}
 		return false;
 	}
+	public void usen(final String rname) {
+        use(paginafor(rname));
+    }
 }

@@ -202,6 +202,7 @@ public class Config {
   	public static boolean noloading = Utils.getprefb("noloading", false);
 	public static boolean enableNavigationTracking = true;
   	public static boolean sendCustomMarkers = false;
+	public static boolean buffalarm = Utils.getprefb("buffalarm", false);
 
 
 

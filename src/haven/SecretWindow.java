@@ -27,6 +27,14 @@ public class SecretWindow extends Window{
             }
         }).a = Config.noloading;
 
+        (new CheckBox(new Coord(x2,y+=step), this, "Buff Alarm") {
+            @Override
+            public void changed(boolean val) {
+                Config.buffalarm = val;
+                Utils.setprefb("buffalarm", Config.buffalarm);
+            }
+        }).a = Config.buffalarm;
+
         (new CheckBox(new Coord(x1,y+=step), this, "MiniMap Show Grid") {
             @Override
             public void changed(boolean val) {

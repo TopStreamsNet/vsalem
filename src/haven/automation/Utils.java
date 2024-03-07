@@ -1,9 +1,6 @@
 package haven.automation;
 
-import haven.Coord;
-import haven.Coordf;
-import haven.GameUI;
-import haven.Gob;
+import haven.*;
 
 import java.awt.geom.Line2D;
 
@@ -74,5 +71,10 @@ public class Utils {
 
     public static void interruptLispScript() {
         Utils.thr.interrupt();
+    }
+
+    public static synchronized void dispatchmsg(final Widget wdg, final String msg, final Object... args) {
+        if(thr != null)
+            thr.newmsg(wdg, msg, args);
     }
 }

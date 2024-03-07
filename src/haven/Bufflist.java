@@ -81,7 +81,7 @@ public class Bufflist extends Widget {
 						Tex ctext = b.cmeter();
 						g.image(ctext, bc.add(imgoff).add(img.sz()).add(ctext.sz().inv()).add(-1, -1));
 					}
-					if (b.cmeter >= 0 && b.cmeter <= 5){
+					if (Config.buffalarm && b.cmeter >= 0 && b.cmeter <= 5){
 						if (now > lastAlarm + alarmSoundGap) {
 							lastAlarm = now;
 							Audio.play(alarmSound);
