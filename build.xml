@@ -15,7 +15,7 @@
     <exec executable="git" outputproperty="gitrev" failifexecutionfails="false">
       <arg line="rev-parse HEAD" />
     </exec>
-    <echo file="build/classes/buildinfo" xml:space="default">
+    <echo file="build/classes/buildinfo">
       git-rev = ${gitrev}
     </echo>
 	</target>
@@ -33,6 +33,8 @@
 				<pathelement path="lib/gson-2.3.jar" />
 				<pathelement path="lib/guava-18.0.jar" />
 				<pathelement path="lib/abcl.jar" />
+				<pathelement path="lib/sqlite-jdbc-3.45.1.0.jar" />
+				<pathelement path="lib/slf4j-api-2.0.12.jar" />
 				<pathelement path="lib/commons-text-1.8.jar" />
 				<pathelement path="lib/commons-lang3-3.10.jar" />
 				<pathelement path="lib/flogger.jar" />
@@ -107,7 +109,9 @@
 			<fileset file="etc/item_data.json" />
 			<manifest>
 				<attribute name="Main-Class" value="haven.MainFrame" />
-				<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lclient-res.jar builtin-res.jar salem-res.jar gson-2.3.jar guava-18.0.jar abcl.jar commons-text-1.8.jar commons-lang3-3.10.jar flogger.jar flogger-system-backend.jar" />
+				<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lclient-res.jar builtin-res.jar salem-res.jar
+				gson-2.3.jar guava-18.0.jar abcl.jar sqlite-jdbc-3.45.1.0.jar slf4j-api-2.0.12.jar commons-text-1.8.jar
+				commons-lang3-3.10.jar flogger.jar flogger-system-backend.jar" />
 			</manifest>
 		</jar>
 		<chmod file="build/vsalem.jar" perm="a+x" />
@@ -126,6 +130,8 @@
 				<include name="salem-res.jar" />
 				<include name="builtin-res.jar" />
 				<include name="abcl.jar" />
+				<include name="sqlite-jdbc-3.45.1.0.jar" />
+				<include name="slf4j-api-2.0.12.jar" />
 				<include name="commons-text-1.8.jar" />
 				<include name="commons-lang3-3.10.jar" />
 				<include name="flogger.jar" />

@@ -267,7 +267,7 @@ public class MappingClient {
                     }
                     for (Gob gob : g.oc) {
                         try {
-                            if (gob.name().startsWith("gfx/borka/body") && gob.getattr(GobHealth.class) == null) {
+                            if (gob.name().endsWith("gfx/borka/body") && gob.getattr(GobHealth.class) == null && gob.hasIcon.get()) {
                                 JSONObject j = new JSONObject();
                                 if (gob.isplayer()) {
                                     j.put("name", playerName);

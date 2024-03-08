@@ -40,6 +40,9 @@ public class Radar {
                         ResDrawable d = (ResDrawable) g.getattr(Drawable.class);
                         if (d.sdtnum() == 0)
                             suffix = "_empty";
+                    } else if (r.name.endsWith("gfx/borka/body")) {
+                        if(!g.hasIcon.get() || g.getattr(GobHealth.class) != null)
+                            suffix= "_npc";
                     }
                     this.add(r.name + suffix, g);
                     added = true;

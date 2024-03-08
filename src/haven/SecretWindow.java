@@ -35,6 +35,14 @@ public class SecretWindow extends Window{
             }
         }).a = Config.buffalarm;
 
+        (new CheckBox(new Coord(x2,y+=step), this, "Use SQLite") {
+            @Override
+            public void changed(boolean val) {
+                Config.usesqlite = val;
+                Utils.setprefb("usesqlite", Config.usesqlite);
+            }
+        }).a = Config.usesqlite;
+
         (new CheckBox(new Coord(x1,y+=step), this, "MiniMap Show Grid") {
             @Override
             public void changed(boolean val) {

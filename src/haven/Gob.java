@@ -34,6 +34,7 @@ import haven.res.lib.tree.TreeSprite;
 
 import java.awt.Color;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
@@ -52,6 +53,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	private List<Coord> hitboxcoords;
 	private boolean discovered=false;
 	private List<Pair<GAttrib, Consumer<Gob>>> dattrs = new ArrayList<>();
+	public AtomicBoolean hasIcon = new AtomicBoolean();
 
 	public static class Overlay implements Rendered {
 		public Indir<Resource> res;
@@ -266,6 +268,9 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 				path.move((Moving) a);
 			}
 		}
+		if (ac != null && GobIcon.class == ac) {
+         this.hasIcon.set(true);
+      	}
 		attr.put(ac, a);
 	}
 

@@ -164,6 +164,9 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 
 	public static Resource load(String name, int ver, int prio) {
 		Resource res;
+		if (Config.usesqlite && UI.instance!= null && UI.instance.db != null){
+			new Thread(() -> UI.instance.db.insert_resource(name)).start();
+		}
 		synchronized(cache) {
 			res = cache.get(name);
 			if(res != null) {

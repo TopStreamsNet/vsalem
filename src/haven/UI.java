@@ -26,8 +26,7 @@
 
 package haven;
 
-import haven.automation.LispScript;
-import haven.automation.Script;
+import haven.automation.DBworks;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -56,7 +55,7 @@ public class UI {
 	public final ActAudio audio = new ActAudio();
 
 	// vSalem
-
+	public DBworks db = Config.usesqlite ? new DBworks() : null;
 	private long lastactivity = 0;
 
 	{
@@ -144,7 +143,10 @@ public class UI {
 			});
 			setcmd("test", new Command() {
 				public void run(Console cons, String[] args) {
-					UI.instance.gui.wdgmsg("act", "craft", "berrysalad\00");
+					for (Resource resource : Resource.cached()){
+						System.out.println(""+resource.name);
+					}
+
 				}
 			});
 		}
