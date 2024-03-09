@@ -112,6 +112,7 @@
 				<attribute name="Class-Path" value="jogl-all.jar gluegen-rt.jar lclient-res.jar builtin-res.jar salem-res.jar
 				gson-2.3.jar guava-18.0.jar abcl.jar sqlite-jdbc-3.45.1.0.jar slf4j-api-2.0.12.jar commons-text-1.8.jar
 				commons-lang3-3.10.jar flogger.jar flogger-system-backend.jar" />
+				<attribute name="Add-Exports" value="java.base/java.lang java.desktop/sun.awt java.desktop/sun.java2d" />
 			</manifest>
 		</jar>
 		<chmod file="build/vsalem.jar" perm="a+x" />
