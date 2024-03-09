@@ -153,8 +153,8 @@ public class OCache implements Iterable<Gob> {
 			d.sdt = sdt;
 		} else if((d == null) || (d.res != res) || !d.sdt.equals(sdt)) {
 			g.setattr(new ResDrawable(g, res, sdt));
-			radar.add(g, res);
 		}
+		radar.add(g,res);
 	}
 
 	public synchronized void linbeg(Gob g, Coord s, Coord t, int c) {
@@ -192,8 +192,8 @@ public class OCache implements Iterable<Gob> {
 		if((cmp == null) || !cmp.base.equals(base)) {
 			cmp = new Composite(g, base);
 			g.setattr(cmp);
-			radar.add(g, base);
 		}
+		radar.add(g, base);
 	}
 
 	public synchronized void cmppose(Gob g, int pseq, List<ResData> poses, List<ResData> tposes, boolean interp, float ttime) {

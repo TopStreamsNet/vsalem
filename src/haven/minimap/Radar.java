@@ -24,31 +24,13 @@ public class Radar {
             if (this.contains(g))
                 return;
             boolean added = false;
-            String suffix = "";
             try {
                 Resource r = res.get();
                 if (r != null && r.name != null && r.name.length() != 0) {
-                    if (r.name.endsWith("gfx/terobjs/leanto")) {
-                        ResDrawable d = (ResDrawable) g.getattr(Drawable.class);
-                        if (d.sdtnum() == 0)
-                            suffix = "_vacant";
-                    } else if (r.name.endsWith("gfx/terobjs/thornbush")) {
-                        ResDrawable d = (ResDrawable) g.getattr(Drawable.class);
-                        if (d.sdtnum() == 1)
-                            suffix = "_flowers";
-                    } else if (r.name.endsWith("gfx/terobjs/hangmantree")) {
-                        ResDrawable d = (ResDrawable) g.getattr(Drawable.class);
-                        if (d.sdtnum() == 0)
-                            suffix = "_empty";
-                    } else if (r.name.endsWith("gfx/borka/body")) {
-                        if(!g.hasIcon.get() || g.getattr(GobHealth.class) != null)
-                            suffix= "_npc";
-                    }
-                    this.add(r.name + suffix, g);
+                    this.add(r.name, g);
                     added = true;
                 }
-            } catch (Session.LoadingIndir ignored) {
-            } catch (Resource.Loading ignored) {
+            } catch (Session.LoadingIndir | Resource.Loading ignored) {
             }
             if (!added) {
                 // resource isn't loaded yet?
@@ -64,7 +46,27 @@ public class Radar {
     }
 
     private void add(String name, Gob gob) {
-        Marker m = this.factory.makeMarker(name, gob);
+        String suffix="";
+        try {
+            if (name.endsWith("gfx/terobjs/leanto")) {
+                ResDrawable d = (ResDrawable) gob.getattr(Drawable.class);
+                if (d.sdtnum() == 0)
+                    suffix = "_vacant";
+            } else if (name.endsWith("gfx/terobjs/thornbush")) {
+                ResDrawable d = (ResDrawable) gob.getattr(Drawable.class);
+                if (d.sdtnum() == 1)
+                    suffix = "_flowers";
+            } else if (name.endsWith("gfx/terobjs/hangmantree")) {
+                ResDrawable d = (ResDrawable) gob.getattr(Drawable.class);
+                if (d.sdtnum() == 0)
+                    suffix = "_empty";
+            } else if (name.endsWith("gfx/borka/body")) {
+                if (!gob.hasIcon.get() || gob.getattr(GobHealth.class) != null)
+                    suffix = "_npc";
+            }
+        }catch (Session.LoadingIndir | Resource.Loading ignored) {
+        }
+        Marker m = this.factory.makeMarker(name+suffix, gob);
         if (m != null) {
             KinInfo ki = gob.getattr(KinInfo.class);
             if (ki != null) {
