@@ -29,10 +29,8 @@ public class RadarList extends Scrollport {
         if (msg.equals("changed")) {
             String name = (String) args[0];
             boolean val = (Boolean) args[1];
-            System.out.println("Changed! "+name+" "+val);
         } else if (msg.equals("delete")) {
             String name = (String) args[0];
-            System.out.println("Delete! "+name);
             ui.destroy(sender);
             update();
         } else {
@@ -42,7 +40,6 @@ public class RadarList extends Scrollport {
 
     @SuppressWarnings("SynchronizeOnNonFinalField")
     public void add(String name) {
-        System.out.println("Add!! "+name);
     }
 
     private void update() {

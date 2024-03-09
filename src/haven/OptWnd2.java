@@ -1016,7 +1016,6 @@ public class OptWnd2 extends Window {
 		if(radartab !=null)
 		{
 			boolean success = body.tabs.remove(radartab);
-			System.out.println("Removed the radartab step 1: "+success);
 			radartab.unlink();
 			radartab.btn.destroy();
 			radartab.destroy();

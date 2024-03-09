@@ -441,12 +441,13 @@ public class UI {
 	}
 
 	public void mousewheel(MouseEvent ev, Coord c, int amount) {
-		setmods(ev);
-		lcc = mc = c;
-		if(mousegrab == null)
-			root.mousewheel(c, amount);
-		else
-			mousegrab.mousewheel(wdgxlate(c, mousegrab), amount);
+		this.setmods(ev);
+		this.lcc = this.mc = c;
+		if (this.mousegrab != null && !(this.mousegrab instanceof ItemDrag)) {
+			this.mousegrab.mousewheel(this.wdgxlate(c, this.mousegrab), amount);
+		} else {
+			this.root.mousewheel(c, amount);
+		}
 	}
 
 	public int modflags() {

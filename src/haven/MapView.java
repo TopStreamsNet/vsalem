@@ -1486,7 +1486,6 @@ public class MapView extends PView implements DTarget, Console.Directory {
 		protected void hit(Coord pc, Coord mc, ClickInfo inf) {
 			int modflags = ui.modflags();
 			if(ui.modctrl && ui.modmeta && clickb == 3){
-				System.out.println("Marking "+mc+" for script");
 				ext.markForScript(mc);
 			}
 			if (inf == null) {
