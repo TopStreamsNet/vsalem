@@ -99,6 +99,8 @@ public class SessionDetails {
     }
 
     public void removeInventory(final Inventory inv, final InventoryType type) {
+        if(type == null)
+            return;
         synchronized (invs) {
             switch (type) {
                 case MAIN:
