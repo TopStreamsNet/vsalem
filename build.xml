@@ -153,8 +153,7 @@
 			  	maxmemory="2048m"
 				classpath="java">
 			<arg line="-U http://game.salemthegame.com/res/ game.salemthegame.com"/>
-                        <jvmarg line="-XX:-UseGCOverheadLimit
-                        --add-exports java.base/java.lang=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/sun.java2d=ALL-UNNAMED -Djogl.disable.opengles=true" />
+                        <jvmarg line="-XX:-UseGCOverheadLimit" />
 		</java>
 	</target>
 
@@ -165,8 +164,7 @@
 			  maxmemory="2048m"
 			  classpath="java">
 			<arg line="-d -U http://game.salemthegame.com/res/ game.salemthegame.com"/>
-			<jvmarg line="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:-UseGCOverheadLimit
-			--add-exports java.base/java.lang=ALL-UNNAMED --add-exports java.desktop/sun.awt=ALL-UNNAMED --add-exports java.desktop/sun.java2d=ALL-UNNAMED -Djogl.disable.opengles=true" />
+			<jvmarg line="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005 -XX:-UseGCOverheadLimit" />
 		</java>
 	</target>
 
