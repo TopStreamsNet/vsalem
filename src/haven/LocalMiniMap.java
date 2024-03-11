@@ -178,7 +178,6 @@ public class LocalMiniMap extends Window implements Console.Directory{
 				Tiler tl = m.tiler(t);
 				if(tl instanceof RidgeTile) {
 					if(((RidgeTile)tl).ridgep(m, ul.add(c))) {
-						m.sethitmap(ul.add(c), Tile.RIDGE);
 						for(int y = c.y; y <= c.y + 1; y++) {
 							for(int x = c.x; x <= c.x + 1; x++) {
 								int rgb = buf.getRGB(x, y);

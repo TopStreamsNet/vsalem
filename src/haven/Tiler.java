@@ -32,68 +32,68 @@ import java.lang.annotation.*;
 import haven.Resource.Tile;
 
 public abstract class Tiler {
-    public final int id;
-    
-    public Tiler(int id) {
-	this.id = id;
-    }
-    
-    public abstract void lay(MapMesh m, Random rnd, Coord lc, Coord gc);
-    public abstract void trans(MapMesh m, Random rnd, Tiler gt, Coord lc, Coord gc, int z, int bmask, int cmask);
-    
-    public void layover(MapMesh m, Coord lc, Coord gc, int z, Tile t) {
-	m.new Plane(m.gnd(), lc, z, t);
-    }
+	public final int id;
 
-    public GLState drawstate(Glob glob, GLConfig cfg, Coord3f c) {
-	return(null);
-    }
-    
-    public static class FactMaker implements Resource.PublishedCode.Instancer {
-	public Factory make(Class<?> cl) throws InstantiationException, IllegalAccessException {
-	    if(Factory.class.isAssignableFrom(cl)) {
-		return(cl.asSubclass(Factory.class).newInstance());
-	    } else if(Tiler.class.isAssignableFrom(cl)) {
-		Class<? extends Tiler> tcl = cl.asSubclass(Tiler.class);
-		try {
-		    final Constructor<? extends Tiler> cons = tcl.getConstructor(Integer.TYPE, Resource.Tileset.class);
-		    return(new Factory() {
-			    public Tiler create(int id, Resource.Tileset set) {
-				return(Utils.construct(cons, id, set));
-			    }
-			});
-		} catch(NoSuchMethodException e) {}
-		throw(new RuntimeException("Could not find dynamic tiler contructor for " + tcl));
-	    }
-	    return(null);
+	public Tiler(int id) {
+		this.id = id;
 	}
-    }
 
-    @Resource.PublishedCode(name = "tile", instancer = FactMaker.class)
-    public static interface Factory {
-	public Tiler create(int id, Resource.Tileset set);
-    }
+	public abstract void lay(MapMesh m, Random rnd, Coord lc, Coord gc);
+	public abstract void trans(MapMesh m, Random rnd, Tiler gt, Coord lc, Coord gc, int z, int bmask, int cmask);
 
-    @dolda.jglob.Discoverable
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface ResName {
-	public String value();
-    }
+	public void layover(MapMesh m, Coord lc, Coord gc, int z, Tile t) {
+		m.new Plane(m.gnd(), lc, z, t);
+	}
 
-    private static final Map<String, Factory> rnames = new TreeMap<String, Factory>();
-    static {
+	public GLState drawstate(Glob glob, GLConfig cfg, Coord3f c) {
+		return(null);
+	}
+
+	public static class FactMaker implements Resource.PublishedCode.Instancer {
+		public Factory make(Class<?> cl) throws InstantiationException, IllegalAccessException {
+			if(Factory.class.isAssignableFrom(cl)) {
+				return(cl.asSubclass(Factory.class).newInstance());
+			} else if(Tiler.class.isAssignableFrom(cl)) {
+				Class<? extends Tiler> tcl = cl.asSubclass(Tiler.class);
+				try {
+					final Constructor<? extends Tiler> cons = tcl.getConstructor(Integer.TYPE, Resource.Tileset.class);
+					return(new Factory() {
+						public Tiler create(int id, Resource.Tileset set) {
+							return(Utils.construct(cons, id, set));
+						}
+					});
+				} catch(NoSuchMethodException e) {}
+				throw(new RuntimeException("Could not find dynamic tiler contructor for " + tcl));
+			}
+			return(null);
+		}
+	}
+
+	@Resource.PublishedCode(name = "tile", instancer = FactMaker.class)
+	public static interface Factory {
+		public Tiler create(int id, Resource.Tileset set);
+	}
+
+	@dolda.jglob.Discoverable
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface ResName {
+		public String value();
+	}
+
+	private static final Map<String, Factory> rnames = new TreeMap<String, Factory>();
+	static {
 		for(Class<?> cl : dolda.jglob.Loader.get(ResName.class).classes()) {
-		String nm = cl.getAnnotation(ResName.class).value();
-		try {
-			rnames.put(nm, (Factory)cl.newInstance());
-		} catch(InstantiationException | IllegalAccessException e) {
-			throw(new Error(e));
+			String nm = cl.getAnnotation(ResName.class).value();
+			try {
+				rnames.put(nm, (Factory)cl.newInstance());
+			} catch(InstantiationException | IllegalAccessException e) {
+				throw(new Error(e));
+			}
 		}
-		}
-    }
+	}
 
-    public static Factory byname(String name) {
-	return(rnames.get(name));
-    }
+	public static Factory byname(String name) {
+		return(rnames.get(name));
+	}
 }
