@@ -1003,8 +1003,6 @@ public class OptWnd2 extends Window {
 	public static void setRadarInfo(RadarConfig rcf, MarkerFactory mf){
 		OptWnd2.rc = rcf;
 		OptWnd2.mf = mf;
-		if(instance == null) return;
-		instance.makeRadarTab();
 	}
 
 	private void makeRadarTab()

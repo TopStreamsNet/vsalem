@@ -43,7 +43,6 @@ public class RadarList extends Scrollport {
     }
 
     private void update() {
-
         cont.update();
     }
 
