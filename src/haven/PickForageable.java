@@ -15,6 +15,8 @@ public class PickForageable implements Runnable {
         Gob herb = null;
         synchronized (gui.map.glob.oc) {
             for (Gob gob : gui.map.glob.oc) {
+                if (gob.id == gui.map.player().id)
+                    continue;
                 Resource res = null;
                 try {
                     res = gob.getres();
@@ -22,7 +24,7 @@ public class PickForageable implements Runnable {
                 }
                 if (res != null) {
                     double distFromPlayer = gob.rc.dist(gui.map.player().rc);
-                    if (distFromPlayer <= 20 * 11 && (herb == null || distFromPlayer < herb.rc.dist(gui.map.player().rc)))
+                    if (distFromPlayer < herb.rc.dist(gui.map.player().rc))
                         herb = gob;
                 }
             }
