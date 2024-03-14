@@ -24,7 +24,7 @@ public class PickForageable implements Runnable {
                 }
                 if (res != null) {
                     double distFromPlayer = gob.rc.dist(gui.map.player().rc);
-                    if (distFromPlayer < herb.rc.dist(gui.map.player().rc))
+                    if (herb == null || distFromPlayer < herb.rc.dist(gui.map.player().rc))
                         herb = gob;
                 }
             }
