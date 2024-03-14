@@ -1308,6 +1308,9 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 			Thread t = new Thread(new PickForageable(this), "PickForageable");
 			t.start();
 			return(true);
+		} else if (!ev.isShiftDown() && keyCode == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED)  {
+			Config.showboundingboxes = !Config.showboundingboxes;
+			return(true);
 		}
 		return(super.globtype(key, ev));
 	}

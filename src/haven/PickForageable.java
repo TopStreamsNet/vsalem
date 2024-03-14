@@ -18,15 +18,12 @@ public class PickForageable implements Runnable {
                 Resource res = null;
                 try {
                     res = gob.getres();
-                } catch (Loading l) {
+                } catch (Loading ignored) {
                 }
                 if (res != null) {
-                    if (res.name.startsWith("gfx/terobjs/herbs") ||
-                            res.name.startsWith("gfx/terobjs/items")) {
-                        double distFromPlayer = gob.rc.dist(gui.map.player().rc);
-                        if (distFromPlayer <= 20 * 11 && (herb == null || distFromPlayer < herb.rc.dist(gui.map.player().rc)))
-                            herb = gob;
-                    }
+                    double distFromPlayer = gob.rc.dist(gui.map.player().rc);
+                    if (distFromPlayer <= 20 * 11 && (herb == null || distFromPlayer < herb.rc.dist(gui.map.player().rc)))
+                        herb = gob;
                 }
             }
         }

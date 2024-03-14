@@ -43,7 +43,7 @@ public class Glob {
 	public final GobHitmap gobhitmap = new GobHitmap();
     public long time, epoch = System.currentTimeMillis();
     public int season;
-    public OCache oc = new OCache(this);
+    public final OCache oc = new OCache(this);
     public MCache map;
     public Session sess;
     public Party party;

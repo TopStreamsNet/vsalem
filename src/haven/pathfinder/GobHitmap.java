@@ -264,9 +264,9 @@ public class GobHitmap {
             final Coord center = new Coord(allx / coordes.size(), ally / coordes.size());
             fillspace(center, g, coords);
 
-        } else {
+        }/* else {
             System.out.println("No hitbox found for %s"+g.resname());
-        }
+        }*/
         return coords;
     }
 }
