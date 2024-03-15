@@ -1,6 +1,11 @@
 $size[20]{$u{CHANGE LOG:}}
  
 $size[14]{$u{Update for 18.02.2024 (Latikai):}}
+  * Noticed I broke something else.
+  * Re-introduced the old semi-transparent height map overlay.
+  * Fixed cheap scarecrow radius to the new value.
+
+$size[14]{$u{Update for 18.02.2024 (Latikai):}}
   * Well, it's been a while since a changelog! Almost made it to 10 years...
   * Merged in changes for new haven.
   * Swapped wiki to salemthegame.wiki.
