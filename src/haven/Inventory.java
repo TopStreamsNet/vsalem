@@ -27,6 +27,8 @@
 package haven;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.google.common.collect.*;
 import haven.automation.SessionDetails;
 
@@ -170,7 +172,7 @@ public class Inventory extends Widget implements DTarget {
 
     public Coord isz;
     Coord isz_client;
-    Map<GItem, WItem> wmap = new HashMap<GItem, WItem>();
+    Map<GItem, WItem> wmap = new ConcurrentHashMap<GItem, WItem>();
     public int newseq = 0;
 
     public List<WItem> getInventoryContents() {

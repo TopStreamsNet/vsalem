@@ -5,6 +5,10 @@ import haven.*;
 
 public class PickForageable implements Runnable {
     private GameUI gui;
+    final static String[] space_patterns_exclude = new String[]{"gfx/terobjs/arch/",
+            "gfx/terobjs/footprints", "gfx/terobjs/bust", "gfx/terobjs/redgroundpillow",
+            "gfx/terobjs/bluegroundpillow", "gfx/terobjs/greengroundpillow",
+            "gfx/terobjs/splatter"};
 
     public PickForageable(GameUI gui) {
         this.gui = gui;
@@ -14,20 +18,27 @@ public class PickForageable implements Runnable {
     public void run() {
         Gob herb = null;
         synchronized (gui.map.glob.oc) {
-            for (Gob gob : gui.map.glob.oc) {
-                if (gob.id == gui.map.player().id)
-                    continue;
-                Resource res = null;
-                try {
-                    res = gob.getres();
-                } catch (Loading ignored) {
+            gobloop:
+                for (Gob gob : gui.map.glob.oc) {
+                    if (gob.id == gui.map.player().id)
+                        continue;
+                    Resource res = null;
+                    try {
+                        res = gob.getres();
+                    } catch (Loading ignored) {
+                    }
+                    if (res != null) {
+                        double distFromPlayer = gob.rc.dist(gui.map.player().rc);
+                        if (distFromPlayer < 100 && (herb == null || distFromPlayer < herb.rc.dist(gui.map.player().rc))) {
+                            for (String exclusion : space_patterns_exclude) {
+                                if (res.name.startsWith(exclusion)) {
+                                    continue gobloop;
+                                }
+                            }
+                            herb = gob;
+                        }
+                    }
                 }
-                if (res != null) {
-                    double distFromPlayer = gob.rc.dist(gui.map.player().rc);
-                    if (herb == null || distFromPlayer < herb.rc.dist(gui.map.player().rc))
-                        herb = gob;
-                }
-            }
         }
         if (herb == null)
             return;

@@ -34,6 +34,7 @@ import haven.res.lib.tree.TreeSprite;
 
 import java.awt.Color;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -45,7 +46,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	public long id;
 	public int frame, initdelay = (int)(Math.random() * 3000) + 3000;
 	public final Glob glob;
-	public Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
+	public Map<Class<? extends GAttrib>, GAttrib> attr = new ConcurrentHashMap<Class<? extends GAttrib>, GAttrib>();
 	public Collection<Overlay> ols = new LinkedList<Overlay>();
 	private GobPath path = null;
 	private static List<Long> timeList = new LinkedList<Long>();
