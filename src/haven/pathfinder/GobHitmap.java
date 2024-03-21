@@ -135,9 +135,13 @@ public class GobHitmap {
         return map.containsKey(c);
     }
 
+    public synchronized Tile getTileType(final Coord c) {
+        return map.get(c).tile;
+    }
+
     public synchronized List<Coord> add(final Gob g) {
         final UI ui = UI.instance;
-        if (ui != null && ui.gui != null && ui.gui.map != null && g.id != MapView.plgob && !(g instanceof OCache.Virtual) && g.id >= 0) {
+        if (ui != null && ui.gui != null && ui.gui.map != null && !(g instanceof OCache.Virtual) && g.id >= 0) {
             return fill(g);
         } else {
             return null;
@@ -195,6 +199,7 @@ public class GobHitmap {
         float err = 0.0f;
         int y = y0;
 
+        Tile tt = (g.id == MapView.plgob) ? Tile.PLAYER : Tile.GOB;
         for (int x = x0; x <= x1; ++x) {
             final Coord c;
             if (steep) {
@@ -203,7 +208,7 @@ public class GobHitmap {
             } else {
                 c = new Coord(x, y);
             }
-            map.put(c, map.getOrDefault(c, new HitTile(Tile.GOB)));
+            map.put(c, map.getOrDefault(c, new HitTile(tt)));
             map.get(c).add(g);
             coords.add(c);
 
@@ -223,10 +228,12 @@ public class GobHitmap {
         queue.push(start);
 
         Coord c;
+        Tile tt = (g.id == MapView.plgob) ? Tile.PLAYER : Tile.GOB;
         while (queue.size() > 0) {
             c = queue.pop();
-            if (map.getOrDefault(c, nulltile).tile != Tile.GOB) {
-                map.put(c, map.getOrDefault(c, new HitTile(Tile.GOB)));
+
+            if ((map.getOrDefault(c, nulltile).tile != Tile.GOB) && (map.getOrDefault(c, nulltile).tile != Tile.PLAYER)) {
+                map.put(c, map.getOrDefault(c, new HitTile(tt)));
                 map.get(c).add(g);
                 coords.add(c);
                 queue.add(c.add(1, 0));

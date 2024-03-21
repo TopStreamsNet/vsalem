@@ -619,6 +619,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 
 		sb.append("Angle: ").append(Math.toDegrees(a)).append("\n");
 		sb.append("Position: ").append(String.format("(%.3f, %.3f, %.3f)", getc().x, getc().y, getc().z)).append("\n");
+		sb.append("Distance: ").append(String.format("(%.3f)", UI.instance.gui.map.glob.oc.getgob(MapView.plgob).rc.dist(this.rc))).append("\n");
 		sb.append("Layers: ").append("\n");
 		for (Resource.Layer l : getres().layers()) {
 			sb.append("--").append(l).append("\n");

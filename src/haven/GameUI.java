@@ -88,7 +88,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 
 	// vSalem
 	public boolean drinkingTea, lastDrinkingSucessful;
-	public Thread DrinkThread;
+	public Thread DrinkThread, PickUpThread;
 	private long  DrinkTimer = 0;
 
 
@@ -1305,8 +1305,10 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 			dwalkdown(ev);
 			return(true);
 		} else if (!ev.isShiftDown() && keyCode == KeyEvent.VK_Q && ev.getID() == KeyEvent.KEY_TYPED)  {
-			Thread t = new Thread(new PickForageable(this), "PickForageable");
-			t.start();
+			if(PickUpThread == null || !PickUpThread.isAlive() || PickUpThread.isInterrupted()) {
+				PickUpThread = new Thread(new PickForageable(this), "PickForageable");
+				PickUpThread.start();
+			}
 			return(true);
 		} else if (!ev.isShiftDown() && !ev.isControlDown() && keyCode == KeyEvent.VK_B && ev.getID() == KeyEvent.KEY_TYPED)  {
 			Config.showboundingboxes = !Config.showboundingboxes;
