@@ -419,7 +419,7 @@ public class WItem extends Widget implements DTarget {
 
 	String name = Config.contents_icons.get(contents);
 	for(Map.Entry<String, String> entry : Config.contents_icons.entrySet()) {
-	    if(contents.contains(entry.getKey())){
+	    if(contents.endsWith(entry.getKey())){
 	    	name = entry.getValue();
 		break;
 	    }
