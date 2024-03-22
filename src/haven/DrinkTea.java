@@ -46,7 +46,7 @@ public class DrinkTea implements Runnable {
                     FlowerMenu menu = gui.ui.root.findchild(FlowerMenu.class);
                     int retries = 0;
                     while (menu == null || menu.opts == null) {
-                        if (retries++ > 100) {
+							if (retries++ > 100) {
                             gui.drinkingTea = false;
                             return;
                         }
