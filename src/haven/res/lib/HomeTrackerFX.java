@@ -79,7 +79,7 @@ public class HomeTrackerFX extends Sprite {
 	public void draw(GOut g) {
 	    super.draw(g);
 	    
-	    Gob gob = ui.sess.glob.oc.getgob(ui.gui.plid);
+	    Gob gob = ui.sess.glob.oc.getgob(MapView.plgob);
 	    if(gob != player){
 		player = gob;
 		if(fx != null){

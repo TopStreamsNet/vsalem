@@ -143,7 +143,7 @@ public class UI {
 			});
 			setcmd("test", new Command() {
 				public void run(Console cons, String[] args) {
-					System.out.println("plid "+UI.instance.gui.plid+" vs plgob "+MapView.plgob);
+					System.out.println("plgob "+MapView.plgob);
 
 				}
 			});

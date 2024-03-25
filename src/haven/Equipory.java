@@ -104,7 +104,7 @@ public class Equipory extends Widget {
 		public Widget create(Coord c, Widget parent, Object[] args) {
 			long gobid;
 			if(args.length < 1)
-				gobid = parent.getparent(GameUI.class).plid;
+				gobid = MapView.plgob;
 			else
 				gobid = (Integer)args[0];
 			return(new Equipory(c, parent, gobid));

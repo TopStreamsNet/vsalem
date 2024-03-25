@@ -29,6 +29,13 @@ public class LispScript extends Script {
 
     @Override
     public void script_run() {
-        Load.load(String.format("%s/scripts/%s", Config.userhome, script));
+        if(this.script.startsWith("repl")) {
+            LispScript.engine.eval("(load \""+Config.userhome+"/scripts/lib/_config.lisp"+"\")");
+            LispScript.engine.eval("(defpackage :salem-repl (:use :salem-config :common-lisp :cl-user :java))");
+            LispScript.engine.eval("(in-package :salem-repl)");
+            LispScript.engine.run();
+        }else {
+            Load.load(String.format("%s/scripts/%s", Config.userhome, script));
+        }
     }
 }

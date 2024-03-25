@@ -48,7 +48,6 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 	private static final int nkeys[] = {KeyEvent.VK_1, KeyEvent.VK_2, KeyEvent.VK_3, KeyEvent.VK_4,
 			KeyEvent.VK_5, KeyEvent.VK_6, KeyEvent.VK_7, KeyEvent.VK_8,
 			KeyEvent.VK_9, KeyEvent.VK_0, KeyEvent.VK_MINUS, KeyEvent.VK_EQUALS};
-	public final long plid;
 	public final EquipProxyWdg equipProxy;
 	public MenuGrid menu;
 	public CraftWnd craftwnd;
@@ -134,7 +133,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		super(Coord.z, parent.sz, parent);
 		ui.gui = this;
 		this.chrid = chrid;
-		this.plid = plid;
+		MapView.plgob = plid;
 		setcanfocus(true);
 		setfocusctl(true);
 		menu = new MenuGrid(Coord.z, this);
@@ -376,7 +375,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		String place = ((String)pargs[0]).intern();
 		if(place == "mapview") {
 			Coord cc = (Coord)cargs[0];
-			map = new MapView(Coord.z, sz, this, cc, plid);
+			map = new MapView(Coord.z, sz, this, cc, MapView.plgob);
 			map.lower();
 			if(mmap != null){
 				ui.destroy(mmap);
