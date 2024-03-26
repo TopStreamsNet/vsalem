@@ -32,7 +32,7 @@
 	"ecol"  : "aaff44"
   },
   "gfx/terobjs/cheapscarecrow"     : {
-	"radius": 60,
+	"radius": 120,
 	"scol"  : "88aaff44",
 	"ecol"  : "aaff44"
   },
