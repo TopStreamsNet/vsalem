@@ -333,7 +333,7 @@ public class LocalMiniMap extends Window implements Console.Directory{
 
 
 	public void tick(double dt) {
-		Gob pl = ui.sess.glob.oc.getgob(MapView.plgob);
+		Gob pl = ui.sess.glob.oc.getgob(ui.gui.plid);
 		if(pl == null)
 			this.cc = mv.cc.div(tilesz);
 		else

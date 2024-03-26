@@ -2,6 +2,7 @@ package haven;
 
 
 import haven.*;
+import haven.automation.Holding;
 
 public class PickForageable implements Runnable {
     private GameUI gui;
@@ -17,19 +18,28 @@ public class PickForageable implements Runnable {
     @Override
     public void run() {
         Gob herb = null;
+        Gob player = gui.map.player();
+        Holding holding = null;
         synchronized (gui.map.glob.oc) {
             gobloop:
                 for (Gob gob : gui.map.glob.oc) {
-                    if (gob.id == gui.map.player().id)
+                    /* skip if it is ourselves */
+                    if (gob.id == MapView.plgob)
                         continue;
+                    /* skip if it is holding us */
+                    holding = gob.getattr(Holding.class);
+                    if(holding != null && holding.held.id == MapView.plgob){
+                        continue;
+                    }
+
                     Resource res = null;
                     try {
                         res = gob.getres();
                     } catch (Loading ignored) {
                     }
                     if (res != null) {
-                        double distFromPlayer = gob.rc.dist(gui.map.player().rc);
-                        if (distFromPlayer < 100 && (herb == null || distFromPlayer < herb.rc.dist(gui.map.player().rc))) {
+                        double distFromPlayer = gob.rc.dist(player.rc);
+                        if (distFromPlayer < 100 && (herb == null || distFromPlayer < herb.rc.dist(player.rc))) {
                             for (String exclusion : space_patterns_exclude) {
                                 if (res.name.startsWith(exclusion)) {
                                     continue gobloop;

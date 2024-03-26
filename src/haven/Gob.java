@@ -227,7 +227,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 				final UI ui = UI.instance;
 				if (discovered) {
 					if (getattr(HeldBy.class) == null &&
-							(getattr(Holding.class) == null || (ui.gui != null && ui.gui.map != null && getattr(Holding.class).held.id != MapView.plgob)) &&
+							(getattr(Holding.class) == null || (ui.gui != null && ui.gui.map != null && getattr(Holding.class).held.id != ui.gui.plid)) &&
 							!pathfinding_blackout) {
 						hitboxcoords = glob.gobhitmap.add(this);
 					}
@@ -457,10 +457,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			return true;
 
 		Following follow = getattr(Following.class);
-		if (follow != null && follow.tgt().getattr(LinMove.class) != null)
-			return true;
-
-		return false;
+		return follow != null && follow.tgt().getattr(LinMove.class) != null;
 	}
 
 	public LinMove getLinMove() {
@@ -619,7 +616,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 
 		sb.append("Angle: ").append(Math.toDegrees(a)).append("\n");
 		sb.append("Position: ").append(String.format("(%.3f, %.3f, %.3f)", getc().x, getc().y, getc().z)).append("\n");
-		sb.append("Distance: ").append(String.format("(%.3f)", UI.instance.gui.map.glob.oc.getgob(MapView.plgob).rc.dist(this.rc))).append("\n");
+		sb.append("Distance: ").append(String.format("(%.3f)", UI.instance.gui.map.glob.oc.getgob(UI.instance.gui.plid).rc.dist(this.rc))).append("\n");
 		sb.append("Layers: ").append("\n");
 		for (Resource.Layer l : getres().layers()) {
 			sb.append("--").append(l).append("\n");
@@ -656,7 +653,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			//don't want objects being held to be on the hitmap
 			final UI ui = UI.instance;
 			if (getattr(HeldBy.class) == null &&
-					(getattr(Holding.class) == null || ui == null || getattr(Holding.class).held.id != MapView.plgob) &&
+					(getattr(Holding.class) == null || ui == null || getattr(Holding.class).held.id != ui.gui.plid) &&
 					!pathfinding_blackout) {
 				hitboxcoords = glob.gobhitmap.add(this);
 			}
@@ -665,7 +662,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 
 	private void discovered(final String name) {
 		final UI ui = UI.instance;
-		if (ui != null && ui.gui != null && ui.gui.map != null && MapView.plgob != -1) {
+		if (ui != null && ui.gui != null && ui.gui.map != null && ui.gui.plid != -1) {
 			res().ifPresent((res) -> {
 						if (GobHitbox.getBBox(this) != null) {
 							updateHitmap();
