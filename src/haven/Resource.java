@@ -181,7 +181,7 @@ public class Resource implements Comparable<Resource>, Prioritized, Serializable
 						 * properly handled. This could be the wrong
 						 * way of going about it, however; I'm not
 						 * sure. */
-						throw(new LoadException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source), res));
+						//throw(new LoadException(String.format("Weird version number on %s (%d > %d), loaded from %s", res.name, res.ver, ver, res.source), res));
 					}
 				} else if(ver == -1) {
 					if(res.error != null) {

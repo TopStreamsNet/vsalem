@@ -653,7 +653,7 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			//don't want objects being held to be on the hitmap
 			final UI ui = UI.instance;
 			if (getattr(HeldBy.class) == null &&
-					(getattr(Holding.class) == null || ui == null || getattr(Holding.class).held.id != ui.gui.plid) &&
+					(getattr(Holding.class) == null || ui == null || getattr(Holding.class).held.id != MapView.plgob) &&
 					!pathfinding_blackout) {
 				hitboxcoords = glob.gobhitmap.add(this);
 			}
