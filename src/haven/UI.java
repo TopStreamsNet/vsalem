@@ -32,7 +32,9 @@ import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class UI {
 	public static UI instance;
@@ -144,6 +146,63 @@ public class UI {
 			setcmd("test", new Command() {
 				public void run(Console cons, String[] args) {
 					System.out.println("plgob "+MapView.plgob);
+
+				}
+			});
+			setcmd("hookah", new Command() {
+				public void run(Console cons, String[] args) {
+					Gob hookah = null;
+					Gob player = gui.map.player();
+					synchronized (gui.map.glob.oc) {
+						for (Gob gob : gui.map.glob.oc) {
+							if (gob.resname().get().startsWith("gfx/terobjs/hookah") && (hookah == null || (gob.rc.dist(player.rc)) < hookah.rc.dist(player.rc))){
+								hookah = gob;
+							}
+						}
+					}
+					if(hookah != null) {
+						Gob finalHookah = hookah;
+						new Thread() {
+							public void run() {
+								UI.instance.gui.syslog.append("Found hookah", Color.CYAN);
+								UI.instance.gui.map.wdgmsg("click", Coord.z, finalHookah.rc, 1, 0);
+								UI.instance.gui.syslog.append("Waiting to move to hookah", Color.CYAN);
+								Moving m = player.getattr(Moving.class);
+								while (m == null) {
+									m = player.getattr(Moving.class);
+								}
+								UI.instance.gui.syslog.append("Moving to hookah", Color.CYAN);
+								m = player.getattr(Moving.class);
+								while (m != null) {
+									m = player.getattr(Moving.class);
+								}
+								UI.instance.gui.syslog.append("Standing by the hookah", Color.CYAN);
+								UI.instance.gui.map.wdgmsg("click", finalHookah.sc, finalHookah.rc, 3, 0, 0, (int) finalHookah.id, finalHookah.rc, 0, -1);
+								UI.instance.gui.syslog.append("Waiting for flowermenu", Color.CYAN);
+								Set<FlowerMenu> sfm = UI.instance.root.children(FlowerMenu.class);
+								while(sfm.isEmpty()){
+									sfm = UI.instance.root.children(FlowerMenu.class);
+								}
+								UI.instance.gui.syslog.append("Got flower menu!", Color.CYAN);
+								for (FlowerMenu fm: sfm) {
+									for(FlowerMenu.Petal pt : fm.opts){
+										if(pt.name.startsWith("Puff")){
+											UI.instance.gui.syslog.append("Start puff "+(new Timestamp(System.currentTimeMillis())), Color.CYAN);
+											fm.choose(pt);
+											try{
+											TimeUnit.SECONDS.sleep(19);}catch(Exception ignored){}
+											UI.instance.gui.syslog.append("End puff "+(new Timestamp(System.currentTimeMillis())), Color.CYAN);
+											UI.instance.gui.map.wdgmsg("click", Coord.z, finalHookah.rc, 1, 0);
+											return;
+										}else{
+											UI.instance.gui.syslog.append("Petal:"+pt.name, Color.RED);
+										}
+									}
+								}
+
+							}
+						}.start();
+					}
 
 				}
 			});
