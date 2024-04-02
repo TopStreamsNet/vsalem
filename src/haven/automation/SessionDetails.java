@@ -24,6 +24,9 @@ public class SessionDetails {
     private WeakReference<Inventory> beltinv = null;
     private final List<WeakReference<Inventory>> invs = new ArrayList<>();
 
+    private WeakReference<Charlist> chrlst = null;
+    private final Object chrlstlock = new Object();
+
     public SessionDetails(final Session sess) {
         this.session = new WeakReference<>(sess);
         shp = hhp = mhp = stam = energy = 0;
@@ -132,6 +135,25 @@ public class SessionDetails {
     public GItem getHeldItem() {
         synchronized (heldlock) {
             return helditem != null ? helditem.get() : null;
+        }
+    }
+
+
+    public void attachCharlist(final Charlist cl) {
+        synchronized (chrlstlock) {
+            chrlst = new WeakReference<>(cl);
+        }
+    }
+
+    public void removeCharlist() {
+        synchronized (chrlstlock) {
+            chrlst = null;
+        }
+    }
+
+    public Charlist getCharlist() {
+        synchronized (chrlstlock) {
+            return chrlst != null ? chrlst.get() : null;
         }
     }
 }

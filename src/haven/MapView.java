@@ -1485,8 +1485,11 @@ public class MapView extends PView implements DTarget, Console.Directory {
 
 		protected void hit(Coord pc, Coord mc, ClickInfo inf) {
 			int modflags = ui.modflags();
+			Resource curs = ui.root.getcurs(c);
+			// ctrl+alt+rmb
 			if(ui.modctrl && ui.modmeta && clickb == 3){
 				ext.markForScript(mc);
+				return;
 			}
 			if (inf == null) {
 				if (Config.center) {
@@ -1502,34 +1505,47 @@ public class MapView extends PView implements DTarget, Console.Directory {
 					pllastcc = mc;
 				}
 			} else {
-				if (ui.modmeta) {
-					ChatUI.Channel channel = ui.gui.chat.sel;
-					if (channel instanceof ChatUI.EntryChannel) {
-						((ChatUI.EntryChannel) channel).send(String.format("$hl[%d]", inf.gob.id));
-					}
-					if(ui.modshift){
-						Coord gobc = inf.gob.rc;
-						Coord gobtc = gobc.div(11.0f);
-						MCache.Grid gobgrid = UI.instance.sess.glob.map.getgridt(gobtc);
-						Coord gridOffset = gobtc.sub(gobgrid.ul);
-						ArrayList<JSONObject> loadedMarkers = new ArrayList<>();
-						// upload GOB marker
-						JSONObject o = new JSONObject();
-						try {
-							o.put("name", inf.gob.basename());
-							o.put("gridID", String.valueOf(gobgrid.id));
-							o.put("x", gridOffset.x);
-							o.put("y", gridOffset.y);
-							o.put("type", "shared");
-							o.put("image", inf.gob.name());
-						} catch (JSONException e) {
-							e.printStackTrace();
+				// alt+rmb
+				if (ui.modmeta && clickb == 3) {
+					if (ui.gui.vhand == null && curs != null && curs.basename().equals("arw")) {
+						ChatUI.Channel channel = ui.gui.chat.sel;
+						if (channel instanceof ChatUI.EntryChannel && channel.name().equals("Area Chat")) {
+							((ChatUI.EntryChannel) channel).send(String.format("$hl[%d]", inf.gob.id));
+						} else {
+							System.out.println(inf.gob.details());
 						}
-						loadedMarkers.add(o);
-						MappingClient.getInstance(ui.sess.username).setMarker(loadedMarkers);
+						return;
 					}
-					System.out.println(inf.gob.details());
 				}
+				// alt+lmb
+				else if(ui.modmeta && clickb == 1) {
+					// alt+shift+lmb
+					if (ui.modshift) {
+						if (ui.gui.vhand == null && curs != null && curs.basename().equals("arw")) {
+							Coord gobc = inf.gob.rc;
+							Coord gobtc = gobc.div(11.0f);
+							MCache.Grid gobgrid = UI.instance.sess.glob.map.getgridt(gobtc);
+							Coord gridOffset = gobtc.sub(gobgrid.ul);
+							ArrayList<JSONObject> loadedMarkers = new ArrayList<>();
+							// upload GOB marker
+							JSONObject o = new JSONObject();
+							try {
+								o.put("name", inf.gob.basename());
+								o.put("gridID", String.valueOf(gobgrid.id));
+								o.put("x", gridOffset.x);
+								o.put("y", gridOffset.y);
+								o.put("type", "shared");
+								o.put("image", inf.gob.name());
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+							loadedMarkers.add(o);
+							MappingClient.getInstance(ui.sess.username).setMarker(loadedMarkers);
+							return;
+						}
+					}
+				}
+
 				if (inf.ol == null) {
 					clearmovequeue();
 					if(Config.advroute && clickb == 3){
@@ -2100,4 +2116,9 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	public void queuemove(final Coord c) {
 		movequeue.add(c);
 	}
+
+	public void moveto(final Coord c) {
+        clearmovequeue();
+        wdgmsg("click", new Coord(1, 1), c, 1, 0);
+    }
 }

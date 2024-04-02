@@ -32,12 +32,13 @@ import haven.minimap.Marker;
 import haven.minimap.Radar;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 public class OCache implements Iterable<Gob> {
 	/* XXX: Use weak refs */
 	private Collection<Collection<Gob>> local = new LinkedList<Collection<Gob>>();
-	private Map<Long, Gob> objs = new TreeMap<Long, Gob>();
-	private Map<Long, Integer> deleted = new TreeMap<Long, Integer>();
+	private Map<Long, Gob> objs = new ConcurrentSkipListMap<Long, Gob>();
+	private Map<Long, Integer> deleted = new ConcurrentSkipListMap<Long, Integer>();
 	private Glob glob;
 	public final Radar radar = new Radar();
 
@@ -46,7 +47,7 @@ public class OCache implements Iterable<Gob> {
 	}
 
 	public Collection<Gob> getGobs() {
-		return new ArrayList<Gob>(objs.values());
+			return new ArrayList<>(this.objs.values());
 	}
 
 	public synchronized Gob[] getallgobs() {

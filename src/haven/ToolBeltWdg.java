@@ -1,5 +1,6 @@
 package haven;
 
+import static haven.Config.autoaim;
 import static haven.Inventory.sqlite;
 import static haven.WItem.missing;
 import haven.Resource.AButton;
@@ -7,6 +8,10 @@ import haven.Resource.AButton;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.ender.wiki.Item;
 import org.ender.wiki.Wiki;
@@ -304,10 +309,33 @@ public class ToolBeltWdg extends Window implements DropTarget{
 	    if(mvc.isect(Coord.z, map.sz)) {
 		map.delay(map.new Hittest(mvc) {
 		    protected void hit(Coord pc, Coord mc, MapView.ClickInfo inf) {
-			if(inf == null || inf.gob != null)
-			    ui.gui.wdgmsg("belt", slot, 1, ui.modflags(), mc);
-			else
-			    ui.gui.wdgmsg("belt", slot, 1, ui.modflags(), mc, (int)inf.gob.id, (int)inf.gob.id);
+				if(inf == null || inf.gob != null) {
+					if(autoaim && gui.belt[slot].get().name.startsWith("paginae/atk")){
+						List<Gob> gobs = Arrays.stream(ui.gui.map.glob.oc.getallgobs()).collect(Collectors.toList());
+						gobs.stream().filter(Gob::isplayer).collect(Collectors.toList()).forEach(gobs::remove);
+						double offDist = 5 * MCache.tilesz.x;
+						gobs.stream().filter(gob -> gob.rc.dist(mc) > offDist).collect(Collectors.toList()).forEach(gobs::remove);
+						gobs = gobs.stream().filter(gob -> {
+							if(gob.resname().isPresent() && gob.resname().get().startsWith("gfx/kritter")){
+								return (true);
+							}else{
+								return (false);
+							}
+						}).collect(Collectors.toList());
+						gobs.sort(Comparator.comparingDouble(o -> o.rc.dist(mc)));
+						if (!gobs.isEmpty()) {
+							Gob target = gobs.get(0);
+							System.out.println("Auto-aim!");
+							ui.gui.wdgmsg("belt", slot, 1, ui.modflags(), target.rc);
+						}else{
+							ui.gui.wdgmsg("belt", slot, 1, ui.modflags(), mc);
+						}
+					}else {
+						ui.gui.wdgmsg("belt", slot, 1, ui.modflags(), mc);
+					}
+				} else {
+					ui.gui.wdgmsg("belt", slot, 1, ui.modflags(), mc, (int) inf.gob.id, (int) inf.gob.id);
+				}
 		    }
 
 		    protected void nohit(Coord pc) {

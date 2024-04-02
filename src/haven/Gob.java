@@ -671,4 +671,8 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 			discovered = true;
 		}
 	}
+
+	public boolean hasHitbox(){
+		return (this.hitboxcoords != null);
+	}
 }

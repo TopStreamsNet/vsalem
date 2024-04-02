@@ -204,6 +204,7 @@ public class Config {
   	public static boolean sendCustomMarkers = false;
 	public static boolean buffalarm = Utils.getprefb("buffalarm", false);
 	public static boolean usesqlite = Utils.getprefb("usesqlite", false);
+	public static boolean autoaim = Utils.getprefb("autoaim", false);
 
 
 

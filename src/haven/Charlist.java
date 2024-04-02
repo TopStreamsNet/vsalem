@@ -172,6 +172,21 @@ public class Charlist extends Widget {
         };
     }
 
+    @Override
+    protected void removed() {
+        super.removed();
+        ui.sess.details.removeCharlist();
+    }
+
+    protected void added() {
+        parent.setfocus(this);
+    }
+
+    @Override
+    protected void binded() {
+        ui.sess.details.attachCharlist(this);
+    }
+
     public void scroll(int amount) {
         y += amount;
         synchronized(chars) {

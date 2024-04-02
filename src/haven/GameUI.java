@@ -1304,7 +1304,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		} else if(!ev.isControlDown() && ((keyCode == KeyEvent.VK_W) || (keyCode == KeyEvent.VK_A) || (keyCode == KeyEvent.VK_S) || (keyCode == KeyEvent.VK_D))) {
 			dwalkdown(ev);
 			return(true);
-		} else if (!ev.isShiftDown() && keyCode == KeyEvent.VK_Q && ev.getID() == KeyEvent.KEY_TYPED)  {
+		} else if (!ev.isMetaDown() && !ev.isControlDown() && !ev.isShiftDown() && keyCode == KeyEvent.VK_Q && ev.getID() == KeyEvent.KEY_TYPED)  {
 			if(PickUpThread == null || !PickUpThread.isAlive() || PickUpThread.isInterrupted()) {
 				PickUpThread = new Thread(new PickForageable(this), "PickForageable");
 				PickUpThread.start();

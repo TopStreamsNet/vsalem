@@ -43,6 +43,14 @@ public class SecretWindow extends Window{
             }
         }).a = Config.usesqlite;
 
+        (new CheckBox(new Coord(x2,y+=step), this, "Auto-Aim") {
+            @Override
+            public void changed(boolean val) {
+                Config.autoaim = val;
+                Utils.setprefb("autoaim", Config.autoaim);
+            }
+        }).a = Config.autoaim;
+
         (new CheckBox(new Coord(x1,y+=step), this, "MiniMap Show Grid") {
             @Override
             public void changed(boolean val) {

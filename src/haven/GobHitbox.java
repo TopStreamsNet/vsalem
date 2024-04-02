@@ -169,6 +169,13 @@ public class GobHitbox extends Sprite {
         //System.out.println("gfx/kritter/wishpoosh/wishpoosh" +neg.bc+":"+neg.bs);
          //if (name.equals("gfx/kritter/darkenbear/darkenbear"))
         //System.out.println("gfx/kritter/darkenbear/darkenbear" +neg.bc+":"+neg.bs);
+        /*if (name.startsWith("gfx/borka/body")){
+            BBox bbox = new BBox(neg.bc, neg.bs);
+            bbox.a = bbox.a.add(0,-10);
+            bbox.b = bbox.b.add(0,10);
+            return bbox;
+        }*/
+
         return neg == null ? null : new BBox(neg.bc, neg.bs);
     }
 }

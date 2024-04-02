@@ -85,8 +85,8 @@ public abstract class Pathfinder {
      * Are we on a bad tile and is our gob hitbox overlapping another
      */
     private boolean hitGob(final Coord mc) {
-        final Coord c = plhb.a.add(mc).toCoord().add(-2,-2);
-        final Coord br = plhb.b.add(mc).toCoord().add(2,2);
+        final Coord c = plhb.a.add(mc).toCoord().add(-2, 0);
+        final Coord br = plhb.b.add(mc).toCoord().add(2, 0);
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1) {
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
@@ -104,8 +104,8 @@ public abstract class Pathfinder {
      * TODO: plhb is problem slightly too big for this since tiles will let you usually overlap a bit
      */
     private boolean hitOnBoat(final Coord mc) {
-        final Coord c = plhb.a.add(mc).toCoord().add(-2,-2);
-        final Coord br = plhb.b.add(mc).toCoord().add(2,2);
+        final Coord c = plhb.a.add(mc).toCoord().add(-2,0);
+        final Coord br = plhb.b.add(mc).toCoord().add(2,0);
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {
@@ -123,8 +123,8 @@ public abstract class Pathfinder {
      * Especially the case in caves, not so much with ridges...
      */
     private boolean hitOnLand(final Coord mc) {
-        final Coord c = plhb.a.add(mc).toCoord().add(-2,-2);
-        final Coord br = plhb.b.add(mc).toCoord().add(2,2);
+        final Coord c = plhb.a.add(mc).toCoord().add(-2,0);
+        final Coord br = plhb.b.add(mc).toCoord().add(2,0);
         Coord xy = new Coord(0,0);
         for (xy.x = c.x; xy.x < br.x; xy.x += 1)
             for (xy.y = c.y; xy.y < br.y; xy.y += 1) {

@@ -667,4 +667,15 @@ public class Inventory extends Widget implements DTarget {
             return items.toArray(new GItem[0]);
         }
     }
+
+
+    public String name() {
+        if(parent instanceof Window && ((Window) parent).cap != null) {
+            return ((Window) parent).cap.text;
+        } else {
+            return "";
+        }
+    }
+
+
 }
