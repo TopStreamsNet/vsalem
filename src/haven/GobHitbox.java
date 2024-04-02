@@ -95,6 +95,7 @@ public class GobHitbox extends Sprite {
     private static final BBox bboxCwall = new BBox(new Coord(-1, 0), new Coord(0, 11));
     /*private static final BBox bboxChest = new BBox(new Coordf(-4.5f, -3.5f), new Coordf(3.5f, 4.5f));
     private static final BBox bboxBorka = new BBox(new Coordf(-4.5f, -3.5f), new Coordf(3.5f, 4.5f));*/
+    private static final BBox bboxRspruce = new BBox(new Coord(-5, -5), new Coord(5, 10));
 
     public static BBox getBBox(Gob gob) {
         Resource res = null;
@@ -122,6 +123,8 @@ public class GobHitbox extends Sprite {
             return bboxPig;
         else if (name.startsWith("gfx/terobjs/consobj"))
             return bboxCons;
+        else if (name.startsWith("gfx/terobjs/tree/rspruce"))
+            return bboxRspruce;
         /*else if (name.startsWith("gfx/terobjs/chest"))
             return bboxChest;
         else if (name.startsWith("gfx/borka/body"))

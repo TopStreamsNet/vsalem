@@ -5,7 +5,7 @@ import java.awt.event.KeyEvent;
 
 public class WeightWdg extends Window {
     static final Tex bg = Resource.loadtex("gfx/hud/bgtex");
-
+	private int sum = 0;
     private Tex label;
 
     public WeightWdg(Coord c, Widget parent) {
@@ -24,8 +24,8 @@ public class WeightWdg extends Window {
 	if(ca != null)
 	    cap = ca.comp;
 	Color color = (weight > cap)? Color.RED:Color.WHITE;
-
-	label = Text.render(String.format("Weight: %.2f/%.2f kg", weight / 1000.0, cap / 1000.0), color).tex();
+	this.sum = this.ui.gui.maininv.wmap.size();
+	label = Text.render(String.format("Weight: %.2f/%.2f kg, # %d", weight / 1000.0, cap / 1000.0, this.sum), color).tex();
 	sz = label.sz().add(Window.swbox.bisz()).add(4,0);
     }
 
