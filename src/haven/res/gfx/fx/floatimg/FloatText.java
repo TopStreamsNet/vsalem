@@ -55,8 +55,24 @@ public class FloatText
             oN = "Player";
         }
         oN = oN + ": ";
-
-        UI.instance.gui.syslog.append("" + oN + string, altCol == null ? color : altCol);
-
+        float dmg = 0;
+        try {
+            dmg = Float.parseFloat(string);
+        } catch (Exception ignored) {
+            // empty catch block
+        }
+        if(dmg > 0){
+            final Color red = new Color(255, 136, 136);
+            if (color.equals(red))
+                g.red_damage += dmg;
+            UI.instance.gui.syslog.append("" + oN + string +
+                    " red: " + g.red_damage +
+                    " black: " + g.black_damage +
+                    " blue " + g.blue_damage +
+                    " yellow: " + g.yellow_damage +
+                    " " + color, altCol == null ? color : altCol);
+        } else {
+            UI.instance.gui.syslog.append("" + oN + string, altCol == null ? color : altCol);
+        }
     }
 }

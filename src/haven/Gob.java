@@ -55,6 +55,10 @@ public class Gob implements Sprite.Owner, Skeleton.ModOwner, Rendered {
 	private boolean discovered=false;
 	private List<Pair<GAttrib, Consumer<Gob>>> dattrs = new ArrayList<>();
 	public AtomicBoolean hasIcon = new AtomicBoolean();
+	public float red_damage = 0.0f;
+	public float blue_damage = 0.0f;
+	public float black_damage = 0.0f;
+	public float yellow_damage = 0.0f;
 
 	public static class Overlay implements Rendered {
 		public Indir<Resource> res;

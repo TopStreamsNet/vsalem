@@ -145,7 +145,7 @@ public class GameUI extends ConsoleHost implements Console.Directory {
 		chat = new ChatUI(Coord.z, 0, this);
 		syslog = new ChatUI.Log(chat, "System");
 		ui.cons.out = new java.io.PrintWriter(new java.io.Writer() {
-			StringBuilder buf = new StringBuilder();
+			final StringBuilder buf = new StringBuilder();
 
 			public void write(char[] src, int off, int len) {
 				buf.append(src, off, len);
