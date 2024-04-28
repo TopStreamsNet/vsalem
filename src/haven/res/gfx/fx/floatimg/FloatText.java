@@ -8,7 +8,7 @@ public class FloatText
     public static final Text.Foundry fnd = new Text.Foundry("SansSerif", 10);
 
     public FloatText(Sprite.Owner owner, Resource resource, String string, Color color) {
-        super(owner, resource, new TexI(Utils.outline2(FloatText.fnd.render((String)string, (Color)color).img, Utils.contrast(color))), 2000);
+        super(owner, resource, new TexI(Utils.outline2(FloatText.fnd.render((String)Utils.generate_dmg_string(owner, string, color), (Color)color).img, Utils.contrast(color))), 2000);
 
         String oN = "";
         Color altCol = null;
@@ -62,14 +62,11 @@ public class FloatText
             // empty catch block
         }
         if(dmg > 0){
-            final Color red = new Color(255, 136, 136);
-            if (color.equals(red))
-                g.red_damage += dmg;
             UI.instance.gui.syslog.append("" + oN + string +
-                    " red: " + g.red_damage +
-                    " black: " + g.black_damage +
-                    " blue " + g.blue_damage +
-                    " yellow: " + g.yellow_damage +
+                    " red: " + String.format("%.2f", g.red_damage) +
+                    " black: " + String.format("%.2f", g.black_damage) +
+                    " blue " + String.format("%.2f", g.blue_damage) +
+                    " yellow: " + String.format("%.2f", g.yellow_damage) +
                     " " + color, altCol == null ? color : altCol);
         } else {
             UI.instance.gui.syslog.append("" + oN + string, altCol == null ? color : altCol);

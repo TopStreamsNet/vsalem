@@ -339,7 +339,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 
 		private float dist = 500.0f;
 		private float elev = (float) Math.PI / 4.0f;
-		private float angl = 0.0f;
+		private float angl = -1.6f;
 		private Coord dragorig = null;
 		private float elevorig, anglorig;
 
@@ -793,10 +793,27 @@ public class MapView extends PView implements DTarget, Console.Directory {
 			this.cc = new Coord(pl.getc());
 		synchronized (glob) {
 			if (glob.lightamb != null) {
-				DirLight light = new DirLight(glob.lightamb, glob.lightdif, glob.lightspc, Coord3f.o.sadd((float) glob.lightelev, (float) glob.lightang, 1f));
-				rl.add(light, null);
-				updsmap(rl, light);
-				amb = light;
+				ui.sess.glob.brighten();
+				if(Config.alwaysbright){
+					glob.lightang = Math.PI * 3.0 / 4.0;
+					glob.lightelev = 0.9773843811168246;
+					DirLight light = new DirLight(
+							glob.lightamb, glob.lightdif, glob.lightspc, Coord3f.o.sadd((float)glob.lightelev, (float)glob.lightang, 1.0F)
+					);
+					rl.add(light, null);
+					glob.lightang = Math.PI * 7.0 / 4.0;
+					DirLight light3 = new DirLight(
+							glob.lightamb, glob.lightdif, glob.lightspc, Coord3f.o.sadd((float)glob.lightelev, (float)glob.lightang, 1.0F)
+					);
+					rl.add(light3, null);
+					updsmap(rl, light);
+					amb = light;
+				} else {
+					DirLight light = new DirLight(glob.lightamb, glob.lightdif, glob.lightspc, Coord3f.o.sadd((float) glob.lightelev, (float) glob.lightang, 1f));
+					rl.add(light, null);
+					updsmap(rl, light);
+					amb = light;
+				}
 			} else {
 				amb = null;
 			}
@@ -2118,7 +2135,7 @@ public class MapView extends PView implements DTarget, Console.Directory {
 	}
 
 	public void moveto(final Coord c) {
-        clearmovequeue();
-        wdgmsg("click", new Coord(1, 1), c, 1, 0);
-    }
+		clearmovequeue();
+		wdgmsg("click", new Coord(1, 1), c, 1, 0);
+	}
 }

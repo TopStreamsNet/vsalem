@@ -26,6 +26,7 @@
 
 package haven;
 
+import java.text.Collator;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,7 +65,9 @@ public class Inventory extends Widget implements DTarget {
         @Override
         public int compare(WItem o1, WItem o2) {
             try{
-                int result = o1.item.resname().compareTo(o2.item.resname());
+                Collator usCollator = Collator.getInstance(Locale.US);
+                usCollator.setStrength(Collator.PRIMARY);
+                int result = usCollator.compare(o1.item.resname(),o2.item.resname());
                 if(result == 0)
                 {
                     result = cmp_desc.compare(o1, o2);

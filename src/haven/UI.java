@@ -145,7 +145,7 @@ public class UI {
 			});
 			setcmd("test", new Command() {
 				public void run(Console cons, String[] args) {
-					System.out.println("plgob "+MapView.plgob);
+					System.out.println("cam "+UI.instance.gui.map.camera.angle());
 
 				}
 			});

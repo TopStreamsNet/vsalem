@@ -1501,4 +1501,30 @@ public class Utils {
 		}
 		return null;
 	}
+
+	public static String generate_dmg_string(Sprite.Owner owner, String string, Color color) {
+		Gob g = (Gob)owner;
+
+		float dmg = 0;
+		try {
+			dmg = Float.parseFloat(string);
+		} catch (Exception ignored) {
+			// empty catch block
+		}
+		if(dmg > 0) {
+			final Color red = new Color(255, 136, 136);
+			final Color blue = new Color(0, 255, 238);
+			float total_damage = 0;
+			if (color.equals(red)) {
+				g.red_damage += dmg;
+				total_damage = g.red_damage;
+			}else if (color.equals(blue)) {
+				g.blue_damage += dmg;
+				total_damage = g.blue_damage;
+			}
+			return string+" : "+String.format("%.2f",total_damage);
+		}else{
+			return string;
+		}
+	}
 }
