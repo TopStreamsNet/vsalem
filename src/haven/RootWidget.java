@@ -100,7 +100,7 @@ public class RootWidget extends ConsoleHost {
                     Config.alwaysbright = true;
                 }
                 Utils.setprefb("alwaysbright", Config.alwaysbright);
-                Utils.setpreff("brightang", (int)Config.brightang);
+                Utils.setpreff("brightang", Config.brightang);
                 ui.sess.glob.brighten();
                 ui.message("Always Bright: " + (Config.alwaysbright ? "ON" : "OFF")+" Bright Ang: "+Config.brightang);
             }else if(isgui && code == KeyEvent.VK_C && alt){
